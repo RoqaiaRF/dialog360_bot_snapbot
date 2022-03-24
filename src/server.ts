@@ -10,7 +10,7 @@ const app: Express = express();
 /************************************************************************************
  *                              Basic Express Middlewares
  ***********************************************************************************/
-
+ 
 app.set('json spaces', 4);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
