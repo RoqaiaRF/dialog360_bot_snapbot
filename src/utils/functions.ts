@@ -8,10 +8,9 @@ const client = twilio(
 //Send text message to specific number
 const sendTextMessage = () => {
 
-
 client.messages
 .create({
-    from: 'whatsapp:+14155238886',
+    from: 'whatsapp:+96563336437',
     to: 'whatsapp:+962799849386',
     body: 'Ahoy from Twilio',
     mediaUrl: 'https://bit.ly/whatsapp-image-example',
@@ -20,4 +19,6 @@ client.messages
 console.log("post from function") 
   
   }
+
+  
 export default sendTextMessage;
