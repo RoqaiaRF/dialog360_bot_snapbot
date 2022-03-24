@@ -1,76 +1,50 @@
-import cookieParser from 'cookie-parser';
+import express, { Express } from 'express';
 import morgan from 'morgan';
-import path from 'path';
 import helmet from 'helmet';
+import cors from 'cors';
+import config from '../config.json';
+import { getFilesWithKeyword } from './utils/getFilesWithKeyword';
 
-import express, { NextFunction, Request, Response } from 'express';
-import StatusCodes from 'http-status-codes';
-import 'express-async-errors';
+const app: Express = express();
 
-import apiRouter from './routes/api';
-import logger from 'jet-logger';
-import { CustomError } from '@shared/errors';
+/************************************************************************************
+ *                              Basic Express Middlewares
+ ***********************************************************************************/
 
-
-// Constants
-const app = express();
-
-
-/***********************************************************************************
- *                                  Middlewares
- **********************************************************************************/
-
-// Common middlewares
+app.set('json spaces', 4);
 app.use(express.json());
-app.use(express.urlencoded({extended: true}));
-app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
 
-// Show routes called in console during development
-if (process.env.NODE_ENV === 'development') {
-    app.use(morgan('dev'));
+// Handle logs in console during development
+if (process.env.NODE_ENV === 'development' || config.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+  app.use(cors());
 }
 
-// Security (helmet recommended in express docs)
-if (process.env.NODE_ENV === 'production') {
-    app.use(helmet());
+// Handle security and origin in production
+if (process.env.NODE_ENV === 'production' || config.NODE_ENV === 'production') {
+  app.use(helmet());
 }
 
+/************************************************************************************
+ *                               Register all routes
+ ***********************************************************************************/
 
-/***********************************************************************************
- *                         API routes and error handling
- **********************************************************************************/
+getFilesWithKeyword('router', __dirname + '/app').forEach((file: string) => {
+  const { router } = require(file);
+  app.use('/', router);
+})
+/************************************************************************************
+ *                               Express Error Handling
+ ***********************************************************************************/
 
-// Add api router
-app.use('/api', apiRouter);
-
-// Error handling
-app.use((err: Error | CustomError, _: Request, res: Response, __: NextFunction) => {
-    logger.err(err, true);
-    const status = (err instanceof CustomError ? err.HttpStatus : StatusCodes.BAD_REQUEST);
-    return res.status(status).json({
-        error: err.message,
-    });
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  return res.status(500).json({
+    errorName: err.name,
+    message: err.message,
+    stack: err.stack || 'no stack defined'
+  });
 });
 
-
-/***********************************************************************************
- *                                  Front-end content
- **********************************************************************************/
-
-// Set views dir
-const viewsDir = path.join(__dirname, 'views');
-app.set('views', viewsDir);
-
-// Set static dir
-const staticDir = path.join(__dirname, 'public');
-app.use(express.static(staticDir));
-
-// Serve index.html file
-app.get('*', (_: Request, res: Response) => {
-    res.sendFile('index.html', {root: viewsDir});
-});
-
-
-
-// Export here and start in a diff file (for testing).
 export default app;
