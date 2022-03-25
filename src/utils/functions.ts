@@ -1,24 +1,38 @@
 const twilio = require('twilio');
-const client = twilio(
-    "ACd4d92fca5bbdb9a425b4d78d7c3d58f7",'5de0895e94164fa5dad19ed34858440a'
-// process.env.TWILIO_ACCOUNT_SID,
-// process.env.TWILIO_AUTH_TOKEN
-);
+import dotenv from 'dotenv';
 
-//Send text message to specific number
-const sendTextMessage = () => {
+dotenv.config();
 
-client.messages
-.create({
-    from: 'whatsapp:+96563336437',
-    to: 'whatsapp:+962799849386',
-    body: 'Ahoy from Twilio',
-    mediaUrl: 'https://bit.ly/whatsapp-image-example',
-})
- 
-console.log("post from function") 
-  
+//  string فيبقى الاحتمال الاخير وهو undefined or null علامة ! هي من اجل الغاء ال 
+const ACCOUNT_SID: string = (process.env.TWILIO_ACCOUNT_SID! as string);
+const AUTH_TOKEN:  string = (process.env.TWILIO_AUTH_TOKEN! as string);
+const senderID:    string = 'whatsapp:+96563336437';
+
+//& EXAMPLE MESSAGE CONTENT
+/* 
+ * receiverID: 'whatsapp:+962799849386';
+ * text message : `Welcome to our bot :) 💊🚰`
+ * template message : `welcome roqaia which language you want ?roqaia`
+ * mediaURL: 'https://www.gardeningknowhow.com/wp-content/uploads/2019/09/flower-color-400x391.jpg'
+*/
+
+const client = twilio( ACCOUNT_SID, AUTH_TOKEN, { lazyloading: true } );
+
+
+//Send text , media & emoji message to specific number
+const sendMessage = async(message: string, receiverID: string, mediaURL: any) => {
+
+    try{ await client.messages
+        .create({
+            from: senderID,
+            to: receiverID,
+            body: message,
+            mediaUrl: mediaURL,
+        });
+
+      } catch(error){ console.log (`Error at sending message: ${error}`); }
+       
   }
 
-  
-export default sendTextMessage;
+
+export { sendMessage };
