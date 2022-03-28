@@ -39,7 +39,8 @@ const demo = (message: string, sendeID: any,  Latitude: string, Longitude: strin
                 sendTextMedia(`شنو الخدمه الي تبينها عنا ؟`, sendeID);
                 break;
             case "اختر فرع اخر":
-            sendTextMedia(`اهلا وسهلا بك في قهوة root `, sendeID);
+            sendTextMedia(`اختر نوع القهوة التي تريدها من فضلك`, sendeID);
+            sendMedia("اهلا وسهلا بك في قهوة rooot ",sendeID,`https://ae01.alicdn.com/kf/Hfd7cff32b29147df89f85c3744b2c841z/-.jpg`);
             break;
 
             case "تنظيف":
@@ -103,8 +104,35 @@ const demo = (message: string, sendeID: any,  Latitude: string, Longitude: strin
 
                 //root cofee 
 
+                case "قهوة عربية":
+                    sendTextMedia(`
+                    شكرا لاختيارك مقهى .root.  تم استلام طلبك قهوة عربية بنجاح..
+                    نسعد بخدمتك ونراك قريبا!
+                    المجموع: 2.60 دينار 
+                    الررجاء أستخدام الرابط للدفع. 
+                    https://client.exqu.co/orders/2-2942/pay
+                    `, sendeID);
+                    break;
 
-            
+                case "قهوة حلوة":
+                    sendTextMedia(`
+                    شكرا لاختيارك مقهى .root.  تم استلام طلبك قهوة حلوة بنجاح..
+                    نسعد بخدمتك ونراك قريبا!
+                    المجموع: 2.5 دينار 
+                    الررجاء أستخدام الرابط للدفع. 
+                    https://client.exqu.co/orders/2-2942/pay
+                    `, sendeID);
+                    break;     
+                case "قهوة سعودية":
+                    sendTextMedia(`
+                    شكرا لاختيارك مقهى .root.  تم استلام طلبك قهوة سعودية بنجاح..
+                    نسعد بخدمتك ونراك قريبا!
+                    المجموع: 2.86 دينار 
+                    الررجاء أستخدام الرابط للدفع. 
+                    https://client.exqu.co/orders/2-2942/pay
+                    `, sendeID);
+                    break;
+                    
         default:sendTextMedia(`Welcome ...
         please click on the right option
         
