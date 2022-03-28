@@ -1,11 +1,13 @@
-const sendTextMedia = require('../../utils/functions/sendTextMedia.ts');
 
+//const sendTextMedia = require('../../utils/functions/sendTextMedia');
+
+import sendTextMedia, {sendMedia} from "../../utils/functions/sendTextMedia";
 
 const demo = (message: string, sendeID: any,  Latitude: string, Longitude: string) => {
+  
 
 
-
-    function send() {   sendTextMedia(`اختر اللغة المناسبة للطلب`, sendeID)  }
+    function send() {   sendTextMedia(`اختر اللغة المناسبة للطلب`, sendeID,)  }
 
     if (Latitude != undefined|| Longitude != undefined) {
         message= "kuwait"
@@ -34,21 +36,15 @@ const demo = (message: string, sendeID: any,  Latitude: string, Longitude: strin
             break;
 
             case "ابدأ الطلب":
-                sendTextMedia(`شنو الخدمه الي تبينها اليوم ؟
-                1️⃣ أظافر
-                2️⃣ شعر
-                3️⃣ تركيب
-                4️⃣ العودة للرئيسية
-
-                `, sendeID, "https://static.almalnews.com/uploads/2020/05/%D8%B5%D8%A7%D9%84%D9%88%D9%86%D8%A7%D8%AA-%D8%A7%D9%84%D8%AA%D8%AC%D9%85%D9%8A%D9%84-%D9%81%D9%8A-%D9%85%D8%B5%D8%B1.jpg");
+                sendTextMedia(`شنو الخدمه الي تبينها عنا ؟`, sendeID);
                 break;
             case "اختر فرع اخر":
-            sendTextMedia(`العفو منك ليس عندنا فروع اخرى, اخبرنا بموقع اخر من فضلك`, sendeID);
+            sendTextMedia(`اهلا وسهلا بك في قهوة root `, sendeID);
             break;
 
-            case "1":
+            case "تنظيف":
             sendTextMedia(`خدمات التنظيف`, sendeID);
-            sendTextMedia(`اعتني باظفركي  💅🏾 مع صالون pink `, sendeID,"https://cdn.salla.sa/F49bh46h7lvOo5jndLaW3Z6omxREGGGgpY94iZxa.jpeg");
+            sendMedia(`اعتني باظفركي  💅🏾 مع صالون pink `, sendeID,"https://cdn.salla.sa/F49bh46h7lvOo5jndLaW3Z6omxREGGGgpY94iZxa.jpeg");
             break;
 
             case "بدكير و منكير رويال":
@@ -61,9 +57,14 @@ const demo = (message: string, sendeID: any,  Latitude: string, Longitude: strin
             `, sendeID);
             break;
 
-            case "2":
+            case "أظافر":
             sendTextMedia(`خدمات الشعر المتوفره`, sendeID);
-            sendTextMedia(`اصبغي شعركي 👩‍🦰 مع صالون pink `, sendeID,"https://www.horrah.com/wp-content/uploads/2021/02/%D8%A3%D9%84%D9%88%D8%A7%D9%86-%D8%B5%D8%A8%D8%BA%D8%A7%D8%AA-%D8%A7%D9%84%D8%B4%D8%B9%D8%B1-%D9%88%D8%A7%D8%B3%D9%85%D8%A7%D8%A6%D9%87%D8%A7-.jpg");
+            sendMedia(`اصبغي شعركي 👩‍🦰 مع صالون pink `, sendeID,"https://www.horrah.com/wp-content/uploads/2021/02/%D8%A3%D9%84%D9%88%D8%A7%D9%86-%D8%B5%D8%A8%D8%BA%D8%A7%D8%AA-%D8%A7%D9%84%D8%B4%D8%B9%D8%B1-%D9%88%D8%A7%D8%B3%D9%85%D8%A7%D8%A6%D9%87%D8%A7-.jpg");
+            break;
+
+            
+            case "3":
+            sendTextMedia(`سيتم اتاحة هذه الخدمة قريبا`, sendeID);
             break;
 
             case "حف":
@@ -97,6 +98,12 @@ const demo = (message: string, sendeID: any,  Latitude: string, Longitude: strin
                 `, sendeID);
                 break;
 
+
+
+
+                //root cofee 
+
+
             
         default:sendTextMedia(`Welcome ...
         please click on the right option
@@ -109,4 +116,4 @@ const demo = (message: string, sendeID: any,  Latitude: string, Longitude: strin
     }
 }
 
-module.exports = demo;
+export default demo;

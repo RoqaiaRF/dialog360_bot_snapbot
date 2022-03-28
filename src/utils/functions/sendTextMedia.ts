@@ -11,14 +11,13 @@ const senderID:    string =  (process.env.SENDER_ID! as string);
 const client = twilio( ACCOUNT_SID, AUTH_TOKEN, { lazyloading: false } ); //lazyloading:  speed of sending /true or false
 
 //Send text , media & emoji message to specific number
-const sendTextMedia = async(message: string, receiverID: string, mediaUrl: any) => {
+const sendTextMedia = async(message: string, receiverID: string) => {
 
      await client.messages
         .create({
             from: senderID,
             to: receiverID, 
             body: message,
-            mediaUrl: mediaUrl
         })
         .then( (message: any):any  => {
              console.log( message.body)
@@ -31,4 +30,26 @@ const sendTextMedia = async(message: string, receiverID: string, mediaUrl: any) 
   }
 
 
-module.exports= sendTextMedia;
+
+
+  const sendMedia = async(message: string, receiverID: string, mediaUrl: any) => {
+
+    await client.messages
+       .create({
+           from: senderID,
+           to: receiverID, 
+           body: message,
+           mediaUrl: mediaUrl
+       })
+       .then( (message: any):any  => {
+            console.log( message.body)
+       })
+
+       .catch( (error: any) => {
+           console.log (`Error at sending message: ${error}`); 
+       })
+      console.log(senderID)
+ }
+
+export default sendTextMedia;
+export { sendMedia };
