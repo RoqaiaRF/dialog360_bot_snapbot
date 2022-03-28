@@ -2,16 +2,20 @@
 const sendTextMedia = require('../../utils/functions/sendTextMedia.ts');
 
 
-const demo = (message: string, sendeID: any) => {
+const demo = (message: string, sendeID: any,  Latitude: string, Longitude: string) => {
 
 
 
     function send() {   sendTextMedia(`اختر اللغة المناسبة للطلب`, sendeID)  }
 
+    if (Latitude != undefined|| Longitude != undefined) {
+        message= "kuwait"
+    }
+
 
     switch (message.toString()) {
         case "العربية":
-            sendTextMedia(` 🇰🇼 اخبرنا وين تسكن  حتى نساعدك بمعرفة اقرب فرع لك 😊`, sendeID);
+            sendTextMedia(`  ارسل اللوكيشن لموقعك حتى نساعدك بمعرفة اقرب فرع لك 🇰🇼 😊`, sendeID);
             break;
         case "English":
             sendTextMedia(`English is not supported yet`, sendeID);
@@ -57,8 +61,6 @@ const demo = (message: string, sendeID: any) => {
             https://client.exqu.co/orders/2-2942/pay
             `, sendeID);
             break;
-
-
 
             case "2":
             sendTextMedia(`خدمات الشعر المتوفره`, sendeID);

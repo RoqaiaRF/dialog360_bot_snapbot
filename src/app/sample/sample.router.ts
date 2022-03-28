@@ -11,7 +11,7 @@ export const router: Router = Router();
 // Post to recive  messages
 router.post("/demo", async (req, res) => {
 
-  if (!req.body.Body) {
+  if (!req.body) {
 
     return res.status(400).json({
       status: "Bad Request",
@@ -21,8 +21,10 @@ router.post("/demo", async (req, res) => {
 
   let message = req.body.Body;
   let Sender_ID = req.body.From;
-  demo(message,Sender_ID)
-  console.log(message);
+  let Latitude = req.body.Latitude;
+  let Longitude = req.body.Longitude;
+  demo(message,Sender_ID, Latitude, Longitude)
+  console.log(req.body);
   console.log(Sender_ID);
 
   return res.status(200).json({
