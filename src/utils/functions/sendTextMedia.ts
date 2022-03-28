@@ -11,13 +11,14 @@ const senderID:    string =  (process.env.SENDER_ID! as string);
 const client = twilio( ACCOUNT_SID, AUTH_TOKEN, { lazyloading: false } ); //lazyloading:  speed of sending /true or false
 
 //Send text , media & emoji message to specific number
-const sendTextMedia = async(message: string, receiverID: string) => {
+const sendTextMedia = async(message: string, receiverID: string, mediaUrl: any) => {
 
      await client.messages
         .create({
             from: senderID,
             to: receiverID, 
-            body: message
+            body: message,
+            mediaUrl: mediaUrl
         })
         .then( (message: any):any  => {
              console.log( message.body)
