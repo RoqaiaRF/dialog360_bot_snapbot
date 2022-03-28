@@ -1,7 +1,7 @@
 import { Router } from 'express';
 // const sendTextMedia = require('../../utils/functions/sendTextMedia.ts');
 // const welcome_lang = require('../../utils/phases/welcome_lang.ts');
-const demo = require('../../utils/phases/demo.ts')
+const demo = require('../../utils/phases/demo')
 // Export module for registering router in express app
 export const router: Router = Router();
 
