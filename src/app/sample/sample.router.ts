@@ -9,7 +9,7 @@ export const router: Router = Router();
 
 
 // Post to recive  messages
-router.post("/", async (req, res) => {
+router.post("/demo", async (req, res) => {
 
   if (!req.body.Body) {
 
