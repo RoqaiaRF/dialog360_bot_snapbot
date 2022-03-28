@@ -6,13 +6,7 @@ const demo = (message: string, sendeID: any) => {
 
 
 
-    function send() {
-
-        sendTextMedia(`اختر اللغة المناسبة للطلب`, sendeID)
-
-        
-        
-    }
+    function send() {   sendTextMedia(`اختر اللغة المناسبة للطلب`, sendeID)  }
 
 
     switch (message.toString()) {
@@ -72,10 +66,8 @@ const demo = (message: string, sendeID: any) => {
             sendTextMedia(`اصبغي شعركي 👩‍🦰 مع صالون pink `, sendeID,"https://www.horrah.com/wp-content/uploads/2021/02/%D8%A3%D9%84%D9%88%D8%A7%D9%86-%D8%B5%D8%A8%D8%BA%D8%A7%D8%AA-%D8%A7%D9%84%D8%B4%D8%B9%D8%B1-%D9%88%D8%A7%D8%B3%D9%85%D8%A7%D8%A6%D9%87%D8%A7-.jpg");
             break;
 
-
-            
-            case "kuwait":
-            sendTextMedia(`أقرب فرع لك هو  صالون  pink 💅🏼 ومتاح لخدمتك الان`, sendeID);
+            case "حف":
+            sendTextMedia(`سيت اتاحة هذه الخدمة قريبا`, sendeID);
             break;
 
 
