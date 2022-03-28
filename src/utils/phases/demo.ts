@@ -1,5 +1,3 @@
-
-declare function require(name:string);
 const sendTextMedia = require('../../utils/functions/sendTextMedia.ts');
 
 
