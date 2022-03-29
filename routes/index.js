@@ -1,11 +1,17 @@
 var express = require('express');
 var router = express.Router();
-/**
- * index route
- */
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+
+const storeController =  require("../app/controllers/storeController")
+
+
+/* Test To Get All Stores From Database. */
+router.get('/', async function(req, res, next) {
+    const storesList = await storeController.getAll() 
+    let stores = []
+    storesList.map((el, i) => {
+        branchs[i] = el.name_ar
+    })
+    console.log("All stores:", JSON.stringify(stores, null, 2));
 });
 
 module.exports = router;
