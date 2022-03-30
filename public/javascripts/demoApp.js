@@ -1,7 +1,7 @@
 const sendTextMsg = require("./sendMsgFunctions");
 const sendMedia = require("./sensMedia");
 
-const demo = ( message, sendeID ,Latitude ,Longitude ) => {
+const demo = (message, sendeID, Latitude, Longitude) => {
   function send() {
     sendTextMsg(`اختر اللغة المناسبة للطلب`, sendeID);
   }
@@ -14,7 +14,6 @@ const demo = ( message, sendeID ,Latitude ,Longitude ) => {
     case "العربية":
       sendTextMsg(`أهلا بك في خدمة سنابوت , اختر مطعم او صالون`, sendeID);
       break;
-
 
     case "مطعم سنابوت":
       sendTextMsg(
