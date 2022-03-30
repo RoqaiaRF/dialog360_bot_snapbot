@@ -1,14 +1,14 @@
 const sendTextMsg = require("./sendMsgFunctions");
 const sendMedia = require("./sensMedia");
 
-const demo = (message, sendeID) => {
+const demo = ( message, sendeID ,Latitude ,Longitude ) => {
   function send() {
     sendTextMsg(`اختر اللغة المناسبة للطلب`, sendeID);
   }
 
-  // if (Latitude != undefined || Longitude != undefined) {
-  //   message = "kuwait";
-  // }
+  if (Latitude != undefined || Longitude != undefined) {
+    message = "kuwait";
+  }
 
   switch (message.toString()) {
     case "العربية":
