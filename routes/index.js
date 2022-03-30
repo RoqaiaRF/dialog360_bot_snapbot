@@ -7,7 +7,7 @@ const storeController =  require("../app/controllers/storeController")
 /* Test To Get All Stores From Database. */
 router.get('/', async function(req, res, next) {
     const storesList = await storeController.getAll() 
-    let stores = []
+    let branchs = []
     storesList.map((el, i) => {
         branchs[i] = el.name_ar
     })
