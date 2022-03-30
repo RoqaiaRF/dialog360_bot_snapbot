@@ -11,7 +11,7 @@ router.get('/', async function(req, res, next) {
     storesList.map((el, i) => {
         branchs[i] = el.name_ar
     })
-    console.log("All stores:", JSON.stringify(stores, null, 2));
+    console.log("All stores:", JSON.stringify(branchs, null, 2));
 });
 
 module.exports = router;
