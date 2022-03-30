@@ -1,19 +1,33 @@
 {
   "name": "snapbotwhatssappbot",
-  "version": "0.0.0",
-  "private": true,
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
   "scripts": {
-    "start": "node ./bin/www"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RoqaiaRF/snapbotwhatssappbot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RoqaiaRF/snapbotwhatssappbot/issues"
+  },
+  "homepage": "https://github.com/RoqaiaRF/snapbotwhatssappbot#readme",
   "dependencies": {
     "axios": "^0.26.1",
-    "debug": "~2.6.9",
-    "express": "~4.16.1",
-    "express-session": "^1.17.2",
-    "http-errors": "~1.6.3",
-    "morgan": "~1.9.1",
+    "body-parser": "^1.19.2",
+    "debug": "^4.3.4",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
+    "i": "^0.3.7",
     "mysql2": "^2.3.3",
+    "npm": "^8.5.5",
     "redis": "^4.0.4",
-    "sequelize": "^6.17.0"
+    "sequelize": "^6.17.0",
+    "twilio": "^3.76.0"
   }
 }
