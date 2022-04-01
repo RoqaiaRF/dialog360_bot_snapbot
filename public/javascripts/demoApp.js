@@ -2,7 +2,7 @@ const sendTextMsg = require("./sendMsgFunctions");
 const sendMedia = require("./sensMedia");
 
 const demo = (message, sendeID, Latitude, Longitude) => {
-  message = "" + message;
+  message = "" + message; // convert to string
   function send() {
     sendTextMsg(`اختر اللغة المناسبة للطلب`, sendeID);
   }
