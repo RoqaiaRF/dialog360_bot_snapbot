@@ -17,7 +17,7 @@ router.get("/", async function (req, res, next) {
   console.log("Test all redis functions: ");
 
   getStoreData.setString("framework", "ReactJS");
-  console.log( getStoreData.getString("framework") );
+  console.log(await getStoreData.getString("framework") );
 });
 
 module.exports = router;
