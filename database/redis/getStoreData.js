@@ -1,10 +1,8 @@
+// const { createClient } = require("redis");
+// const client = createClient();
+
 const redis = require("redis");
 const client = redis.createClient();
-
-// listen for connect events
-client.on("connect", function () {
-  console.log("Connected!");
-});
 
 //^ store a simple string
 
@@ -12,7 +10,7 @@ client.on("connect", function () {
 
 const setString = (key, value) => {
   return client.set(key, value, function (err, reply) {
-    console.log(reply); // succsess!
+    //console.log(reply); // succsess!
     return reply;
   });
 };
@@ -25,12 +23,30 @@ const setString = (key, value) => {
         });
 */
 
-const getString = (key, value) => {
-  return client.get(key, value, function (err, reply) {
-    console.log(reply); // the retrieved value
-    return reply;
-  });
-};
+const getString =  (key) => {
+  let value;
+
+  try {
+     client.get(key, (err, data) => {
+
+      if (err) {
+        console.error(err); 
+      }
+
+      if (data) {
+        console.log(data);
+        value = data;
+      } 
+      else {
+
+      }
+    });
+  } catch (err) {
+    console.log(err);
+
+  }
+  return value
+}
 
 //^ store objects (hashes) :
 
@@ -44,7 +60,7 @@ const getString = (key, value) => {
 
 const setObject = (key, value) => {
   return client.hmset(key, value, function (err, reply) {
-    console.log(reply); // OK
+    //console.log(reply); // OK
     return reply;
   });
 };
@@ -59,7 +75,7 @@ const setObject = (key, value) => {
 */
 const getObject = (key) => {
   return client.hgetall(key, function (err, object) {
-    console.log(object);
+    //console.log(object);
     return object;
   });
 };
@@ -73,8 +89,9 @@ const getObject = (key) => {
 
 */
 const storeList = (array) => {
-  return client.rpush(array, function (err, reply) { // array= [key, value1, value2, ...]
-    console.log(reply); // 2
+  return client.rpush(array, function (err, reply) {
+    // array= [key, value1, value2, ...]
+  //  console.log(reply); // 2
     return reply;
   });
 };
@@ -88,16 +105,16 @@ const storeList = (array) => {
 
 */
 const getList = (key) => {
-   return client.lrange(key, 0, -1, function(err, reply) {
-        console.log(reply); // [ 'ReactJS', 'Angular' ]
-        return reply;
-      });
-}
+  return client.lrange(key, 0, -1, function (err, reply) {
+    //console.log(reply); // [ 'ReactJS', 'Angular' ]
+    return reply;
+  });
+};
 module.exports = {
   setString,
   getString,
   setObject,
   getObject,
   storeList,
-  getList
+  getList,
 };
