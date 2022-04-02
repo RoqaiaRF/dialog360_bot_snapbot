@@ -23,30 +23,14 @@ const setString = (key, value) => {
         });
 */
 
-const getString =  (key) => {
-  let value;
-
-  try {
-     client.get(key, (err, data) => {
-
-      if (err) {
-        console.error(err); 
-      }
-
-      if (data) {
-        console.log(data);
-        value = data;
-      } 
-      else {
-
-      }
+const getString = (key) => {
+  return new Promise((resolve, reject) => {
+    client.get(key, (err, data) => {
+      if (err) return reject(err);
+      if (data != null) return resolve(data);
     });
-  } catch (err) {
-    console.log(err);
-
-  }
-  return value
-}
+  });
+};
 
 //^ store objects (hashes) :
 
@@ -91,7 +75,7 @@ const getObject = (key) => {
 const storeList = (array) => {
   return client.rpush(array, function (err, reply) {
     // array= [key, value1, value2, ...]
-  //  console.log(reply); // 2
+    //  console.log(reply); // 2
     return reply;
   });
 };
