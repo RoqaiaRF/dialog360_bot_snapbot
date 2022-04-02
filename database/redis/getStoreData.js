@@ -9,15 +9,8 @@ const client = redis.createClient();
 //EX: client.set('framework', 'ReactJS');
 
 const setString = (key, value) => {
-
-  return new Promise((resolve, reject) => {
-    client.set((key, value), (err, data) => {
-      if (err) return reject(err);
-      if (data != null) return resolve(data);
-    });
-  });
-
-}
+  client.set(key, value);
+};
 //^ retrieve the value of the key - Just a string -
 
 /*  EX:
@@ -33,7 +26,7 @@ const getString = (key) => {
       if (data != null) return resolve(data);
     });
   });
-}
+};
 
 //^ store objects (hashes) :
 
@@ -46,14 +39,10 @@ const getString = (key) => {
 */
 
 const setObject = (key, value) => {
-  
-  return new Promise((resolve, reject) => {
-    client.hmset((key, value), (err, data) => {
-      if (err) return reject(err);
-      if (data != null) return resolve(data);
-    });
+  client.hmset((key, value), function (err, reply) {
+    //     console.log(reply); // 2
   });
-}
+};
 
 //^ retrieve the value of the key - Just an objects -
 
@@ -81,15 +70,11 @@ const getObject = (key) => {
         });
 
 */
-const storeList = (array) => {
-    // array= [key, value1, value2, ...]
-  return new Promise((resolve, reject) => {
-    client.rpush(array, (err, data) => {
-      if (err) return reject(err);
-      if (data != null) return resolve(data);
-    });
+const setList = (array) => {
+  client.rpush(array, function (err, reply) {
+    console.log(reply); // 2
   });
- 
+  // array= [key, value1, value2, ...]
 };
 
 //^ get a list of items
@@ -100,22 +85,20 @@ const storeList = (array) => {
         });
 
 */
-const getList = (key) => {
-  
+const getList = (key, begin, end) => {
   return new Promise((resolve, reject) => {
-    client.lrange(key, (err, data) => {
+    client.lrange(key, begin, end, (err, data) => {
       if (err) return reject(err);
       if (data != null) return resolve(data);
     });
   });
 };
 
-
 module.exports = {
   setString,
   getString,
   setObject,
   getObject,
-  storeList,
+  setList,
   getList,
 };
