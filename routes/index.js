@@ -13,11 +13,28 @@ router.get("/", async function (req, res, next) {
   });
   console.log("All stores:", JSON.stringify(branchs, null, 2));
 
+
   //Test all redis functions
   console.log("Test all redis functions: ");
 
-  getStoreData.setString("framework", "ReactJS");
-  console.log(await getStoreData.getString("framework") );
+  const obj=  {
+    'javascript': 'ReactJS',
+    'css': 'TailwindCSS',
+    'node': 'Express'
+  }
+  getStoreData.setObject('frameworks_hash', obj);
+  console.log(await  getStoreData.getObject('frameworks_hash'))
+  
+  getStoreData.setString("framework", "ReactJS")
+  console.log(await getStoreData.getString("framework"))
+  
+  const array = ['frameworks_list', 'ReactJS', 'Angular'];
+  getStoreData.setList(array)
+  console.log(await getStoreData.getList('frameworks_list',0,-1)) //0, -1 get all list item
+
+//TODO: TEST ALL REDIS OPERATIONS
+
 });
 
 module.exports = router;
+ 
