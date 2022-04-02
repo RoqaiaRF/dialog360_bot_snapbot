@@ -9,12 +9,15 @@ const client = redis.createClient();
 //EX: client.set('framework', 'ReactJS');
 
 const setString = (key, value) => {
-  return client.set(key, value, function (err, reply) {
-    //console.log(reply); // succsess!
-    return reply;
-  });
-};
 
+  return new Promise((resolve, reject) => {
+    client.set((key, value), (err, data) => {
+      if (err) return reject(err);
+      if (data != null) return resolve(data);
+    });
+  });
+
+}
 //^ retrieve the value of the key - Just a string -
 
 /*  EX:
@@ -30,7 +33,7 @@ const getString = (key) => {
       if (data != null) return resolve(data);
     });
   });
-};
+}
 
 //^ store objects (hashes) :
 
@@ -43,11 +46,14 @@ const getString = (key) => {
 */
 
 const setObject = (key, value) => {
-  return client.hmset(key, value, function (err, reply) {
-    //console.log(reply); // OK
-    return reply;
+  
+  return new Promise((resolve, reject) => {
+    client.hmset((key, value), (err, data) => {
+      if (err) return reject(err);
+      if (data != null) return resolve(data);
+    });
   });
-};
+}
 
 //^ retrieve the value of the key - Just an objects -
 
@@ -57,10 +63,13 @@ const setObject = (key, value) => {
         });
 
 */
+
 const getObject = (key) => {
-  return client.hgetall(key, function (err, object) {
-    //console.log(object);
-    return object;
+  return new Promise((resolve, reject) => {
+    client.hgetall(key, (err, data) => {
+      if (err) return reject(err);
+      if (data != null) return resolve(data);
+    });
   });
 };
 
@@ -73,11 +82,14 @@ const getObject = (key) => {
 
 */
 const storeList = (array) => {
-  return client.rpush(array, function (err, reply) {
     // array= [key, value1, value2, ...]
-    //  console.log(reply); // 2
-    return reply;
+  return new Promise((resolve, reject) => {
+    client.rpush(array, (err, data) => {
+      if (err) return reject(err);
+      if (data != null) return resolve(data);
+    });
   });
+ 
 };
 
 //^ get a list of items
@@ -89,11 +101,16 @@ const storeList = (array) => {
 
 */
 const getList = (key) => {
-  return client.lrange(key, 0, -1, function (err, reply) {
-    //console.log(reply); // [ 'ReactJS', 'Angular' ]
-    return reply;
+  
+  return new Promise((resolve, reject) => {
+    client.lrange(key, (err, data) => {
+      if (err) return reject(err);
+      if (data != null) return resolve(data);
+    });
   });
 };
+
+
 module.exports = {
   setString,
   getString,
