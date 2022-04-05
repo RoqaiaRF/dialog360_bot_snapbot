@@ -12,3 +12,4 @@ const distance_km = (point1, point2) => {
   return haversine_m(point1, point2) / 1000; //Results in kilometers
 };
 module.exports = { distance_m, distance_km };
+ 
