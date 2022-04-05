@@ -44,13 +44,29 @@ const giveExpirationTime = (key, time) => {
   client.expire(key, time); //EX: client.expire('status', 300);
 };
 
-//TODO: Incrementing and decrementing
+
+//^ Incrementing and decrementing for numeric keys
+
+const incrementbyValue = (key, value) => {
+  client.incrby(key, value, function(err, reply) {
+    console.log(reply); 
+  });
+}
+
+const decrementbyValue = (key, value) => {
+  client.decrby(key, value, function(err, reply) {
+    console.log(reply); 
+  });
+}
+
 
 module.exports = {
 //  isConnect,
   isExists,
   deleteKeys,
   giveExpirationTime,
+  incrementbyValue,
+  decrementbyValue
 };
 
 /*

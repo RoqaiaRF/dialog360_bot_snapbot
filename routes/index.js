@@ -3,7 +3,7 @@ const router = express.Router();
 const operations = require("../database/redis/operations");
 const getStoreData = require("../database/redis/getStoreData"); //import redis functions & operations
 const storeController = require("../app/controllers/storeController");
-
+const distance = require("../app/controllers/calcLocationController");
 /* Test To Get All Stores From Database. */
 router.get("/", async function (req, res, next) {
   const storesList = await storeController.getAll();
@@ -41,6 +41,9 @@ router.get("/", async function (req, res, next) {
 operations.deleteKeys("framework");
 operations.giveExpirationTime("frameworks_list",3)
 */
+
+
+// test distance calculation
 
 });
 
