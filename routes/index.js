@@ -15,6 +15,8 @@ router.get("/", async function (req, res, next) {
 
 
   //Test all redis functions
+  //&  DONE
+  /*
   console.log("Test all redis functions: ");
 
   const obj=  {
@@ -31,8 +33,14 @@ router.get("/", async function (req, res, next) {
   const array = ['frameworks_list', 'ReactJS', 'Angular'];
   getStoreData.setList(array)
   console.log(await getStoreData.getList('frameworks_list',0,-1)) //0, -1 get all list item
-
+*/
 //TODO: TEST ALL REDIS OPERATIONS
+
+//Test redis operations
+/*
+operations.deleteKeys("framework");
+operations.giveExpirationTime("frameworks_list",3)
+*/
 
 });
 
