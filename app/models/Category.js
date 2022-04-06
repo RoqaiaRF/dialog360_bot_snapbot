@@ -1,8 +1,17 @@
 module.exports = (sequelize, Sequelize) => {
-    const Category = sequelize.define("category", {
+  const category = sequelize.define(
+    "category",
+    {
       name_ar: {
-        type: Sequelize.STRING
-      }
-    });
-    return Category;
-  };
+        type: Sequelize.STRING,
+      },
+      store_id: {
+        type: Sequelize.BIGINT,
+      },
+    },
+    {
+      timestamps: false,
+    }
+  );
+  return category;
+};

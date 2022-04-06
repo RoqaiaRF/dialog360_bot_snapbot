@@ -1,13 +1,8 @@
-
 const sendTextMsg = require("../../public/javascripts/sendMsgFunctions");
+const db = require("../../database/connection");
+const category = require("../models/Category")(db.sequelize, db.Sequelize);
 
-const subCategory = () => {
-  sendTextMsg(`
-اختر احد التصنيفات الرئيسية التالية: 
-${mainCat}
-`,
-    sendeID
-  );
+exports.getCategories = async () => {
+  let list = await category.findAll({ attributes: ["name_ar", "store_id"] });
+  return list;
 };
-
-module.exports = subCategory;
