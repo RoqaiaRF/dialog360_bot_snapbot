@@ -1,8 +1,14 @@
 const Sequelize = require("sequelize");
-const sequelize = new Sequelize('defaultdb', 'doadmin', 'cnhtm0qcEPKumXV4', {
-    host: 'db-mysql-nyc3-69101-do-user-9392750-0.b.db.ondigitalocean.com',
-    dialect: 'mysql',
-    port: 25060,
+require("dotenv").config();
+
+const DB_DATABASE = process.env.DB_DATABASE;
+const DB_USERNAMES = process.env.DB_USERNAMES;
+const DB_PASSWORD = process.env.DB_PASSWORD;
+const DIALECT = process.env.DIALECT;
+
+const sequelize = new Sequelize(DB_DATABASE, DB_USERNAMES, DB_PASSWORD, {
+    host: "localhost",
+    dialect: DIALECT,
 });
 
 const db = {};
