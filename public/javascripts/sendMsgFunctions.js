@@ -18,13 +18,11 @@ const sendTextMsg = async (message, receiverID) => {
       body: message,
     })
     .then((message) => {
-      console.log(message.body);
     })
 
     .catch((error) => {
       console.log(`Error at sending message: ${error}`);
     });
-  console.log(senderID);
 };
 
 module.exports = sendTextMsg;

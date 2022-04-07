@@ -4,6 +4,7 @@
 const redis = require("redis");
 const client = redis.createClient();
 
+
 //^ store a simple string
 
 //EX: client.set('framework', 'ReactJS');
@@ -22,8 +23,13 @@ const setString = (key, value) => {
 const getString = (key) => {
   return new Promise((resolve, reject) => {
     client.get(key, (err, data) => {
-      if (err) return reject(err);
-      if (data != null) return resolve(data);
+      if (err) {
+        console.log(reject(err));
+        return reject(err);
+      } else if (data != null) {
+        console.log(resolve(data));
+        return resolve(data);
+      }
     });
   });
 };

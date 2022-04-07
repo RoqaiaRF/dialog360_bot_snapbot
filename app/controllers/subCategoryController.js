@@ -3,10 +3,10 @@ const sendTextMsg = require("../../public/javascripts/sendMsgFunctions");
 
 const subCategory = () => {
   sendTextMsg(`
-اختر احد التصنيفات الرئيسية التالية: 
+اختر احد التصنيفات الفرعيه التالية: 
 ${subCat}
 `,
-    sendeID
+    senderID
   );
 };
 

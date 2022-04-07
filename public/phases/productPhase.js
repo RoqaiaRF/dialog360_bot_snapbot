@@ -1,10 +1,10 @@
 const sendTextMsg = require("../javascripts/sendMsgFunctions");
 const productController = require("../../app/controllers/productController");
 
-const productPhase = async (sendeID) => {
-  let message = `اختر احد هذه التصنيفات: 
+const productPhase = async (senderID, category_id) => {
+  let message = `اختر احد هذه المنتجات: 
 `;
-  const array = await productController.getProducts();
+  const array = await productController.getProducts(category_id);
   let resultArray = [];
 
   array.forEach((item, index) => {
@@ -16,9 +16,7 @@ const productPhase = async (sendeID) => {
 `;
   });
 
-  console.log(message);
-
-  sendTextMsg(` ${message}`, sendeID);
+  sendTextMsg(` ${message}`, senderID);
 };
 
 module.exports = productPhase;
