@@ -1,36 +1,35 @@
 module.exports = (sequelize, Sequelize) => {
-  const store = sequelize.define(
+  const Store = sequelize.define(
     "store",
     {
       name_ar: {
         type: Sequelize.STRING,
       },
-     
+
       lat: {
         type: Sequelize.DOUBLE,
       },
-      lagitude: {
+      lng: {
         type: Sequelize.DOUBLE,
       },
-      parent_id: { 
-        type: Sequelize.BIGINT
+      parent_id: {
+        type: Sequelize.BIGINT,
+      },
+      phone: {
+        type: Sequelize.INTEGER,
+      },
+
+      type: {
+        type: Sequelize.BIGINT,
+      },
+
+      name_en: {
+        type: Sequelize.STRING,
+      },
     },
-    phone: { 
-      type: Sequelize.INTEGER
-    },  
-
-    type: { 
-      type: Sequelize.BIGINT
-    }, 
-
-    name_en: { 
-      type: Sequelize.STRING
-    }, 
-
-  },
     {
       timestamps: false,
     }
   );
-  return store;
+  return Store;
 };

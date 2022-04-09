@@ -1,13 +1,48 @@
 const db = require("../../database/connection");
-const Store = require('../models/Store')(db.sequelize, db.Sequelize);
+const Store = require("../models/Store")(db.sequelize, db.Sequelize);
 
-/**
- * function get All Branchs for store
- * @param {*} req 
- * @param {*} res 
- * @returns 
- */
-exports.getAll = async (req, res) => {
-   const stores = await Store.findAll({ attributes: ['name_ar']})
-   return stores
-  };
+// define relationships
+// Store hasMany branchs
+Store.hasMany(Store, {
+  as: "branchs",
+  foreignKey: "parent_id",
+  targetKey: "id",
+});
+
+Store.belongsTo(Store, {
+  as: "parent",
+  foreignKey: "parent_id",
+  targetKey: "id",
+});
+
+// find store with phone number with branchs
+exports.storeDetails = async (phone) => {
+  const store = await Store.findOne(
+    {
+      where: {
+        phone: phone,
+      },
+      include: {
+        model: Store,
+        as: "branchs",
+        include: {
+          model: Store,
+          as: "parent",
+        },
+      },
+    },
+    {
+      attributes: [
+        "name_ar",
+        "name_en",
+        "lat",
+        "lat",
+        "lng",
+        "parent_id",
+        "phone",
+        "type",
+      ],
+    }
+  );
+  return store;
+};
