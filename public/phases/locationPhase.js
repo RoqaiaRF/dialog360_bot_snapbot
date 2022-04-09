@@ -1,6 +1,5 @@
 
 const sendTextMsg = require("../javascripts/sendMsgFunctions");
-// Outputs: English, العربية
 
 const locationPhase = (senderID) => {
     sendTextMsg(
