@@ -54,7 +54,9 @@ const categoryPhase = async (sendeID) => {
   sendTextMsg(` ${message}`, sendeID);
 };
 
-
+/*----------------------------------------*/
+//  Expected Outputs: the product number: 1, 2 ,3,...
+//^ Phase #3 send products and request to choose the right product by sending product_index of it's category
 
 const productPhase = async (senderID, category_id) => {
   let message = `اختر احد هذه المنتجات: 
@@ -74,9 +76,14 @@ const productPhase = async (senderID, category_id) => {
   sendTextMsg(` ${message}`, senderID);
 };
 
+const errorMsg = () => {
+  sendTextMsg(`خطأ في الارسال`, senderID);
+};
 
-
-
-
-
-module.exports = welcomeLangPhase;
+module.exports = {
+  welcomeLangPhase,
+  locationPhase,
+  categoryPhase,
+  productPhase,
+  errorMsg
+};
