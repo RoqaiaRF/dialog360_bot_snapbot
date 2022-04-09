@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-  const product = sequelize.define(
+  const Product = sequelize.define(
     "product",
     {
       name_ar: {
@@ -13,5 +13,5 @@ module.exports = (sequelize, Sequelize) => {
       timestamps: false,
     }
   );
-  return product;
+  return Product;
 };
