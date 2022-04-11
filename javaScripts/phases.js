@@ -13,6 +13,7 @@ const welcomeLangPhase = (senderID, storeEN_Name, storeAR_Name) => {
                 حياك الله في ${storeAR_Name }.. شرفتنا  .. 
                 من فضلك لا تكتب شيئا مفهوم لاني رح ارجعك لهذا الخيار 😄
            للحصول على المساعدة اارسل *
+           دائما للعودة للرئيسية اضغط 0 
                 `,
     senderID
   );
@@ -23,12 +24,22 @@ const welcomeLangPhase = (senderID, storeEN_Name, storeAR_Name) => {
 //  Expected Outputs: user Location contain langitude and latitude
 //^ Phase #2 request user location
 
-const locationPhase = (senderID) => {
+
+const locationPhaseAR = (senderID) => {
   sendTextMsg(
     `  ارسل اللوكيشن لموقعك حتى نساعدك بمعرفة اقرب فرع لك 🇰🇼 😊`,
     senderID
   );
-};
+}
+
+
+const locationPhaseEN = (senderID) => {
+  sendTextMsg(
+    `  Please send your location To find the nearest branch to you🇰🇼 😊`,
+    senderID
+  );
+}
+
 
 /*----------------------------------------*/
 //  Expected Outputs: the category number: 1, 2 ,3,...
@@ -76,14 +87,15 @@ const productPhase = async (senderID, category_id) => {
   sendTextMsg(` ${message}`, senderID);
 };
 
-const errorMsg = () => {
+const errorMsg = (senderID) => {
   sendTextMsg(`خطأ في الارسال
   wrong message`, senderID);
 };
 
 module.exports = {
   welcomeLangPhase,
-  locationPhase,
+  locationPhaseEN,
+  locationPhaseAR,
   categoryPhase,
   productPhase,
   errorMsg
