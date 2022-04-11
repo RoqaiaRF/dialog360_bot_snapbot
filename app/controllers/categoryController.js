@@ -1,8 +1,7 @@
-const sendTextMsg = require("../../javaScripts/sendMsgFunctions");
 const db = require("../../database/connection");
 const Category = require("../models/Category")(db.sequelize, db.Sequelize);
 const Product = require("../models/Product")(db.sequelize, db.Sequelize);
-
+const redis = require("../../database/redis");
 // define relationships
 
 // Category has Many Products
@@ -28,33 +27,34 @@ Category.belongsTo(Category, {
 
 // function get categories & subCategories
 
-const getCategories = async (store_id) => {
-  let list = await Category.findAll(
-    {
-      where: {
-        store_id: store_id,
-      },
-      include: [
-        {
-          model: Category,
-          as: "subCategories",
-          include: {
+exports.getCategories = async (receiver_id, store_id) => {
+  const cats = await redis.getUserVars(receiver_id, "cats");
+  if (cats) {
+    console.log("from cache");
+    return JSON.parse(cats);
+  } else {
+    let list = await Category.findAll(
+      {
+        where: {
+          store_id: store_id,
+        },
+        include: [
+          {
+            model: Category,
+            as: "subCategories",
+            include: {
+              model: Product,
+            },
+          },
+          {
             model: Product,
           },
-        },
-        {
-          model: Product,
-        },
-      ],
-    },
-    { attributes: ["name_ar", "name_en", "store_id"] }
-  );
- 
-
-  console.log("================================")
-  console.log(list)
-  console.log("================================")
-  return list;
+        ],
+      },
+      { attributes: ["name_ar", "name_en", "store_id"] }
+    );
+    await redis.setUserVars(receiver_id, "cats", JSON.stringify(list));
+    console.log("from db");
+    return list;
+  }
 };
-
-module.exports = getCategories;
