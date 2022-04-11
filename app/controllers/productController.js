@@ -1,4 +1,4 @@
-const sendTextMsg = require("../../public/javascripts/sendMsgFunctions");
+const sendTextMsg = require("../../javaScripts/sendMsgFunctions");
 const db = require("../../database/connection");
 const product = require("../models/Product")(db.sequelize, db.Sequelize);
 

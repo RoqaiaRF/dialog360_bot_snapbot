@@ -16,12 +16,12 @@ Store.belongsTo(Store, {
 });
 
 // find store with phone number with branchs
-exports.storeDetails = async (phone) => {
+const storeDetails = async (phone) => {
   const store = await Store.findOne(
     {
       where: {
         phone: phone,
-      },
+      }, 
       include: {
         model: Store,
         as: "branchs",
@@ -46,3 +46,6 @@ exports.storeDetails = async (phone) => {
   );
   return store;
 };
+
+
+module.exports = storeDetails;

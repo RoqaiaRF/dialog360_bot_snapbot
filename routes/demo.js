@@ -1,7 +1,7 @@
 var express = require("express");
 var router = express.Router();
 
-const demo = require("../public/javascripts/demoApp");
+const demo = require("../javaScripts/demoApp");
 
 router.post("/", (req, res) => {
   if (!req.body) {

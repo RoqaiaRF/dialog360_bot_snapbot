@@ -1,4 +1,4 @@
-const sendTextMsg = require("../../public/javascripts/sendMsgFunctions");
+const sendTextMsg = require("../../javaScripts/sendMsgFunctions");
 const db = require("../../database/connection");
 const Category = require("../models/Category")(db.sequelize, db.Sequelize);
 const Product = require("../models/Product")(db.sequelize, db.Sequelize);
@@ -27,7 +27,8 @@ Category.belongsTo(Category, {
 });
 
 // function get categories & subCategories
-exports.getCategories = async (store_id) => {
+
+const getCategories = async (store_id) => {
   let list = await Category.findAll(
     {
       where: {
@@ -48,5 +49,12 @@ exports.getCategories = async (store_id) => {
     },
     { attributes: ["name_ar", "name_en", "store_id"] }
   );
+ 
+
+  console.log("================================")
+  console.log(list)
+  console.log("================================")
   return list;
 };
+
+module.exports = getCategories;
