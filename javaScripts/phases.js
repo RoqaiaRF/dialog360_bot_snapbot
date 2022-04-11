@@ -1,16 +1,16 @@
-const sendTextMsg = require("../javascripts/sendMsgFunctions");
-const categoryController = require("../../app/controllers/categoryController");
-const productController = require("../../app/controllers/productController");
+const sendTextMsg = require("./sendMsgFunctions");
+const categoryController = require("../app/controllers/categoryController");
+const productController = require("../app/controllers/productController");
 
 // Expected Outputs: English, العربية
 //^ Phase #1 welcome and choose Language
 /*----------------------------------------*/
-const welcomeLangPhase = (senderID) => {
+const welcomeLangPhase = (senderID, storeEN_Name, storeAR_Name) => {
   sendTextMsg(
-    `Welcome ... 
+    `Welcome at ${storeEN_Name}... 
                 please click on the right option
                 
-                حياك الله .. شرفتنا  .. 
+                حياك الله في ${storeAR_Name }.. شرفتنا  .. 
                 من فضلك لا تكتب شيئا مفهوم لاني رح ارجعك لهذا الخيار 😄
            للحصول على المساعدة اارسل *
                 `,
@@ -77,7 +77,8 @@ const productPhase = async (senderID, category_id) => {
 };
 
 const errorMsg = () => {
-  sendTextMsg(`خطأ في الارسال`, senderID);
+  sendTextMsg(`خطأ في الارسال
+  wrong message`, senderID);
 };
 
 module.exports = {
