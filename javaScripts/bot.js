@@ -34,7 +34,7 @@ const getUserVars = async (receiver_id, variable) => {
 const deleteAllKeys = async () => {
   await client.flushall();
 }
-d
+
 
 //TODO: English bot
 //const englishBot = (sender_id, message,  longitude, latitude) => {};
