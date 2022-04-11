@@ -4,22 +4,38 @@ const sendMsg = require("./phases");
 const categoryController = require("../app/controllers/categoryController");
 const storeController = require("../app/controllers/storeController");
 
-let expiration_time = 7200; // مدة الانتهاء تساوي ساعتان
+let expiration_time = 7200; // مدة صلاحية انتهاء المفاتيح في ريديس تساوي ساعتان
+
+// get all branches to this store                
+
+const getAllBranches =(store_id, storObj) => {
+  if (storObj.parent_id === null)
+  {
+    console.log("there is no branches to this store, so return store_id");
+  }
+  else{
+
+  }
+
+
+}
 
 //set data to the redis session
 const setUserVars = async (receiver_id, variable, value) => {
   await client.setex(`${receiver_id}:${variable}`, expiration_time, value);
-};
+}
 
 //get the stored data from the redis session
 const getUserVars = async (receiver_id, variable) => {
   const myKeyValue = await client.get(`${receiver_id}:${variable}`);
   return myKeyValue;
-};
-
+}
+// delete all data from all databases in redis
 const deleteAllKeys = async () => {
   await client.flushall();
-};
+}
+d
+
 //TODO: English bot
 //const englishBot = (sender_id, message,  longitude, latitude) => {};
 
@@ -34,7 +50,7 @@ const arabicBot = (sender_id, message,  longitude, latitude) => {
 
 // receiver_id: رقم صاحب المتجر / رقم البوت *-----------* sender_id: رقم المرسل / الزبون
 
-const bot = async (sender_id, receiver_id, message, longitude, latitude) => {
+const bot = async (sender_id, receiver_id, message, longitude, latitude, username) => {
   // EX: Input: "whatsapp:+96512345678" ,Output: "12345678"
   receiver_id = receiver_id.replace("whatsapp:+141", "");
   // receiver_id = receiver_id.replace("whatsapp:+965",'');
@@ -44,16 +60,17 @@ const bot = async (sender_id, receiver_id, message, longitude, latitude) => {
   );
   const storeEN_Name = storObj.name_en; // اسم المتجر بالانجليزي
   const storeAR_Name = storObj.name_ar; // اسم المتجر في العربي
-  const storeID = storObj.id; // we need it to get the categories
+  const store_id = storObj.id; // we need it to get the categories
+  const parent_id = storObj.parent_id;
 
-  console.log(`storeID: ${storeID}`);
+  console.log(`store_id: ${store_id}`);
+  console.log(storObj)
   let phase = await getUserVars(sender_id, "phase");
   console.log(`phase: ${phase}`);
 
   if (message == "0") {
-    deleteAllKeys();
     setUserVars(sender_id, "phase", "1");
-    sendMsg.welcomeLangPhase(sender_id, storeEN_Name, storeAR_Name);
+    sendMsg.welcomeLangPhase(sender_id, storeEN_Name, storeAR_Name, username);
 }
   switch (phase) {
     case "0":
@@ -61,9 +78,8 @@ const bot = async (sender_id, receiver_id, message, longitude, latitude) => {
     case undefined:
       
       //*DONE *** رسالة الترحيب تحتوي على اسم المتجر بالعربي والانجليزي واختيار اللغة
-      sendMsg.welcomeLangPhase(sender_id, storeEN_Name, storeAR_Name);
+      sendMsg.welcomeLangPhase(sender_id, storeEN_Name, storeAR_Name, username);
 
-      deleteAllKeys(); // delete all keys
 
       //Store phase # 1 EX: (key, value) => ( whatsapp:+96563336437 , 1 )
       setUserVars(sender_id, "phase", "1");

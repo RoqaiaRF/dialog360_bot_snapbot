@@ -5,12 +5,12 @@ const productController = require("../app/controllers/productController");
 // Expected Outputs: English, العربية
 //^ Phase #1 welcome and choose Language
 /*----------------------------------------*/
-const welcomeLangPhase = (senderID, storeEN_Name, storeAR_Name) => {
+const welcomeLangPhase = (senderID, storeEN_Name, storeAR_Name, username) => {
   sendTextMsg(
-    `Welcome at ${storeEN_Name}... 
+    `Welcome ${username} at ${storeEN_Name}... 
                 please click on the right option
                 
-                حياك الله في ${storeAR_Name }.. شرفتنا  .. 
+                حياك الله في ${storeAR_Name }..  ${username}شرفتنا  .. 
                 من فضلك لا تكتب شيئا مفهوم لاني رح ارجعك لهذا الخيار 😄
            للحصول على المساعدة اارسل *
            دائما للعودة للرئيسية اضغط 0 
