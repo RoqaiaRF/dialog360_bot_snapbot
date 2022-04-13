@@ -2,19 +2,26 @@ const redis = require("ioredis");
 const client = redis.createClient();
 const sendMsg = require("./phases");
 const categoryController = require("../app/controllers/categoryController");
-const storeController = require("../app/controllers/storeController");
+const storeDetails = require("../app/controllers/storeController");
 
 let expiration_time = 7200; // مدة صلاحية انتهاء المفاتيح في ريديس تساوي ساعتان
 
 // get all branches to this store                
 
-const getAllBranches =(store_id, storObj) => {
-  if (storObj.parent_id === null)
+const getAllBranches =(sender_id, store_id, storObj) => {
+
+  //if there is no branches to this store return the store
+  if (storObj.parent_id === null && storObj.branches === null)  
   {
-    console.log("there is no branches to this store, so return store_id");
+    sendMsg.nearestLocation(sender_id, storObj.name_ar);
+    
   }
+  //TODO: فحص اللوكيشن المرسل اذا كان من ضمن مناطق التغطيه او لا
+
   else{
 
+    console.log("storObj.branches: ");
+    console.log(storObj.branches);
   }
 
 
@@ -54,9 +61,9 @@ const bot = async (sender_id, receiver_id, message, longitude, latitude, usernam
   // EX: Input: "whatsapp:+96512345678" ,Output: "12345678"
   receiver_id = receiver_id.replace("whatsapp:+141", "");
   // receiver_id = receiver_id.replace("whatsapp:+965",'');
-
+console.log(receiver_id);
   const storObj = JSON.parse(
-    JSON.stringify(await storeController(receiver_id))
+    JSON.stringify(await storeDetails(receiver_id))
   );
   const storeEN_Name = storObj.name_en; // اسم المتجر بالانجليزي
   const storeAR_Name = storObj.name_ar; // اسم المتجر في العربي
@@ -68,10 +75,12 @@ const bot = async (sender_id, receiver_id, message, longitude, latitude, usernam
   let phase = await getUserVars(sender_id, "phase");
   console.log(`phase: ${phase}`);
 
-  if (message == "0") {
-    setUserVars(sender_id, "phase", "1");
+  if (message == "0" || message == "العودة للرئيسية") {
+   
     sendMsg.welcomeLangPhase(sender_id, storeEN_Name, storeAR_Name, username);
-}
+    setUserVars(sender_id, "phase", "1");
+  }
+else{
   switch (phase) {
     case "0":
     case null:
@@ -97,7 +106,7 @@ const bot = async (sender_id, receiver_id, message, longitude, latitude, usernam
         setUserVars(sender_id, "language", "en");
       //  englishBot(sender_id, message,  longitude, latitude);
       }
-
+     
       else {
         //Send ERROR message : If the message sent is wrong
         sendMsg.errorMsg(sender_id);
@@ -110,10 +119,16 @@ const bot = async (sender_id, receiver_id, message, longitude, latitude, usernam
         console.log(longitude)
       }
       else { 
+        getAllBranches(sender_id,  store_id, storObj);
+        setUserVars(sender_id, "phase", "3");
+
+      
         console.log("we will find if there is branches or not then find the nearest branch")
       }
 
   }
+
+}
 };
 module.exports = bot;
 

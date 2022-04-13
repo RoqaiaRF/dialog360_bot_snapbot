@@ -16,9 +16,11 @@ Store.belongsTo(Store, {
   targetKey: "id",
 });
 
+//!    :)   لانه نفسه رقم الهاتف ...  فهمتني ؟ receiver_idملاحظات لعبدالله : انا غيرت هنا وحذفت ال 
+// ! يعني ابقه هكذا كما هو 
 // find store with phone number with branchs
-exports.storeDetails = async (receiver_id, phone) => {
-  const store = await redis.getUserVars(receiver_id, "store");
+const storeDetails = async (phone) => {
+  const store = await redis.getUserVars(phone, "store");
   if (store) {
     console.log("from cache tset");
     return JSON.parse(store);
@@ -50,8 +52,10 @@ exports.storeDetails = async (receiver_id, phone) => {
         ],
       }
     );
-    await redis.setUserVars(receiver_id, "store", JSON.stringify(store));
+    await redis.setUserVars(phone, "store", JSON.stringify(store));
     console.log("from db");
     return store;
   }
 };
+
+module.exports = storeDetails
