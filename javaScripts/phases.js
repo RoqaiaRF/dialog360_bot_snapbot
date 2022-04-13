@@ -10,8 +10,8 @@ const welcomeLangPhase = (senderID, storeEN_Name, storeAR_Name, username) => {
     `Welcome ${username} at ${storeEN_Name}... 
                 please click on the right option
                 
-                حياك الله في ${storeAR_Name }..  ${username}شرفتنا  .. 
-                من فضلك لا تكتب شيئا مفهوم لاني رح ارجعك لهذا الخيار 😄
+                حياك الله في   ${storeAR_Name }..  ${username}شرفتنا يا    .. 
+                😄
            للحصول على المساعدة اارسل *
            دائما للعودة للرئيسية اضغط 0 
                 `,
@@ -40,7 +40,12 @@ const locationPhaseEN = (senderID) => {
   );
 }
 
-
+const nearestLocation = (senderID, storeName) => {
+  sendTextMsg(
+    `أقرب فرع لك هو ${storeName} ومتاح لخدمتك الان`,
+    senderID
+  );
+}
 /*----------------------------------------*/
 //  Expected Outputs: the category number: 1, 2 ,3,...
 //^ Phase #3 send main category and request to choose the right category by sending category_index
@@ -98,5 +103,6 @@ module.exports = {
   locationPhaseAR,
   categoryPhase,
   productPhase,
-  errorMsg
+  errorMsg,
+  nearestLocation
 };
