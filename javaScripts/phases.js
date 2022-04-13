@@ -50,24 +50,24 @@ const nearestLocation = (senderID, storeName) => {
 //  Expected Outputs: the category number: 1, 2 ,3,...
 //^ Phase #3 send main category and request to choose the right category by sending category_index
 
-const categoryPhase = async (sendeID) => {
+const categoryPhase = async (sendeID, categories) => {
   let message = `اختر احد هذه التصنيفات: 
 `;
-  const array = await categoryController.getCategories();
-  let resultArray = [];
+//   const array = await categoryController.getCategories();
+//   let resultArray = [];
 
-  array.forEach((item, index) => {
-    resultArray[index] = item.name_ar;
-  });
+//   array.forEach((item, index) => {
+//     resultArray[index] = item.name_ar;
+//   });
 
-  resultArray.forEach((item, index) => {
-    message += `(${index + 1}) ${item}
-`;
-  });
+//   resultArray.forEach((item, index) => {
+//     message += `(${index + 1}) ${item}
+// `;
+//   });
 
-  console.log(message);
+  //console.log(message);
 
-  sendTextMsg(` ${message}`, sendeID);
+  sendTextMsg(` ${message} ${categories}`, sendeID);
 };
 
 /*----------------------------------------*/
