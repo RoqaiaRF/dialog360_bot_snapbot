@@ -27,7 +27,7 @@ Category.belongsTo(Category, {
 
 // function get categories & subCategories
 
-exports.getCategories = async (receiver_id, store_id) => {
+const getCategories = async (receiver_id, store_id) => {
   const cats = await redis.getUserVars(receiver_id, "cats");
   if (cats) {
     console.log("from cache");
@@ -58,3 +58,5 @@ exports.getCategories = async (receiver_id, store_id) => {
     return list;
   }
 };
+
+module.exports = getCategories;
