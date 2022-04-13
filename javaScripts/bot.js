@@ -13,10 +13,11 @@ const getAllBranches =(sender_id, store_id, storObj) => {
   //if there is no branches to this store return the store
   if (storObj.parent_id === null && storObj.branches === null)  
   {
+      //TODO: فحص اللوكيشن المرسل اذا كان من ضمن مناطق التغطيه او لا
+
     sendMsg.nearestLocation(sender_id, storObj.name_ar);
     
   }
-  //TODO: فحص اللوكيشن المرسل اذا كان من ضمن مناطق التغطيه او لا
 
   else{
 
@@ -138,3 +139,5 @@ module.exports = bot;
  * phase 2 : location
  * phase 3 : main categories
  */
+
+
