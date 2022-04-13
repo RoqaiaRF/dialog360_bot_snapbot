@@ -1,8 +1,11 @@
 const db = require("../../database/connection");
 const Store = require("../models/Store")(db.sequelize, db.Sequelize);
+const Region = require("../models/Region")(db.sequelize, db.Sequelize);
 const redis = require("../../database/redis");
+const { getCityName, getNearestLocation } = require("../helpers/location");
 
 // define relationships
+
 // Store hasMany branchs
 Store.hasMany(Store, {
   as: "branchs",
@@ -16,11 +19,14 @@ Store.belongsTo(Store, {
   targetKey: "id",
 });
 
+Store.hasMany(Region, {
+  foreignKey: "store_id",
+  targetKey: "id",
+});
 // find store with phone number with branchs
-exports.storeDetails = async (receiver_id, phone) => {
+const storeDetails = async (receiver_id, phone) => {
   const store = await redis.getUserVars(receiver_id, "store");
   if (store) {
-    console.log("from cache tset");
     return JSON.parse(store);
   } else {
     const store = await Store.findOne(
@@ -51,7 +57,62 @@ exports.storeDetails = async (receiver_id, phone) => {
       }
     );
     await redis.setUserVars(receiver_id, "store", JSON.stringify(store));
-    console.log("from db");
     return store;
   }
 };
+// جلب جميع الفروع عن طريق رقم الهاتف
+const getAllBranchs = async (phone) => {
+  const branchs = await Store.findAll(
+    {
+      where: {
+        phone: phone,
+      },
+    },
+    {
+      attributes: [
+        "name_ar",
+        "name_en",
+        "lat",
+        "lng",
+        "parent_id",
+        "phone",
+        "type",
+      ],
+    }
+  );
+  return branchs;
+};
+
+// جلب عدد الفروع بحسب الهاتف واحدثيات المسخدم
+const branchsCount = async (phone, lat, lng) => {
+  const cityName = await getCityName(lat, lng);
+  //return cityName;
+  const count = await Store.count({
+    where: {
+      phone: phone,
+    },
+    include: {
+      model: Region,
+      where: {
+        name_en: cityName,
+      },
+    },
+  });
+  return count;
+};
+
+// تجلب أقرب فرع الى المستخدم وان كان خارج نطاق التغطية تعيد القيمة 0
+
+// تحتاج الى تمرير رقم الهاتف والاحداثيات
+const getNearestBranch = async (phone, lat, lng) => {
+  const count = await branchsCount(phone, lat, lng);
+  const branchs = await getAllBranchs(phone);
+  //return branchs;
+  if (count > 0) {
+    const nearest = await getNearestLocation({ lat, lng }, branchs);
+    return nearest;
+  } else {
+    return false;
+  }
+};
+module.exports = { storeDetails, getNearestBranch };
