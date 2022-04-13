@@ -10,8 +10,8 @@ const welcomeLangPhase = (senderID, storeEN_Name, storeAR_Name, username) => {
     `Welcome ${username} at ${storeEN_Name}... 
                 please click on the right option
                 
-                حياك الله في ${storeAR_Name }..  ${username}شرفتنا  .. 
-                من فضلك لا تكتب شيئا مفهوم لاني رح ارجعك لهذا الخيار 😄
+                حياك الله في   ${storeAR_Name }..  ${username}شرفتنا يا    .. 
+                😄
            للحصول على المساعدة اارسل *
            دائما للعودة للرئيسية اضغط 0 
                 `,
@@ -40,29 +40,34 @@ const locationPhaseEN = (senderID) => {
   );
 }
 
-
+const nearestLocation = (senderID, storeName) => {
+  sendTextMsg(
+    `أقرب فرع لك هو ${storeName} ومتاح لخدمتك الان`,
+    senderID
+  );
+}
 /*----------------------------------------*/
 //  Expected Outputs: the category number: 1, 2 ,3,...
 //^ Phase #3 send main category and request to choose the right category by sending category_index
 
-const categoryPhase = async (sendeID) => {
+const categoryPhase = async (sendeID, categories) => {
   let message = `اختر احد هذه التصنيفات: 
 `;
-  const array = await categoryController.getCategories();
-  let resultArray = [];
+//   const array = await categoryController.getCategories();
+//   let resultArray = [];
 
-  array.forEach((item, index) => {
-    resultArray[index] = item.name_ar;
-  });
+//   array.forEach((item, index) => {
+//     resultArray[index] = item.name_ar;
+//   });
 
-  resultArray.forEach((item, index) => {
-    message += `(${index + 1}) ${item}
-`;
-  });
+//   resultArray.forEach((item, index) => {
+//     message += `(${index + 1}) ${item}
+// `;
+//   });
 
-  console.log(message);
+  //console.log(message);
 
-  sendTextMsg(` ${message}`, sendeID);
+  sendTextMsg(` ${message} ${categories}`, sendeID);
 };
 
 /*----------------------------------------*/
@@ -98,5 +103,6 @@ module.exports = {
   locationPhaseAR,
   categoryPhase,
   productPhase,
-  errorMsg
+  errorMsg,
+  nearestLocation
 };
