@@ -108,15 +108,25 @@ const branchsCount = async (phone, lat, lng) => {
 // تجلب أقرب فرع الى المستخدم وان كان خارج نطاق التغطية تعيد القيمة 0
 
 // تحتاج الى تمرير رقم الهاتف والاحداثيات
-const getNearestBranch = async (phone, lat, lng) => {
+const getNearestBranch = async (sender, phone, lat, lng) => {
+  const branch = await redis.getUserVars(sender, "branch");
+  if (branch) {
+    return JSON.parse(branch);
+  } else {
   const count = await branchsCount(phone, lat, lng);
   const branchs = await getAllBranchs(phone);
   //return branchs;
   if (count > 0) {
     const nearest = await getNearestLocation({ lat, lng }, branchs);
+    await redis.setUserVars(
+      sender,
+      "branch",
+      JSON.stringify(nearest)
+    );
     return nearest;
   } else {
     return false;
   }
+}
 };
 module.exports = { storeDetails, getNearestBranch };

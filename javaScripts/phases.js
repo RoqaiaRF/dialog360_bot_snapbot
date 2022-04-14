@@ -97,6 +97,10 @@ const errorMsg = (senderID) => {
   wrong message`, senderID);
 };
 
+const customMessage = (message, senderID) => {
+  sendTextMsg( message, senderID);
+}
+
 module.exports = {
   welcomeLangPhase,
   locationPhaseEN,
@@ -104,5 +108,6 @@ module.exports = {
   categoryPhase,
   productPhase,
   errorMsg,
-  nearestLocation
+  nearestLocation,
+  customMessage
 };
