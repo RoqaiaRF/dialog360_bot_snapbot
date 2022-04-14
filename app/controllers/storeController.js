@@ -24,8 +24,8 @@ Store.hasMany(Region, {
   targetKey: "id",
 });
 // find store with phone number with branchs
-const storeDetails = async (receiver_id, phone) => {
-  const store = await redis.getUserVars(receiver_id, "store");
+const storeDetails = async (phone) => {
+  const store = await redis.getUserVars(`whatsapp:${phone}`, "store");
   if (store) {
     return JSON.parse(store);
   } else {
@@ -56,7 +56,11 @@ const storeDetails = async (receiver_id, phone) => {
         ],
       }
     );
-    await redis.setUserVars(receiver_id, "store", JSON.stringify(store));
+    await redis.setUserVars(
+      `whatsapp:${phone}`,
+      "store",
+      JSON.stringify(store)
+    );
     return store;
   }
 };
