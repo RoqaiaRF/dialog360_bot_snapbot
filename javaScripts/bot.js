@@ -4,8 +4,6 @@ const sendMsg = require("./phases");
 const getCategories = require("../app/controllers/categoryController");
 const storeController = require("../app/controllers/storeController");
 
-
-
 let expiration_time = 7200; // مدة صلاحية انتهاء المفاتيح في ريديس تساوي ساعتان
 
 //Print Categories
@@ -13,12 +11,11 @@ let expiration_time = 7200; // مدة صلاحية انتهاء المفاتيح
 const categories = (categoriesObj) => {
   let msg = "";
   categoriesObj.forEach((element, index) => {
-   
-    msg += `(*${(index + 1)}*) ${element.name_ar}
- `; 
-  }) 
-  return msg
-}
+    msg += `(*${index + 1}*) ${element.name_ar}
+ `;
+  });
+  return msg;
+};
 
 // get all branches to this store
 
@@ -28,7 +25,7 @@ const categories = (categoriesObj) => {
 //     (storObj.parent_id === null && storObj.branches === null) ||
 //     storObj.branches === undefined
 //   ) {
-   
+
 //     sendMsg.nearestLocation(sender, storObj.name_ar);
 //   } else {
 //     console.log("storObj.branches: ");
@@ -49,9 +46,7 @@ const getUserVars = async (sender, variable) => {
 
 //delete the stored data from the redis session
 const delUserVars = async (sender, variable) => {
-
   await client.del(`${sender}:${variable}`);
- 
 };
 // delete all data from all databases in redis
 const deleteAllKeys = async () => {
@@ -79,19 +74,22 @@ const bot = async (
   //TODO: UNCOMMENT THIS
   // receiver_id = receiver_id.replace("whatsapp:+965",'');
   console.log(receiver_id);
-  const storObj = JSON.parse(JSON.stringify(await storeController.storeDetails(receiver_id)));
+  const storObj = JSON.parse(
+    JSON.stringify(await storeController.storeDetails(receiver_id))
+  );
   const storeEN_Name = storObj.name_en; // اسم المتجر بالانجليزي
   const storeAR_Name = storObj.name_ar; // اسم المتجر في العربي
   //const store_id = storObj.id; // we need it to get the categories
   const parent_id = storObj.parent_id;
 
- // console.log(`store_id: ${store_id}`);
+  // console.log(`store_id: ${store_id}`);
   console.log(storObj);
   let phase = await getUserVars(sender, "phase");
   console.log(`phase: ${phase}`);
 
   if (message == "0" || message == "العودة للرئيسية") {
-    delUserVars(sender_id, "branch" )
+    delUserVars(sender, "branch");
+
     sendMsg.welcomeLangPhase(sender_id, storeEN_Name, storeAR_Name, username);
     setUserVars(sender, "phase", "1");
   } else if (message == "*") {
@@ -133,30 +131,33 @@ const bot = async (
           sendMsg.errorMsg(sender_id);
           console.log(longitude);
         } else {
-        const nearestBranch = await storeController.getNearestBranch( sender, receiver_id , latitude, longitude)
+          const nearestBranch = await storeController.getNearestBranch(
+            sender,
+            receiver_id,
+            latitude,
+            longitude
+          );
           //getAllBranches(sender_id, store_id, storObj);
-          if (!nearestBranch ) { 
-           sendMsg.customMessage("عذرا لا نقدم خدمات ضمن موقعك الجغرافي", sender_id);
-           setUserVars(sender, "phase", "2");
-           sendMsg.locationPhaseAR(sender_id);
-          
-          }
-          else { 
+          if (!nearestBranch) {
+            setUserVars(sender, "phase", "2");
+            sendMsg.customMessage(
+              "عذرا لا نقدم خدمات ضمن موقعك الجغرافي",
+              sender_id
+            );
+            sendMsg.locationPhaseAR(sender_id);
+          } else {
             sendMsg.nearestLocation(sender_id, nearestBranch.name_ar);
             setUserVars(sender, "phase", "3");
-           
           }
-    
-        
         }
         break;
       case "3":
-        const branch = JSON.parse(await getUserVars(sender, "branch"))
-        let store_id
-        if(branch.parent == null){
-          store_id = branch.id
-        }else{
-          store_id = branch.parent_id
+        const branch = JSON.parse(await getUserVars(sender, "branch"));
+        let store_id;
+        if (branch.parent == null) {
+          store_id = branch.id;
+        } else {
+          store_id = branch.parent_id;
         }
         if (message == "ابدأ الطلب") {
           const categoryObj = JSON.parse(
@@ -165,6 +166,7 @@ const bot = async (
           sendMsg.categoryPhase(sender_id, "" + categories(categoryObj));
           setUserVars(sender, "phase", "4");
         } else if (message === "اختر فرع اخر") {
+          delUserVars(sender, "branch"); // احذف الفرع الموجود
           sendMsg.locationPhaseAR(sender_id);
           setUserVars(sender, "phase", "2");
         } else {
@@ -172,22 +174,33 @@ const bot = async (
         }
         break;
       case "4":
+        // let indexCategory = message - 1 ;
+        // let categoryObj = JSON.parse(
+        //   JSON.stringify(await getUserVars(sender, "cats"))
+        // );
+        // let category = categoryObj[indexCategory]
         
+        // console.log("******* category ************");
+
+        // console.log(categories(categoryObj));
+
+
+
       // أعطيك اللوجيك الان ثم سنعمله
-      /**
-       * عليه ان يتأكد من مدخلات المستخدم 
+      /*
+       *
+       * عليه ان يتأكد من مدخلات المستخدم
        * اذا كانت شخابيط تعاد له رسالة خطأ
        * إن اختار رقما غير الارقام الموجودة تظهر له رسالة الخطأ
-       * نتعرف على الارقام الصحيحة اعتمادا على طول مصفوفة التصنيفات 
+       * نتعرف على الارقام الصحيحة اعتمادا على طول مصفوفة التصنيفات
        * يعني اذا كان الرقم المكتوب اكبر تماما من طول عناصر المصفوفة يظهر الخطأ
        * وان كتب رقما أقل من طول المصفوفة او يساويه
        * نطرح منه الرقم 1
        * ثم نستخرج به معرّف التصنيف الذي سنمرره في دالة لعرض المنتجات
        * استأذنك الان ساذهب :)
-       * 
-       ** :)  حسنا سأنتظرك 
+       *:)  حسنا سأنتظرك
+       *
        */
-
     }
   }
 };
@@ -198,5 +211,5 @@ module.exports = bot;
  * phase 2 : location
  *           get the nearest branch
  * phase 3 : main categories
- * phase 4 : 
+ * phase 4 :
  */
