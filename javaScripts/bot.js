@@ -174,15 +174,15 @@ const bot = async (
         }
         break;
       case "4":
-        // let indexCategory = message - 1 ;
-        // let categoryObj = JSON.parse(
-        //   JSON.stringify(await getUserVars(sender, "cats"))
-        // );
-        // let category = categoryObj[indexCategory]
-        
-        // console.log("******* category ************");
-
-        // console.log(categories(categoryObj));
+        let indexCategory = message - 1 ;
+        let categoryObj = JSON.parse(
+          await getUserVars(sender, "cats")
+        );
+        let category = categoryObj[indexCategory]
+        console.log("******* category ************");
+        //console.log(categoryObj);
+        console.log(category)
+        console.log(indexCategory)
 
 
 
