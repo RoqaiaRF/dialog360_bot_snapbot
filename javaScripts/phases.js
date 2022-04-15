@@ -1,6 +1,5 @@
 const sendTextMsg = require("./sendMsgFunctions");
-const categoryController = require("../app/controllers/categoryController");
-const productController = require("../app/controllers/productController");
+const sendMedia = require("./sendMedia");
 
 // Expected Outputs: English, العربية
 //^ Phase #1 welcome and choose Language
@@ -53,23 +52,9 @@ const nearestLocation = (senderID, storeName) => {
 const categoryPhase = async (senderID, categories) => {
   let message = `اختر احد هذه التصنيفات: 
 `;
-//   const array = await categoryController.getCategories();
-//   let resultArray = [];
-
-//   array.forEach((item, index) => {
-//     resultArray[index] = item.name_ar;
-//   });
-
-//   resultArray.forEach((item, index) => {
-//     message += `(${index + 1}) ${item}
-// `;
-//   });
-
-  //console.log(message);
-
   sendTextMsg(` ${message} ${categories}
   ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
-  للعودة للرئيسية اضغط 0`, senderID);
+  للعودة للرئيسية ارسل 0`, senderID);
 };
 
 /*----------------------------------------*/
@@ -81,8 +66,8 @@ const productPhase = async (senderID, products) => {
 `;
 sendTextMsg(` ${message} ${products}
 ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
-للعودة للمرحلة السابقة اضغط 00
-للعودة للرئيسية اضغط 0`, senderID);
+للعودة للمرحلة السابقة ارسل 00
+للعودة للرئيسية ارسل 0`, senderID);
 
 }
 const subCategoryPhase = async(senderID, subCategory) =>{
@@ -90,10 +75,38 @@ const subCategoryPhase = async(senderID, subCategory) =>{
   `;
   sendTextMsg(` ${message} ${subCategory}
   ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
-  للعودة للمرحلة السابقة اضغط 00
-  للعودة للرئيسية اضغط 0`, senderID);
+  للعودة للمرحلة السابقة ارسل 00
+  للعودة للرئيسية ارسل 0`, senderID);
 
 }
+
+const featuresPhase = async(senderID, features) =>{
+  let message = `اختر احد الخدمات الاضافية الاتيه:   
+  `;
+  sendTextMsg(` ${message} ${features}
+  ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
+  للعودة للمرحلة السابقة ارسل 00
+  للعودة للرئيسية ارسل 0`, senderID);
+
+}
+
+const showProduct = (senderID, product) => {
+  let message = `
+  اسم المنتج: ${product.name_ar}
+  الوصف: ${product.description_ar}
+  السعر: ${product.price}
+  `;
+  // sendTextMsg(` ${message}
+  // ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
+  // للاضافة للسلة ارسل 1
+  // للعودة للمرحلة السابقة ارسل 00
+  // للعودة للرئيسية ارسل 0`, senderID);
+  sendMedia(` ${message}
+  ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
+  للاضافة للسلة ارسل 1
+  للعودة للمرحلة السابقة ارسل 00
+  للعودة للرئيسية ارسل 0`,senderID, product.image);
+}  
 
 const errorMsg = (senderID) => {
   sendTextMsg(`خطأ في الارسال
@@ -113,5 +126,7 @@ module.exports = {
   errorMsg,
   nearestLocation,
   customMessage,
-  subCategoryPhase
+  subCategoryPhase,
+  featuresPhase,
+  showProduct
 };

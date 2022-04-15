@@ -92,6 +92,8 @@ const bot = async (
   sender = sender_id.replace("whatsapp:+962", "");
   //TODO: UNCOMMENT THIS
   // receiver_id = receiver_id.replace("whatsapp:+965",'');
+  // sender = sender_id.replace("whatsapp:+965", "");
+
   console.log(receiver_id);
   const storObj = JSON.parse(
     JSON.stringify(await storeController.storeDetails(sender, receiver_id))
@@ -283,21 +285,32 @@ const bot = async (
       }
       break;
 
-      // أعطيك اللوجيك الان ثم سنعمله
-      /*
-       *
-       * عليه ان يتأكد من مدخلات المستخدم
-       * اذا كانت شخابيط تعاد له رسالة خطأ
-       * إن اختار رقما غير الارقام الموجودة تظهر له رسالة الخطأ
-       * نتعرف على الارقام الصحيحة اعتمادا على طول مصفوفة التصنيفات
-       * يعني اذا كان الرقم المكتوب اكبر تماما من طول عناصر المصفوفة يظهر الخطأ
-       * وان كتب رقما أقل من طول المصفوفة او يساويه
-       * نطرح منه الرقم 1
-       * ثم نستخرج به معرّف التصنيف الذي سنمرره في دالة لعرض المنتجات
-       * استأذنك الان ساذهب :)
-       *:)  حسنا سأنتظرك
-       *
-       */
+      case 7: // عرض الخدمة الواحدة او المنتج 
+
+      if (isNaN(message) == true ){
+        // send error msg
+        sendMsg.errorMsg(sender_id);
+        return;
+     }
+     let productObj7 = JSON.parse(await getUserVars(sender, "products"));
+     let length7 = productObj7.length;
+      
+     if (message == "00"){
+      setUserVars(sender, "phase", "6");
+      sendMsg.productPhase(sender_id, products(productsObj7));
+    }
+    else if (message <= 0 || message >= length7) {
+      // send error msg
+      sendMsg.errorMsg(sender_id); 
+    }
+
+    else { //عرض المنتج الواحد
+      let productIndex = message - 1
+      let product = productObj7[productIndex]
+      sendMsg.showProduct(sender_id, product)
+
+    }
+
     }
   }
 };
