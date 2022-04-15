@@ -112,6 +112,7 @@ const bot = async (
   if (message == "0" || message == "العودة للرئيسية") {
     delUserVars(sender, "branch");
     delUserVars(sender, "cats");
+    delUserVars(sender, "subcategories");
     delUserVars(sender, "products");
 
     sendMsg.welcomeLangPhase(sender_id, storeEN_Name, storeAR_Name, username);
@@ -209,7 +210,7 @@ const bot = async (
         let category = categoryObj[indexCategory];
         let length = categoryObj.length;
         
-        if (message >= length|| message <= 0) {
+        if (message > length|| message <= 0) {
           // send error msg
           sendMsg.errorMsg(sender_id);
         }
@@ -239,10 +240,11 @@ const bot = async (
       
 
        if (message === "00"){
-        setUserVars(sender, "phase", "4");
+        delUserVars(sender, "subcategories");
+
         sendMsg.categoryPhase(sender_id, "" + categories(categoryObj5));
       }
-      else if (isNaN(message) === true || message >= length5|| message <= 0) {
+      else if (isNaN(message) === true || message > length5|| message <= 0) {
         // send error msg
         sendMsg.errorMsg(sender_id);
       }
@@ -259,7 +261,7 @@ const bot = async (
       
       case "6":   //  المنتجات  
 
-      if (isNaN(message) == true ){
+      if (isNaN(message) === true ){
          // send error msg
          sendMsg.errorMsg(sender_id);
          return;
@@ -271,23 +273,29 @@ const bot = async (
       let categoryObj2 = JSON.parse(await getUserVars(sender, "cats"));     
        
       if (message == "00"){
+        delUserVars(sender, "products");
+        delUserVars(sender, "subcategories");
         setUserVars(sender, "phase", "4");
         sendMsg.categoryPhase(sender_id, "" + categories(categoryObj2));
       }
-      else if (message <= 0 || message >= length2) {
+      else if (message <= 0 || message > length2) {
         // send error msg
         sendMsg.errorMsg(sender_id); 
+        console.log("lenght ", length2)
       }
       else { 
-
+        let productObj6 = JSON.parse(await getUserVars(sender, "products"));
         setUserVars(sender, "phase", "7"); // اختيار المنتجات
+        let productIndex6 = message - 1
+        let product6 = productObj6[productIndex6]
+        sendMsg.showProduct(sender_id, product6)
         
       }
       break;
 
       case 7: // عرض الخدمة الواحدة او المنتج 
 
-      if (isNaN(message) == true ){
+      if (isNaN(message) === true ){
         // send error msg
         sendMsg.errorMsg(sender_id);
         return;
@@ -296,12 +304,15 @@ const bot = async (
      let length7 = productObj7.length;
       
      if (message == "00"){
+      delUserVars(sender, "subcategories");
+      delUserVars(sender, "products");
       setUserVars(sender, "phase", "6");
       sendMsg.productPhase(sender_id, products(productsObj7));
     }
-    else if (message <= 0 || message >= length7) {
+    else if (message <= 0 || message > length7) {
       // send error msg
       sendMsg.errorMsg(sender_id); 
+      
     }
 
     else { //عرض المنتج الواحد

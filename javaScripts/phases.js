@@ -105,7 +105,7 @@ const showProduct = (senderID, product) => {
   ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
   للاضافة للسلة ارسل 1
   للعودة للمرحلة السابقة ارسل 00
-  للعودة للرئيسية ارسل 0`,senderID, product.image);
+  للعودة للرئيسية ارسل 0`,senderID, "https://stores-logos.fra1.digitaloceanspaces.com/products/"+product.image);
 }  
 
 const errorMsg = (senderID) => {

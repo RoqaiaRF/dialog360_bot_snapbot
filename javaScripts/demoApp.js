@@ -1,5 +1,5 @@
 const sendTextMsg = require("./sendMsgFunctions");
-const sendMedia = require("./sensMedia");
+const sendMedia = require("./sendMedia");
 
 const demo = (message, sendeID, Latitude, Longitude) => {
   message = "" + message; // convert to string
