@@ -1,16 +1,15 @@
 const db = require("../../database/connection");
 const Category = require("../models/Category")(db.sequelize, db.Sequelize);
-const Product = require("../models/Product")(db.sequelize, db.Sequelize);
 const redis = require("../../database/redis");
 // define relationships
 
 // Category has Many Products
-Category.hasMany(Product, {
+/* Category.hasMany(Product, {
   foreignKey: "category_id",
 });
 Product.belongsTo(Category, {
   foreignKey: "category_id",
-});
+}); */
 
 // Category has Many subCategories
 Category.hasMany(Category, {
@@ -38,18 +37,26 @@ const getCategories = async (sender, store_id) => {
         where: {
           store_id: store_id,
         },
-        include: [
+        include: {
+          model: Category,
+          as: "subCategories",
+          include: {
+            model: Category,
+            as: "parent",
+          }, 
+        },
+/*         include: [
           {
             model: Category,
             as: "subCategories",
-            include: {
+           include: {
               model: Product,
-            },
+            }, 
           },
           {
             model: Product,
           },
-        ],
+        ], */
       },
       { attributes: ["name_ar", "name_en", "store_id"] }
     );

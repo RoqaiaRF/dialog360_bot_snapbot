@@ -11,7 +11,7 @@ Store.hasMany(Store, {
   as: "branchs",
   foreignKey: "parent_id",
   targetKey: "id",
-});
+}); 
 
 Store.belongsTo(Store, {
   as: "parent",
@@ -24,8 +24,8 @@ Store.hasMany(Region, {
   targetKey: "id",
 });
 // find store with phone number with branchs
-const storeDetails = async (phone) => {
-  const store = await redis.getUserVars(`whatsapp:${phone}`, "store");
+const storeDetails = async (sender, phone) => {
+  const store = await redis.getUserVars(sender, "store");
   if (store) {
     return JSON.parse(store);
   } else {
@@ -33,31 +33,31 @@ const storeDetails = async (phone) => {
       {
         where: {
           phone: phone,
+          parent_id: null
         },
-        include: {
+/*         include: {
           model: Store,
           as: "branchs",
           include: {
             model: Store,
             as: "parent",
           },
-        },
+        }, */
       },
       {
         attributes: [
           "name_ar",
           "name_en",
           "lat",
-          "lat",
           "lng",
           "parent_id",
           "phone",
-          "type",
+          "type_id",
         ],
       }
     );
     await redis.setUserVars(
-      `whatsapp:${phone}`,
+      sender,
       "store",
       JSON.stringify(store)
     );

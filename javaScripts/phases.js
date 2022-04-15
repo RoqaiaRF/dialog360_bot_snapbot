@@ -50,7 +50,7 @@ const nearestLocation = (senderID, storeName) => {
 //  Expected Outputs: the category number: 1, 2 ,3,...
 //^ Phase #3 send main category and request to choose the right category by sending category_index
 
-const categoryPhase = async (sendeID, categories) => {
+const categoryPhase = async (senderID, categories) => {
   let message = `اختر احد هذه التصنيفات: 
 `;
 //   const array = await categoryController.getCategories();
@@ -67,30 +67,33 @@ const categoryPhase = async (sendeID, categories) => {
 
   //console.log(message);
 
-  sendTextMsg(` ${message} ${categories}`, sendeID);
+  sendTextMsg(` ${message} ${categories}
+  ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
+  للعودة للرئيسية اضغط 0`, senderID);
 };
 
 /*----------------------------------------*/
 //  Expected Outputs: the product number: 1, 2 ,3,...
 //^ Phase #3 send products and request to choose the right product by sending product_index of it's category
 
-const productPhase = async (senderID, category_id) => {
+const productPhase = async (senderID, products) => {
   let message = `اختر احد هذه المنتجات: 
 `;
-  const array = await productController.getProducts(category_id);
-  let resultArray = [];
+sendTextMsg(` ${message} ${products}
+ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
+للعودة للمرحلة السابقة اضغط 00
+للعودة للرئيسية اضغط 0`, senderID);
 
-  array.forEach((item, index) => {
-    resultArray[index] = item.name_ar;
-  });
+}
+const subCategoryPhase = async(senderID, subCategory) =>{
+  let message = `اختر احد التصنيفات الفرعيه الاتيه:   
+  `;
+  sendTextMsg(` ${message} ${subCategory}
+  ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
+  للعودة للمرحلة السابقة اضغط 00
+  للعودة للرئيسية اضغط 0`, senderID);
 
-  resultArray.forEach((item, index) => {
-    message += `(${index + 1}) ${item}
-`;
-  });
-
-  sendTextMsg(` ${message}`, senderID);
-};
+}
 
 const errorMsg = (senderID) => {
   sendTextMsg(`خطأ في الارسال
@@ -109,5 +112,6 @@ module.exports = {
   productPhase,
   errorMsg,
   nearestLocation,
-  customMessage
+  customMessage,
+  subCategoryPhase
 };

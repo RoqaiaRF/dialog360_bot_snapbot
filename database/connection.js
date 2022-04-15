@@ -12,7 +12,7 @@ const PORT = process.env.PORT;
 const sequelize = new Sequelize(DB_DATABASE, DB_USERNAMES, DB_PASSWORD, {
     host: HOST,
     dialect: DIALECT,
-    //port: PORT
+    port: PORT
 });
 
 const db = {};
