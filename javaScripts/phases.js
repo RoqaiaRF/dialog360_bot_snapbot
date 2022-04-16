@@ -129,4 +129,4 @@ module.exports = {
   subCategoryPhase,
   featuresPhase,
   showProduct
-};
+}

@@ -91,14 +91,16 @@ const bot = async (
   receiver_id = receiver_id.replace("whatsapp:+141", "");
   sender = sender_id.replace("whatsapp:+962", "");
   //TODO: UNCOMMENT THIS
-  // receiver_id = receiver_id.replace("whatsapp:+965",'');
+  receiver_id = receiver_id.replace("whatsapp:+965",'');
   // sender = sender_id.replace("whatsapp:+965", "");
 
   console.log(receiver_id);
   const storObj = JSON.parse(
-    JSON.stringify(await storeController.storeDetails(sender, receiver_id))
+    JSON.stringify(await storeController.storeDetails(sender_id, receiver_id))
   );
   console.log(storObj);
+  console.log(sender,receiver_id);
+ 
   const storeEN_Name = storObj.name_en; // اسم المتجر بالانجليزي
   const storeAR_Name = storObj.name_ar; // اسم المتجر في العربي
   const store_id = storObj.id; // we need it to get the categories
