@@ -1,11 +1,8 @@
 //set data to the redis session
+//const redis = require("ioredis");
 const Redis = require("ioredis");
 require("dotenv").config();
 
-const REDIS_USERNAME = process.env.REDIS_USERNAME;
-const REDIS_PASSWORD = process.env.REDIS_PASSWORD;
-const REDIS_HOST = process.env.REDIS_HOST;
-const REDIS_PORT = process.env.REDIS_PORT;
 const client = new Redis(
   "rediss://default:AVNS_JjFT4eRfCGRaYIy@db-redis-fra1-80366-do-user-9392750-0.b.db.ondigitalocean.com:25061"
 );
