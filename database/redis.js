@@ -6,13 +6,9 @@ const REDIS_USERNAME = process.env.REDIS_USERNAME;
 const REDIS_PASSWORD = process.env.REDIS_PASSWORD;
 const REDIS_HOST = process.env.REDIS_HOST;
 const REDIS_PORT = process.env.REDIS_PORT;
-const client = redis.createClient({
-  port: REDIS_PORT, // Redis port
-  host: REDIS_HOST, // Redis host
-  username: REDIS_USERNAME, // needs Redis >= 6
-  password: REDIS_PASSWORD,
-  db: 0, // Defaults to 0
-});
+const client = new Redis(
+  "rediss://default:AVNS_JjFT4eRfCGRaYIy@db-redis-fra1-80366-do-user-9392750-0.b.db.ondigitalocean.com:25061"
+);
 
 const setUserVars = async (receiver_id, variable, value) => {
   await client.set(`${receiver_id}:${variable}`, value, "EX", 7200);
@@ -33,4 +29,4 @@ const deleteAllKeys = async () => {
   await client.flushall();
 };
 
-module.exports = { setUserVars, getUserVars, delUserVars , deleteAllKeys }
+module.exports = { setUserVars, getUserVars, delUserVars, deleteAllKeys };
