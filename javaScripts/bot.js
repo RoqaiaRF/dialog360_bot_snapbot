@@ -1,5 +1,3 @@
-const redis = require("ioredis");
-const client = redis.createClient();
 const sendMsg = require("./phases");
 const getCategories = require("../app/controllers/categoryController");
 const storeController = require("../app/controllers/storeController");

@@ -1,22 +1,24 @@
 var express = require("express");
 var router = express.Router();
-const categoryController = require("../app/controllers/categoryController");
-const { getNearestBranch } = require("../app/controllers/storeController");
-const { getNearestLocation, getDistance, getCityName } = require("../app/helpers/location");
+const { setUserVars, getUserVars } = require("../database/redis");
+/* const Redis = require("ioredis");
+ */
+// Create a Redis instance.
+// By default, it will connect to localhost:6379.
+// We are going to cover how to specify connection options soon.
+/* const redis = new Redis(
+  "rediss://default:AVNS_JjFT4eRfCGRaYIy@db-redis-fra1-80366-do-user-9392750-0.b.db.ondigitalocean.com:25061"
+); */
+
+/* const Redis = require("ioredis");
+const redis = new Redis(
+  "rediss://default:AVNS_JjFT4eRfCGRaYIy@db-redis-fra1-80366-do-user-9392750-0.b.db.ondigitalocean.com:25061"
+); */
 /* GET users listing. */
 router.get("/", async (req, res, next) => {
-  try {
-    //const cats = await categoryController.getCategories("gfgfgf", 1);
-    const city = await getCityName( 30.77163179298992, 35.60097948249704)
-  const store = await getNearestBranch(
-      "55238886",
-      30.77163179298992, 35.60097948249704
-    ); 
-    console.log(JSON.stringify(store, null, 2));
-    res.send("respond with a resource");
-  } catch (error) {
-    console.log(error);
-  }
+  const key = await setUserVars("213554668588", "phase", "1");
+  
+  console.log("test: ", key);
 });
 
 module.exports = router;
