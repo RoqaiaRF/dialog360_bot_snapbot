@@ -1,5 +1,5 @@
 //set data to the redis session
-const redis = require("ioredis");
+const Redis = require("ioredis");
 require("dotenv").config();
 
 const REDIS_USERNAME = process.env.REDIS_USERNAME;
