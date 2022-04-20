@@ -8,6 +8,7 @@ const {
   delUserVars,
   deleteAllKeys,
 } = require("../database/redis");
+const englishBot = require("../javaScripts/englishBot")
 let expiration_time = 7200; // مدة صلاحية انتهاء المفاتيح في ريديس تساوي ساعتان
 
 //Print Categories
@@ -76,7 +77,7 @@ const products = (productsObj) => {
 }; */
 
 //TODO: English bot
-const englishBot = (sender, message,  longitude, latitude) => {};
+//const englishBot = (sender, message,  longitude, latitude) => {};
 
 //const arabicBot = (sender, message, longitude, latitude) => {};
 
@@ -120,6 +121,8 @@ const bot = async (
     delUserVars(sender, "cats");
     delUserVars(sender, "subcategories");
     delUserVars(sender, "products");
+    delUserVars(sender, "language");
+    
 
     sendMsg.welcomeLangPhase(sender_id, storeEN_Name, storeAR_Name, username);
     setUserVars(sender, "phase", "1");
@@ -155,7 +158,7 @@ const bot = async (
         if (message === "العربية") {
           setUserVars(sender, "language", "ar");
           //  arabicBot(sender_id, message,  longitude, latitude);
-          sendMsg.locationPhaseAR(sender_id);
+          sendMsg.locationPhase(sender_id);
           setUserVars(sender, "phase", "2");
         } else if (message === "English") {
           setUserVars(sender, "language", "en");
@@ -190,7 +193,7 @@ const bot = async (
               "عذرا لا نقدم خدمات ضمن موقعك الجغرافي",
               sender_id
             );
-            sendMsg.locationPhaseAR(sender_id);
+            sendMsg.locationPhase(sender_id);
           } else {
             sendMsg.nearestLocation(sender_id, nearestBranch.name_ar);
             setUserVars(sender, "phase", "3");
@@ -212,7 +215,7 @@ const bot = async (
           sendMsg.categoryPhase(sender_id, "" + categories(categoryObj));
         } else if (message === "اختر فرع اخر") {
           delUserVars(sender, "branch"); // احذف الفرع الموجود
-          sendMsg.locationPhaseAR(sender_id);
+          sendMsg.locationPhase(sender_id);
           setUserVars(sender, "phase", "2");
         } else {
           sendMsg.errorMsg(sender_id);

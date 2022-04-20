@@ -16,8 +16,7 @@ const welcomeLangPhase = (senderID, storeEN_Name, storeAR_Name, username) => {
                 `,
     senderID
   );
- // sendTextMsg(`اختر اللغة المناسبة للطلب`, senderID);
- sendTextMsg(`يمكنك شراء حزمة انترنت وايضا نقوم بخدماتاخرى`, senderID);
+  sendTextMsg(`اختر اللغة المناسبة للطلب`, senderID);
 };
 
 /*----------------------------------------*/
@@ -25,17 +24,9 @@ const welcomeLangPhase = (senderID, storeEN_Name, storeAR_Name, username) => {
 //^ Phase #2 request user location
 
 
-const locationPhaseAR = (senderID) => {
+const locationPhase = (senderID) => {
   sendTextMsg(
     `  ارسل اللوكيشن لموقعك حتى نساعدك بمعرفة اقرب فرع لك 🇰🇼 😊`,
-    senderID
-  );
-}
-
-
-const locationPhaseEN = (senderID) => {
-  sendTextMsg(
-    `  Please send your location To find the nearest branch to you🇰🇼 😊`,
     senderID
   );
 }
@@ -57,7 +48,7 @@ const categoryPhase = async (senderID, categories) => {
   ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
   للعودة للرئيسية ارسل 0`, senderID);
 };
-
+ 
 /*----------------------------------------*/
 //  Expected Outputs: the product number: 1, 2 ,3,...
 //^ Phase #3 send products and request to choose the right product by sending product_index of it's category
@@ -110,8 +101,7 @@ const showProduct = (senderID, product) => {
 }  
 
 const errorMsg = (senderID) => {
-  sendTextMsg(`خطأ في الارسال
-  wrong message`, senderID);
+  sendTextMsg(`خطأ في الارسال`, senderID);
 };
 
 const customMessage = (message, senderID) => {
@@ -123,8 +113,7 @@ const customMessage = (message, senderID) => {
 
 module.exports = {
   welcomeLangPhase,
-  locationPhaseEN,
-  locationPhaseAR,
+  locationPhase,
   categoryPhase,
   productPhase,
   errorMsg,

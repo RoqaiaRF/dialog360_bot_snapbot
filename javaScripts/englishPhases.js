@@ -16,24 +16,16 @@ const welcomeLangPhase = (senderID, storeEN_Name, storeAR_Name, username) => {
                 `,
     senderID
   );
- // sendTextMsg(`اختر اللغة المناسبة للطلب`, senderID);
- sendTextMsg(`يمكنك شراء حزمة انترنت وايضا نقوم بخدماتاخرى`, senderID);
-};
+  sendTextMsg(`اختر اللغة المناسبة للطلب`, senderID);
 
+  }
 /*----------------------------------------*/
 //  Expected Outputs: user Location contain langitude and latitude
 //^ Phase #2 request user location
 
 
-const locationPhaseAR = (senderID) => {
-  sendTextMsg(
-    `  ارسل اللوكيشن لموقعك حتى نساعدك بمعرفة اقرب فرع لك 🇰🇼 😊`,
-    senderID
-  );
-}
 
-
-const locationPhaseEN = (senderID) => {
+const locationPhase = (senderID) => {
   sendTextMsg(
     `  Please send your location To find the nearest branch to you🇰🇼 😊`,
     senderID
@@ -42,7 +34,7 @@ const locationPhaseEN = (senderID) => {
 
 const nearestLocation = (senderID, storeName) => {
   sendTextMsg(
-    `أقرب فرع لك هو ${storeName} ومتاح لخدمتك الان`,
+    `the nearest branch to you is ${storeName} It is now available to serve you`,
     senderID
   );
 }
@@ -51,11 +43,11 @@ const nearestLocation = (senderID, storeName) => {
 //^ Phase #3 send main category and request to choose the right category by sending category_index
 
 const categoryPhase = async (senderID, categories) => {
-  let message = `اختر احد هذه التصنيفات: 
+  let message = `Choose one of these categories: 
 `;
   sendTextMsg(` ${message} ${categories}
   ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
-  للعودة للرئيسية ارسل 0`, senderID);
+  To return to the main send 0`, senderID);
 };
 
 /*----------------------------------------*/
@@ -63,55 +55,50 @@ const categoryPhase = async (senderID, categories) => {
 //^ Phase #3 send products and request to choose the right product by sending product_index of it's category
 
 const productPhase = async (senderID, products) => {
-  let message = `اختر احد هذه المنتجات: 
+  let message = `Choose one of these products: 
 `;
 sendTextMsg(` ${message} ${products}
 ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
-للعودة للمرحلة السابقة ارسل 00
-للعودة للرئيسية ارسل 0`, senderID);
+To return to the previous phase, send 00
+To return to the main send 0`, senderID);
 
 }
 const subCategoryPhase = async(senderID, subCategory) =>{
-  let message = `اختر احد التصنيفات الفرعيه الاتيه:   
+  let message = `Choose one of the following subcategories:   
   `;
   sendTextMsg(` ${message} ${subCategory}
   ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
-  للعودة للمرحلة السابقة ارسل 00
-  للعودة للرئيسية ارسل 0`, senderID);
+  To return to the previous phase, send 00
+  To return to the main send 0`, senderID);
 
 }
 
 const featuresPhase = async(senderID, features) =>{
-  let message = `اختر احد الخدمات الاضافية الاتيه:   
+  let message = `Choose one of the following additional services:   
   `;
   sendTextMsg(` ${message} ${features}
   ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
-  للعودة للمرحلة السابقة ارسل 00
-  للعودة للرئيسية ارسل 0`, senderID);
+  To return to the previous phase, send 00
+  To return to the main send 0`, senderID);
 
 }
 
 const showProduct = (senderID, product) => {
   let message = `
-  اسم المنتج: ${product.name_ar}
-  الوصف: ${product.description_ar}
-  السعر: ${product.price}
+  Product Name: ${product.name_en}
+  Description: ${product.description_en}
+  Price: ${product.price}
   `;
-  // sendTextMsg(` ${message}
-  // ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
-  // للاضافة للسلة ارسل 1
-  // للعودة للمرحلة السابقة ارسل 00
-  // للعودة للرئيسية ارسل 0`, senderID);
+ 
   sendMedia(` ${message}
   ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
-  للاضافة للسلة ارسل 1
-  للعودة للمرحلة السابقة ارسل 00
-  للعودة للرئيسية ارسل 0`,senderID, "https://stores-logos.fra1.digitaloceanspaces.com/products/"+product.image);
+  add to cart 1
+  To return to the previous phase, send 00
+  To return to the main send 0`,senderID, "https://stores-logos.fra1.digitaloceanspaces.com/products/"+product.image);
 }  
 
 const errorMsg = (senderID) => {
-  sendTextMsg(`خطأ في الارسال
-  wrong message`, senderID);
+  sendTextMsg(`wrong message`, senderID);
 };
 
 const customMessage = (message, senderID) => {
@@ -123,8 +110,7 @@ const customMessage = (message, senderID) => {
 
 module.exports = {
   welcomeLangPhase,
-  locationPhaseEN,
-  locationPhaseAR,
+  locationPhase,
   categoryPhase,
   productPhase,
   errorMsg,

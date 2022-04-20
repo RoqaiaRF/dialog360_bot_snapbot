@@ -1,5 +1,5 @@
 
-const sendMsg = require("./phases");
+const sendMsg = require("./englishPhases");
 const getCategories = require("../app/controllers/categoryController");
 const storeController = require("../app/controllers/storeController");
 const getProducts = require("../app/controllers/productController");
@@ -8,9 +8,16 @@ const {
   getUserVars,
   delUserVars,
 } = require("../database/redis");
-let expiration_time = 7200; // مدة صلاحية انتهاء المفاتيح في ريديس تساوي ساعتان
 
 //Print Categories
+
+const englishBot= async (
+    sender_id,
+    receiver_id,
+    message,
+    longitude,
+    latitude,
+    username)=>{
 
 const categories = (categoriesObj) => {
   let msg = "";
@@ -76,13 +83,6 @@ if (message == "0" || message == "العودة للرئيسية") {
   //TODO: المستخدم بحاجة للمساعدة قم بارسال اشعار للداشبورد
 }
 
-const englishBot= async (
-    sender_id,
-    receiver_id,
-    message,
-    longitude,
-    latitude,
-    username)=>{
     switch (phase) {
         case "0":
         case null:
@@ -103,17 +103,17 @@ const englishBot= async (
           if (message === "العربية") {
             setUserVars(sender, "language", "ar");
             //  arabicBot(sender_id, message,  longitude, latitude);
-            sendMsg.locationPhaseAR(sender_id);
-            setUserVars(sender, "phase", "2");
-          } else if (message === "English") {
-            setUserVars(sender, "language", "en");
-            englishBot(sender_id,
+            
+            bot(sender_id,
               receiver_id,
               message,
               longitude,
               latitude)
-              break;
-            
+              return;
+          } else if (message === "English") {
+            setUserVars(sender, "language", "en");
+            sendMsg.locationPhase(sender_id);
+            setUserVars(sender, "phase", "2");
           } else {
             //Send ERROR message : If the message sent is wrong
             sendMsg.errorMsg(sender_id);
@@ -134,10 +134,10 @@ const englishBot= async (
             if (!nearestBranch) {
               setUserVars(sender, "phase", "2");
               sendMsg.customMessage(
-                "عذرا لا نقدم خدمات ضمن موقعك الجغرافي",
+                "Sorry, we do not offer services within your location",
                 sender_id
               );
-              sendMsg.locationPhaseAR(sender_id);
+              sendMsg.locationPhase(sender_id);
             } else {
               sendMsg.nearestLocation(sender_id, nearestBranch.name_en);
               setUserVars(sender, "phase", "3");
@@ -159,7 +159,7 @@ const englishBot= async (
             sendMsg.categoryPhase(sender_id, "" + categories(categoryObj));
           } else if (message === "اختر فرع اخر") {
             delUserVars(sender, "branch"); // احذف الفرع الموجود
-            sendMsg.locationPhaseAR(sender_id);
+            sendMsg.locationPhase(sender_id);
             setUserVars(sender, "phase", "2");
           } else {
             sendMsg.errorMsg(sender_id);
