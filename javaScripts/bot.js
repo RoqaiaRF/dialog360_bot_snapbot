@@ -8,6 +8,7 @@ const {
   delUserVars,
   deleteAllKeys,
 } = require("../database/redis");
+const englishBot = require("../javaScripts/englishBot")
 let expiration_time = 7200; // مدة صلاحية انتهاء المفاتيح في ريديس تساوي ساعتان
 
 //Print Categories
@@ -78,7 +79,7 @@ const products = (productsObj) => {
 //TODO: English bot
 //const englishBot = (sender, message,  longitude, latitude) => {};
 
-const arabicBot = (sender_id, message, longitude, latitude) => {};
+//const arabicBot = (sender, message, longitude, latitude) => {};
 
 // receiver_id: رقم صاحب المتجر / رقم البوت *-----------* sender_id: رقم المرسل / الزبون
 
@@ -113,23 +114,35 @@ const bot = async (
   console.log(storObj);
   let phase = await getUserVars(sender, "phase");
   console.log(`phase: ${phase}`);
+  let language = await getUserVars(sender, "language")
 
   if (message == "0" || message == "العودة للرئيسية") {
     delUserVars(sender, "branch");
     delUserVars(sender, "cats");
     delUserVars(sender, "subcategories");
     delUserVars(sender, "products");
+    delUserVars(sender, "language");
+    
 
     sendMsg.welcomeLangPhase(sender_id, storeEN_Name, storeAR_Name, username);
     setUserVars(sender, "phase", "1");
   } else if (message == "*") {
     //TODO: المستخدم بحاجة للمساعدة قم بارسال اشعار للداشبورد
-  } else {
+  }
+  else if (language == "en"){
+    englishBot(sender_id,
+      receiver_id,
+      message,
+      longitude,
+      latitude)
+  }
+  
+  else {
     switch (phase) {
       case "0":
       case null:
       case undefined:
-        //*DONE *** رسالة الترحيب تحتوي على اسم المتجر بالعربي والانجليزي واختيار اللغة
+        // رسالة الترحيب تحتوي على اسم المتجر بالعربي والانجليزي واختيار اللغة
         sendMsg.welcomeLangPhase(
           sender_id,
           storeEN_Name,
@@ -145,11 +158,17 @@ const bot = async (
         if (message === "العربية") {
           setUserVars(sender, "language", "ar");
           //  arabicBot(sender_id, message,  longitude, latitude);
-          sendMsg.locationPhaseAR(sender_id);
+          sendMsg.locationPhase(sender_id);
           setUserVars(sender, "phase", "2");
         } else if (message === "English") {
           setUserVars(sender, "language", "en");
-          //  englishBot(sender_id, message,  longitude, latitude);
+          englishBot(sender_id,
+            receiver_id,
+            message,
+            longitude,
+            latitude)
+            break;
+          
         } else {
           //Send ERROR message : If the message sent is wrong
           sendMsg.errorMsg(sender_id);
@@ -174,7 +193,7 @@ const bot = async (
               "عذرا لا نقدم خدمات ضمن موقعك الجغرافي",
               sender_id
             );
-            sendMsg.locationPhaseAR(sender_id);
+            sendMsg.locationPhase(sender_id);
           } else {
             sendMsg.nearestLocation(sender_id, nearestBranch.name_ar);
             setUserVars(sender, "phase", "3");
@@ -196,7 +215,7 @@ const bot = async (
           sendMsg.categoryPhase(sender_id, "" + categories(categoryObj));
         } else if (message === "اختر فرع اخر") {
           delUserVars(sender, "branch"); // احذف الفرع الموجود
-          sendMsg.locationPhaseAR(sender_id);
+          sendMsg.locationPhase(sender_id);
           setUserVars(sender, "phase", "2");
         } else {
           sendMsg.errorMsg(sender_id);
