@@ -26,7 +26,7 @@ Category.belongsTo(Category, {
 
 // function get categories & subCategories
 
-const getCategories = async (sender, store_id) => {
+const getCategories = async (sender, store_id, type) => {
   const cats = await redis.getUserVars(sender, "cats");
   if (cats) {
     console.log("from cache");
@@ -36,6 +36,7 @@ const getCategories = async (sender, store_id) => {
       {
         where: {
           store_id: store_id,
+          type: type,
         },
         include: {
           model: Category,
@@ -43,9 +44,9 @@ const getCategories = async (sender, store_id) => {
           include: {
             model: Category,
             as: "parent",
-          }, 
+          },
         },
-/*         include: [
+        /*         include: [
           {
             model: Category,
             as: "subCategories",

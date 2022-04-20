@@ -11,7 +11,7 @@ Store.hasMany(Store, {
   as: "branchs",
   foreignKey: "parent_id",
   targetKey: "id",
-}); 
+});
 
 Store.belongsTo(Store, {
   as: "parent",
@@ -33,9 +33,9 @@ const storeDetails = async (sender, phone) => {
       {
         where: {
           phone: phone,
-          parent_id: null
+          parent_id: null,
         },
-/*         include: {
+        /*         include: {
           model: Store,
           as: "branchs",
           include: {
@@ -56,11 +56,7 @@ const storeDetails = async (sender, phone) => {
         ],
       }
     );
-    await redis.setUserVars(
-      sender,
-      "store",
-      JSON.stringify(store)
-    );
+    await redis.setUserVars(sender, "store", JSON.stringify(store));
     return store;
   }
 };
@@ -113,20 +109,16 @@ const getNearestBranch = async (sender, phone, lat, lng) => {
   if (branch) {
     return JSON.parse(branch);
   } else {
-  const count = await branchsCount(phone, lat, lng);
-  const branchs = await getAllBranchs(phone);
-  //return branchs;
-  if (count > 0) {
-    const nearest = await getNearestLocation({ lat, lng }, branchs);
-    await redis.setUserVars(
-      sender,
-      "branch",
-      JSON.stringify(nearest)
-    );
-    return nearest;
-  } else {
-    return false;
+    const count = await branchsCount(phone, lat, lng);
+    const branchs = await getAllBranchs(phone);
+    //return branchs;
+    if (count > 0) {
+      const nearest = await getNearestLocation({ lat, lng }, branchs);
+      await redis.setUserVars(sender, "branch", JSON.stringify(nearest));
+      return nearest;
+    } else {
+      return false;
+    }
   }
-}
 };
-module.exports = { storeDetails, getNearestBranch };
+module.exports = { storeDetails, getNearestBranch, getAllBranchs };
