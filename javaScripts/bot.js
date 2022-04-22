@@ -85,13 +85,15 @@ const bot = async (
   let phase = await getUserVars(sender, "phase");
   console.log(`phase: ${phase}`);
   let language = await getUserVars(sender, "language")
-
+ 
   if (message == "0" || message == "العودة للرئيسية") {
     delUserVars(sender, "branch");
     delUserVars(sender, "cats");
     delUserVars(sender, "subcategories");
     delUserVars(sender, "products");
     delUserVars(sender, "language");
+    delUserVars(sender, "allbranches"); 
+
     
 
     sendMsg.welcomeLangPhase(sender_id, storeEN_Name, storeAR_Name, username);
@@ -155,7 +157,7 @@ const bot = async (
             latitude,
             longitude
           );
-          //getAllBranches(sender_id, store_id, storObj);
+
           if (!nearestBranch) {
             setUserVars(sender, "phase", "2");
             sendMsg.customMessage(
@@ -179,6 +181,7 @@ const bot = async (
           sendMsg.categoryPhase(sender_id, "" + categories(categoryObj));
         } else if (message === "اختر فرع اخر") { 
           delUserVars(sender, "branch"); // احذف الفرع الموجود
+          
           //احضر الفروع كلها من الداتابيز
           const branchObj = JSON.parse(
             JSON.stringify(await storeController.getAllBranchs(receiver_id))
@@ -190,7 +193,27 @@ const bot = async (
         } else {
           sendMsg.errorMsg(sender_id);
         }
-        break; 
+        break;
+      
+      case "3.1":
+        if (isNaN(message) == true) {
+          sendMsg.errorMsg(sender_id);
+          return;
+        }
+        let indexBranches = message - 1;
+        let branchesObj = JSON.parse(await getUserVars(sender, "allbranches"));
+        let selectedBranch = branchesObj[indexBranches];
+        console.log("branchesList:" , selectedBranch)
+
+        
+        //TODO: Convert this message to template with 3 buttons:  ابدأ الطلب, ابدأ الحجز , العودة للرئيسية  
+        sendMsg.customMessage(`اهلا بك في  ${ selectedBranch.name_ar}`,sender_id ) 
+        //تخزين الفرع المختار مكان المتجر
+        setUserVars(sender,"store",JSON.stringify(selectedBranch)); 
+        setUserVars(sender, "phase", "3");
+
+        break;
+        /********************************************* */
 
       case "4":
         if (isNaN(message) == true) {
@@ -209,7 +232,7 @@ const bot = async (
           let subCategoriesCount = category.subCategories.length;
 
           if (subCategoriesCount > 0) {
-            console.log("*********v*************", category);
+            console.log("********* Category *************", category);
             setUserVars(sender, "phase", "5");
             sendMsg.subCategoryPhase(
               sender_id,
