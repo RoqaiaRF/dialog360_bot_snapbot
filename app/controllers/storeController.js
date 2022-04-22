@@ -50,11 +50,11 @@ const storeDetails = async (sender, phone) => {
           "name_en",
           "lat",
           "lng",
-          "parent_id",
+          "parent_id", 
           "phone",
           "type_id",
         ],
-      }
+      } 
     );
     await redis.setUserVars(sender, "store", JSON.stringify(store));
     return store;
@@ -62,7 +62,7 @@ const storeDetails = async (sender, phone) => {
 };
 // جلب جميع الفروع عن طريق رقم الهاتف
 const getAllBranchs = async (phone) => {
-  const branches = await redis.getUserVars(sender, "branches");
+  const branches = await redis.getUserVars(sender, "allbranches");
   if (branches) {
     console.log("from cache");
     return JSON.parse(branches);
@@ -86,7 +86,7 @@ const getAllBranchs = async (phone) => {
         ],
       }
     );
-    await redis.setUserVars(sender, "branches", JSON.stringify(list));
+    await redis.setUserVars(sender, "allbranches", JSON.stringify(list));
     console.log("from db");
     return list;
   }
