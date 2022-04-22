@@ -37,6 +37,21 @@ const nearestLocation = (senderID, storeName) => {
     senderID
   );
 }
+
+
+/*----------------------------------------*/
+//^ Phase #2.1 Choose one of these branches
+
+const getAllBranchesPhase = async (senderID, branches) => {
+  let message = `اختر احد هذه الفروع التالية: 
+`;
+  sendTextMsg(` ${message} ${branches}
+  ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
+  للعودة للرئيسية ارسل 0`, senderID);
+};
+
+
+
 /*----------------------------------------*/
 //  Expected Outputs: the category number: 1, 2 ,3,...
 //^ Phase #3 send main category and request to choose the right category by sending category_index
@@ -88,11 +103,7 @@ const showProduct = (senderID, product) => {
   الوصف: ${product.description_ar}
   السعر: ${product.price}
   `;
-  // sendTextMsg(` ${message}
-  // ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
-  // للاضافة للسلة ارسل 1
-  // للعودة للمرحلة السابقة ارسل 00
-  // للعودة للرئيسية ارسل 0`, senderID);
+
   sendMedia(` ${message}
   ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
   للاضافة للسلة ارسل 1
@@ -121,5 +132,6 @@ module.exports = {
   customMessage,
   subCategoryPhase,
   featuresPhase,
-  showProduct
+  showProduct, 
+  getAllBranchesPhase
 }

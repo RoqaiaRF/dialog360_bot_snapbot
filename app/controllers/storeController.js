@@ -62,25 +62,35 @@ const storeDetails = async (sender, phone) => {
 };
 // جلب جميع الفروع عن طريق رقم الهاتف
 const getAllBranchs = async (phone) => {
-  const branchs = await Store.findAll(
-    {
-      where: {
-        phone: phone,
+  const branches = await redis.getUserVars(sender, "branches");
+  if (branches) {
+    console.log("from cache");
+    return JSON.parse(branches);
+  } 
+  else{
+    let list = await Store.findAll(
+      {
+        where: {
+          phone: phone,
+        },
       },
-    },
-    {
-      attributes: [
-        "name_ar",
-        "name_en",
-        "lat",
-        "lng",
-        "parent_id",
-        "phone",
-        "type",
-      ],
-    }
-  );
-  return branchs;
+      {
+        attributes: [
+          "name_ar",
+          "name_en",
+          "lat",
+          "lng",
+          "parent_id",
+          "phone",
+          "type",
+        ],
+      }
+    );
+    await redis.setUserVars(sender, "branches", JSON.stringify(list));
+    console.log("from db");
+    return list;
+  }
+
 };
 
 // جلب عدد الفروع بحسب الهاتف واحدثيات المسخدم

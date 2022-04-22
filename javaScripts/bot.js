@@ -41,47 +41,17 @@ const products = (productsObj) => {
 };
 
 // get all branches to this store
+const branches = (branchesObj) => {
+  let msg = "";
+  branchesObj.forEach((element, index) => {
+    msg += `(*${index + 1}*) ${element.name_ar}
+ `;
+  });
+  return msg;
+};
 
-// const getAllBranches = (sender, store_id, storObj) => {
-//   //if there is no branches to this store return the store
-//   if (
-//     (storObj.parent_id === null && storObj.branches === null) ||
-//     storObj.branches === undefined
-//   ) {
-
-//     sendMsg.nearestLocation(sender, storObj.name_ar);
-//   } else {
-//     console.log("storObj.branches: ");
-//     console.log(storObj.branches);
-//   }
-// };
-
-//set data to the redis session
-/* const setUserVars = async (sender, variable, value) => {
-  await client.setex(`${sender}:${variable}`, expiration_time, value);
-}; */
-
-//get the stored data from the redis session
-/* const getUserVars = async (sender, variable) => {
-  const myKeyValue = await client.get(`${sender}:${variable}`);
-  return myKeyValue;
-}; */
-
-//delete the stored data from the redis session
-/* const delUserVars = async (sender, variable) => {
-  await client.del(`${sender}:${variable}`);
-}; */
-// delete all data from all databases in redis
-/* const deleteAllKeys = async () => {
-  await client.flushall();
-}; */
-
-//TODO: English bot
-//const englishBot = (sender, message,  longitude, latitude) => {};
-
-//const arabicBot = (sender, message, longitude, latitude) => {};
-
-// receiver_id: رقم صاحب المتجر / رقم البوت *-----------* sender_id: رقم المرسل / الزبون
+// receiver_id: رقم صاحب المتجر / رقم البوت
+// sender_id: رقم المرسل / الزبون
 
 const bot = async (
   sender_id,
@@ -95,16 +65,16 @@ const bot = async (
   receiver_id = receiver_id.replace("whatsapp:+141", "");
   sender = sender_id.replace("whatsapp:+962", "");
   //TODO: UNCOMMENT THIS
-  receiver_id = receiver_id.replace("whatsapp:+965", "");
+  //receiver_id = receiver_id.replace("whatsapp:+965", "");
   // sender = sender_id.replace("whatsapp:+965", "");
 
   console.log(receiver_id);
   const storObj = JSON.parse(
-    JSON.stringify(await storeController.storeDetails(sender_id, receiver_id))
+    JSON.stringify(await storeController.storeDetails(sender, receiver_id)) //هذه خليها سيندر وليس سندر اي دي لانه احنا مش مخزنين كود الدولة لهيك لازم نحذفه
   );
   console.log(storObj);
   console.log(sender, receiver_id);
-
+ 
   const storeEN_Name = storObj.name_en; // اسم المتجر بالانجليزي
   const storeAR_Name = storObj.name_ar; // اسم المتجر في العربي
   const store_id = storObj.id; // we need it to get the categories
@@ -157,7 +127,6 @@ const bot = async (
       case "1":
         if (message === "العربية") {
           setUserVars(sender, "language", "ar");
-          //  arabicBot(sender_id, message,  longitude, latitude);
           sendMsg.locationPhase(sender_id);
           setUserVars(sender, "phase", "2");
         } else if (message === "English") {
@@ -201,26 +170,27 @@ const bot = async (
         }
         break;
       case "3":
-        // const branch = JSON.parse(await getUserVars(sender, "branch"));
-        // if (branch.parent == null) {
-        //   store_id = branch.id;
-        // } else {
-        //   store_id = branch.parent_id;
-        // }
+      
         if (message == "ابدأ الطلب") {
           const categoryObj = JSON.parse(
             JSON.stringify(await getCategories(sender, store_id))
           );
           setUserVars(sender, "phase", "4");
           sendMsg.categoryPhase(sender_id, "" + categories(categoryObj));
-        } else if (message === "اختر فرع اخر") {
+        } else if (message === "اختر فرع اخر") { 
           delUserVars(sender, "branch"); // احذف الفرع الموجود
-          sendMsg.locationPhase(sender_id);
-          setUserVars(sender, "phase", "2");
+          //احضر الفروع كلها من الداتابيز
+          const branchObj = JSON.parse(
+            JSON.stringify(await storeController.getAllBranchs(receiver_id))
+          );
+         sendMsg.getAllBranchesPhase(sender_id ,""+ branches(branchObj));
+         console.log(branches(branchObj))
+         setUserVars(sender, "phase", "3.1");
+
         } else {
           sendMsg.errorMsg(sender_id);
         }
-        break;
+        break; 
 
       case "4":
         if (isNaN(message) == true) {

@@ -55,7 +55,7 @@ receiver_id = receiver_id.replace("whatsapp:+965", "");
 
 console.log(receiver_id);
 const storObj = JSON.parse(
-  JSON.stringify(await storeController.storeDetails(sender_id, receiver_id))
+  JSON.stringify(await storeController.storeDetails(sender, receiver_id))
 );
 console.log(storObj);
 console.log(sender, receiver_id);
