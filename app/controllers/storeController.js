@@ -26,6 +26,7 @@ Store.hasMany(Region, {
 // find store with phone number with branchs
 const storeDetails = async (sender, phone) => {
   const store = await redis.getUserVars(sender, "store");
+  
   if (store) {
     return JSON.parse(store);
   } else {

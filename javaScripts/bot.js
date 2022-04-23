@@ -74,12 +74,13 @@ const bot = async (
   );
   console.log(storObj);
   console.log(sender, receiver_id);
- 
+
   const storeEN_Name = storObj.name_en; // اسم المتجر بالانجليزي
   const storeAR_Name = storObj.name_ar; // اسم المتجر في العربي
-  const store_id = storObj.id; // we need it to get the categories
-  const parent_id = storObj.parent_id;
 
+  setUserVars(sender, "store_id", storObj.id);
+  const store_id = await getUserVars(sender, "store_id"); // we need it to get the categories
+ console.log( "store_id", store_id);
   // console.log(`store_id: ${store_id}`);
   console.log(storObj);
   let phase = await getUserVars(sender, "phase");
@@ -195,7 +196,7 @@ const bot = async (
         }
         break;
       
-      case "3.1":
+      case "3.1": 
         if (isNaN(message) == true) {
           sendMsg.errorMsg(sender_id);
           return;
@@ -205,16 +206,22 @@ const bot = async (
         let selectedBranch = branchesObj[indexBranches];
         console.log("branchesList:" , selectedBranch)
 
-        
+        if (message > branchesObj.length || message <= 0) {
+          // send error msg
+          sendMsg.errorMsg(sender_id);
+        } else{
+            
         //TODO: Convert this message to template with 3 buttons:  ابدأ الطلب, ابدأ الحجز , العودة للرئيسية  
         sendMsg.customMessage(`اهلا بك في  ${ selectedBranch.name_ar}`,sender_id ) 
         //تخزين الفرع المختار مكان المتجر
         setUserVars(sender,"store",JSON.stringify(selectedBranch)); 
         setUserVars(sender, "phase", "3");
 
+        }
+      
         break;
-        /********************************************* */
 
+        
       case "4":
         if (isNaN(message) == true) {
           sendMsg.errorMsg(sender_id);
