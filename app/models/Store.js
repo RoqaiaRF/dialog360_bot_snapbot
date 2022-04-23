@@ -19,11 +19,13 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
       },
 
-
       pay_when_receiving: {
         type: Sequelize.BOOLEAN,
       },
       reservations_policy: {
+        type: Sequelize.BOOLEAN,
+      },
+      pay_after_receiving:{
         type: Sequelize.BOOLEAN,
       },
       is_store: {
