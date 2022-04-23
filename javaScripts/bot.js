@@ -10,7 +10,6 @@ const {
 } = require("../database/redis");
 const englishBot = require("../javaScripts/englishBot")
 let expiration_time = 7200; // مدة صلاحية انتهاء المفاتيح في ريديس تساوي ساعتان
-let cart = {}
 //Print Categories
 
 const categories = (categoriesObj) => {
@@ -78,9 +77,9 @@ const bot = async (
   const storeEN_Name = storObj.name_en; // اسم المتجر بالانجليزي
   const storeAR_Name = storObj.name_ar; // اسم المتجر في العربي
 
-  setUserVars(sender, "store_id", storObj.id);
-  const store_id = await getUserVars(sender, "store_id"); // we need it to get the categories
-  console.log("store_id", store_id);
+//  setUserVars(sender, "store_id", storObj.id);
+  //const store_id = await getUserVars(sender, "store_id"); // we need it to get the categories
+  //console.log("store_id", store_id);
   // console.log(`store_id: ${store_id}`);
   console.log(storObj);
   let phase = await getUserVars(sender, "phase");
@@ -177,7 +176,7 @@ const bot = async (
 
         if (message == "ابدأ الطلب") {
           const categoryObj = JSON.parse(
-            JSON.stringify(await getCategories(sender, store_id, 1))
+            JSON.stringify(await getCategories(sender, storObj.id, 1))
           );
           setUserVars(sender, "phase", "4");
           sendMsg.categoryPhase(sender_id, "" + categories(categoryObj));
@@ -195,7 +194,7 @@ const bot = async (
         }
         else  if (message == "ابدأ الحجز") {
           const categoryObj = JSON.parse(
-            JSON.stringify(await getCategories(sender, store_id, 0))
+            JSON.stringify(await getCategories(sender, storObj.id, 0))
           );
           setUserVars(sender, "phase", "4");
           sendMsg.categoryPhase(sender_id, "" + categories(categoryObj));
@@ -223,13 +222,10 @@ const bot = async (
           //TODO: Convert this message to template with 3 buttons:  ابدأ الطلب, ابدأ الحجز , العودة للرئيسية  
           sendMsg.customMessage(`اهلا بك في  ${selectedBranch.name_ar}`, sender_id)
           //تخزين الفرع المختار مكان المتجر
-          setUserVars(sender, "store", JSON.stringify(selectedBranch));
+          setUserVars(sender, "branch", JSON.stringify(selectedBranch));
           setUserVars(sender, "phase", "3");
-
         }
-
         break;
-
 
       case "4":
         if (isNaN(message) == true) {
