@@ -10,7 +10,7 @@ const {
 } = require("../database/redis");
 const englishBot = require("../javaScripts/englishBot")
 let expiration_time = 7200; // مدة صلاحية انتهاء المفاتيح في ريديس تساوي ساعتان
-
+let cart = {}
 //Print Categories
 
 const categories = (categoriesObj) => {
@@ -80,36 +80,36 @@ const bot = async (
 
   setUserVars(sender, "store_id", storObj.id);
   const store_id = await getUserVars(sender, "store_id"); // we need it to get the categories
- console.log( "store_id", store_id);
+  console.log("store_id", store_id);
   // console.log(`store_id: ${store_id}`);
   console.log(storObj);
   let phase = await getUserVars(sender, "phase");
   console.log(`phase: ${phase}`);
   let language = await getUserVars(sender, "language")
- 
+
   if (message == "0" || message == "العودة للرئيسية") {
     delUserVars(sender, "branch");
     delUserVars(sender, "cats");
     delUserVars(sender, "subcategories");
     delUserVars(sender, "products");
     delUserVars(sender, "language");
-    delUserVars(sender, "allbranches"); 
+    delUserVars(sender, "allbranches");
 
-    
 
-    sendMsg.welcomeLangPhase(sender_id, storeEN_Name, storeAR_Name, username);
+
+    sendMsg.welcomeLangPhase(sender_id, storeEN_Name, storeAR_Name, username, storObj);
     setUserVars(sender, "phase", "1");
   } else if (message == "*") {
     //TODO: المستخدم بحاجة للمساعدة قم بارسال اشعار للداشبورد
   }
-  else if (language == "en"){
+  else if (language == "en") {
     englishBot(sender_id,
       receiver_id,
       message,
       longitude,
       latitude)
   }
-  
+
   else {
     switch (phase) {
       case "0":
@@ -120,7 +120,8 @@ const bot = async (
           sender_id,
           storeEN_Name,
           storeAR_Name,
-          username
+          username,
+          storObj
         );
 
         //Store phase # 1 EX: (key, value) => ( whatsapp:+96563336437 , 1 )
@@ -139,8 +140,8 @@ const bot = async (
             message,
             longitude,
             latitude)
-            break;
-          
+          break;
+
         } else {
           //Send ERROR message : If the message sent is wrong
           sendMsg.errorMsg(sender_id);
@@ -167,36 +168,44 @@ const bot = async (
             );
             sendMsg.locationPhase(sender_id);
           } else {
-            sendMsg.nearestLocation(sender_id, nearestBranch.name_ar);
+            sendMsg.nearestLocation(sender_id, nearestBranch.name_ar, storObj);
             setUserVars(sender, "phase", "3");
           }
         }
         break;
       case "3":
-      
+
         if (message == "ابدأ الطلب") {
           const categoryObj = JSON.parse(
-            JSON.stringify(await getCategories(sender, store_id))
+            JSON.stringify(await getCategories(sender, store_id, 1))
           );
           setUserVars(sender, "phase", "4");
           sendMsg.categoryPhase(sender_id, "" + categories(categoryObj));
-        } else if (message === "اختر فرع اخر") { 
+        } else if (message === "اختر فرع اخر") {
           delUserVars(sender, "branch"); // احذف الفرع الموجود
-          
+
           //احضر الفروع كلها من الداتابيز
           const branchObj = JSON.parse(
             JSON.stringify(await storeController.getAllBranchs(receiver_id))
           );
-         sendMsg.getAllBranchesPhase(sender_id ,""+ branches(branchObj));
-         console.log(branches(branchObj))
-         setUserVars(sender, "phase", "3.1");
+          sendMsg.getAllBranchesPhase(sender_id, "" + branches(branchObj));
+          console.log(branches(branchObj))
+          setUserVars(sender, "phase", "3.1");
 
-        } else {
+        }
+        else  if (message == "ابدأ الحجز") {
+          const categoryObj = JSON.parse(
+            JSON.stringify(await getCategories(sender, store_id, 0))
+          );
+          setUserVars(sender, "phase", "4");
+          sendMsg.categoryPhase(sender_id, "" + categories(categoryObj));
+        }
+         else {
           sendMsg.errorMsg(sender_id);
         }
         break;
-      
-      case "3.1": 
+
+      case "3.1":
         if (isNaN(message) == true) {
           sendMsg.errorMsg(sender_id);
           return;
@@ -204,24 +213,24 @@ const bot = async (
         let indexBranches = message - 1;
         let branchesObj = JSON.parse(await getUserVars(sender, "allbranches"));
         let selectedBranch = branchesObj[indexBranches];
-        console.log("branchesList:" , selectedBranch)
+        console.log("branchesList:", selectedBranch)
 
         if (message > branchesObj.length || message <= 0) {
           // send error msg
           sendMsg.errorMsg(sender_id);
-        } else{
-            
-        //TODO: Convert this message to template with 3 buttons:  ابدأ الطلب, ابدأ الحجز , العودة للرئيسية  
-        sendMsg.customMessage(`اهلا بك في  ${ selectedBranch.name_ar}`,sender_id ) 
-        //تخزين الفرع المختار مكان المتجر
-        setUserVars(sender,"store",JSON.stringify(selectedBranch)); 
-        setUserVars(sender, "phase", "3");
+        } else {
+
+          //TODO: Convert this message to template with 3 buttons:  ابدأ الطلب, ابدأ الحجز , العودة للرئيسية  
+          sendMsg.customMessage(`اهلا بك في  ${selectedBranch.name_ar}`, sender_id)
+          //تخزين الفرع المختار مكان المتجر
+          setUserVars(sender, "store", JSON.stringify(selectedBranch));
+          setUserVars(sender, "phase", "3");
 
         }
-      
+
         break;
 
-        
+
       case "4":
         if (isNaN(message) == true) {
           sendMsg.errorMsg(sender_id);
@@ -315,7 +324,7 @@ const bot = async (
         }
         break;
 
-      case 7: // عرض الخدمة الواحدة او المنتج
+      case "7": // عرض الخدمة الواحدة او المنتج
         if (isNaN(message) === true) {
           // send error msg
           sendMsg.errorMsg(sender_id);
@@ -324,20 +333,43 @@ const bot = async (
         let productObj7 = JSON.parse(await getUserVars(sender, "products"));
         let length7 = productObj7.length;
 
-        if (message == "00") {
-          delUserVars(sender, "subcategories");
-          delUserVars(sender, "products");
+        if (message === "00") {
           setUserVars(sender, "phase", "6");
-          sendMsg.productPhase(sender_id, products(productsObj7));
+          sendMsg.productPhase(sender_id, products(productObj7));
         } else if (message <= 0 || message > length7) {
           // send error msg
           sendMsg.errorMsg(sender_id);
-        } else {
+        }
+        else if (message === "أضف للسلة"){
+          setUserVars(sender, "phase", "8");
+          sendMsg.quantityProductPhase (sender_id);
+          }
+         else {
           //عرض المنتج الواحد
           let productIndex = message - 1;
           let product = productObj7[productIndex];
+          setUserVars(sender, "productDetails", product );
           sendMsg.showProduct(sender_id, product);
         }
+        break;
+
+        case "8":
+          if (isNaN(message) === true) {
+            // send error msg
+            sendMsg.errorMsg(sender_id);
+            return;
+          }
+          //TODO: Check the maximum quantity of this product
+          const productDetails = await getUserVars(sender, "products")
+          const quantity= productDetails.quantity;
+          if(parseInt(message) > parseInt(quantity)){
+            sendMsg.errorMsg(sender_id);
+          }
+          else { 
+
+          }
+          
+          break;
     }
   }
 };

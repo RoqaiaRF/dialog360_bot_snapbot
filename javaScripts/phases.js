@@ -1,10 +1,11 @@
 const sendTextMsg = require("./sendMsgFunctions");
 const sendMedia = require("./sendMedia");
-
+const isReservation_Pay = require("../app/controllers/isReservation_PayController")
 // Expected Outputs: English, العربية
 //^ Phase #1 welcome and choose Language
 /*----------------------------------------*/
 const welcomeLangPhase = (senderID, storeEN_Name, storeAR_Name, username) => {
+  
   sendTextMsg(
     `Welcome ${username} at ${storeEN_Name}... 
                 please click on the right option
@@ -31,11 +32,24 @@ const locationPhase = (senderID) => {
   );
 }
 
-const nearestLocation = (senderID, storeName) => {
-  sendTextMsg(
+const nearestLocation = (senderID, storeName, storObj) => {
+  
+  const _isReservation_Pay = isReservation_Pay(storObj);
+  if (_isReservation_Pay === "onlyPay" ) {   sendTextMsg(
     `أقرب فرع لك هو ${storeName} ومتاح لخدمتك الان`,
     senderID
-  );
+  );}
+  //TODO: عمل تيمبليت لها فيه الجدز فقط
+
+  else if  (_isReservation_Pay === "onlyReservation" ) {  sendTextMsg(
+    `أقرب فرع لك هو ${storeName} ومتاح لخدمتك الان`,
+    senderID
+  );} 
+  //TODO:  عمل تيمبليت له فيه الحجز والطلب
+  else if  (_isReservation_Pay === "Pay_Reservation_together" ) {   sendTextMsg(
+    `أقرب فرع لك هو ${storeName} ومتاح لخدمتك الان`,
+    senderID
+  );} 
 }
 
 
@@ -110,6 +124,10 @@ const showProduct = (senderID, product) => {
   للعودة للمرحلة السابقة ارسل 00
   للعودة للرئيسية ارسل 0`,senderID, "https://stores-logos.fra1.digitaloceanspaces.com/products/"+product.image);
 }  
+const quantityProductPhase = (senderID)=>{
+  sendTextMsg(`أدخل الكمية المناسبة بالارقام الانجليزية 1, 2, ...`, senderID);
+
+}
 
 const errorMsg = (senderID) => {
   sendTextMsg(`خطأ في الارسال`, senderID);
@@ -133,5 +151,6 @@ module.exports = {
   subCategoryPhase,
   featuresPhase,
   showProduct, 
-  getAllBranchesPhase
+  getAllBranchesPhase,
+  quantityProductPhase
 }
