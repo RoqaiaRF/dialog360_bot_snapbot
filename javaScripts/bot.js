@@ -347,6 +347,7 @@ const bot = async (
           sendMsg.errorMsg(sender_id);
           return;
         }
+        
         // Check the maximum quantity of this product
         let productDetails = JSON.parse( await getUserVars(sender, "productDetails"));
         const quantity = productDetails.quantity;
