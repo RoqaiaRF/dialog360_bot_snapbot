@@ -16,7 +16,7 @@ let expiration_time = 7200; // مدة صلاحية انتهاء المفاتيح
 const categories = (categoriesObj) => {
   let msg = "";
   categoriesObj.forEach((element, index) => {
-    msg += `(*${index + 1}*) ${element.name_ar}
+    msg += `( *${index + 1}* ) ${element.name_ar}
  `;
   });
   return msg;
@@ -25,7 +25,7 @@ const categories = (categoriesObj) => {
 const subCategoriess = (subCategoriesObj) => {
   let msg = "";
   subCategoriesObj.forEach((element, index) => {
-    msg += `(*${index + 1}*) ${element.name_ar}
+    msg += `( *${index + 1}* ) ${element.name_ar}
  `;
   });
   return msg;
@@ -34,7 +34,7 @@ const subCategoriess = (subCategoriesObj) => {
 const products = (productsObj) => {
   let msg = "";
   productsObj.forEach((element, index) => {
-    msg += `(*${index + 1}*) ${element.name_ar}
+    msg += `( *${index + 1}* ) ${element.name_ar}
  `;
   });
   return msg;
@@ -44,7 +44,17 @@ const products = (productsObj) => {
 const branches = (branchesObj) => {
   let msg = "";
   branchesObj.forEach((element, index) => {
-    msg += `(*${index + 1}*) ${element.name_ar}
+    msg += `( *${index + 1}* ) ${element.name_ar}
+ `;
+  });
+  return msg;
+}
+
+// get the purchases
+const showPurchases =(purchasesObj) => {
+  let msg = "";
+   purchasesObj.forEach((element, index) => {
+    msg += ` *${index + 1}* . ${element.name_ar},  عدد:  ${element.quantity}
  `;
   });
   return msg;
@@ -72,7 +82,7 @@ const bot = async (
   const storObj = JSON.parse(
     JSON.stringify(await storeController.storeDetails(sender, receiver_id)) //هذه خليها سيندر وليس سندر اي دي لانه احنا مش مخزنين كود الدولة لهيك لازم نحذفه
   );
-  const cart = cartController.newCart(sender, "25"); // TODO add real tax
+  let cart = cartController.newCart(sender, 25); // TODO add real tax
   console.log(storObj);
   console.log(sender, receiver_id);
 
@@ -95,6 +105,8 @@ const bot = async (
     delUserVars(sender, "products");
     delUserVars(sender, "language");
     delUserVars(sender, "allbranches");
+    delUserVars(sender, "productDetails");
+
 
     sendMsg.welcomeLangPhase(
       sender_id,
@@ -260,11 +272,10 @@ const bot = async (
           await getUserVars(sender, "subcategories")
         );
         let categoryObj5 = JSON.parse(await getUserVars(sender, "cats"));
-        let length5 = subCategories.length;
+        let length5;
 
         if (message === "00") {
           delUserVars(sender, "subcategories");
-
           sendMsg.categoryPhase(sender_id, "" + categories(categoryObj5));
         } else if (
           isNaN(message) === true ||
@@ -309,33 +320,24 @@ const bot = async (
           let productIndex6 = message - 1;
           let product6 = productObj6[productIndex6];
           sendMsg.showProduct(sender_id, product6);
+          setUserVars(sender, "productDetails", JSON.stringify(product6));
+          console.log("################################", product6);
         }
         break;
 
       case "7": // عرض الخدمة الواحدة او المنتج
-        if (isNaN(message) === true) {
-          // send error msg
-          sendMsg.errorMsg(sender_id);
-          return;
-        }
         let productObj7 = JSON.parse(await getUserVars(sender, "products"));
-        let length7 = productObj7.length;
-
         if (message === "00") {
           setUserVars(sender, "phase", "6");
           sendMsg.productPhase(sender_id, products(productObj7));
-        } else if (message <= 0 || message > length7) {
-          // send error msg
-          sendMsg.errorMsg(sender_id);
-        } else if (message === "أضف للسلة") {
+        }
+        //لا تتم الاضافة للسلة بعد , يجب تحديد الكمية وبعدها يضيف للسلة
+        else if (message == "اضافة للسلة") {
           setUserVars(sender, "phase", "8");
           sendMsg.quantityProductPhase(sender_id);
+          console.log("اضف للسلة يا بني !");
         } else {
-          //عرض المنتج الواحد
-          let productIndex = message - 1;
-          let product = productObj7[productIndex];
-          setUserVars(sender, "productDetails", product);
-          sendMsg.showProduct(sender_id, product);
+          sendMsg.errorMsg(sender_id);
         }
         break;
 
@@ -345,15 +347,92 @@ const bot = async (
           sendMsg.errorMsg(sender_id);
           return;
         }
-        //TODO: Check the maximum quantity of this product
-        const productDetails = await getUserVars(sender, "products");
+        // Check the maximum quantity of this product
+        let productDetails = JSON.parse( await getUserVars(sender, "productDetails"));
         const quantity = productDetails.quantity;
-        if (parseInt(message) > parseInt(quantity)) {
-          sendMsg.errorMsg(sender_id);
+        if (parseInt(message) > parseInt(quantity) || parseInt(message) <= 0) {
+          sendMsg.customMessage(`الكمية خاطئة! ادخل كمية اقل من ${quantity}`,sender_id);
         } else {
+          // اضافة الكمية التي اختارها المستخدم لمعلومات المنتج
+          productDetails.quantity = parseInt(message);
+          await cartController.addToCart(sender, productDetails);
+          let newCart = JSON.parse( await getUserVars(sender, "cart"));
+          const purchases = showPurchases(newCart.items) + ""
+          console.log("----- newCart Details -------", newCart)
+          console.log("----- purchases -------", purchases)
+          setUserVars(sender, "phase", "9");
+
+          sendMsg.showCart(sender_id, purchases , newCart.price, newCart.tax, newCart.total);
+
         }
 
         break;
+      case "9": // cart
+        let newCart9 = JSON.parse( await getUserVars(sender, "cart"));
+        const purchases9 = showPurchases(newCart9.items) + "";
+
+        if (message === "الدفع"){
+          //TODO: عرض السلة كاملة مع رابط للدفع
+        }
+        else if (message === "حدد المنتج لحذفه"){
+          sendMsg.customMessage( `حدد رقم المنتج لحذفه: 
+${purchases9} `,sender_id)
+          setUserVars(sender, "phase", "9.1"); 
+        }
+        else if (message === "اضافة منتجات"){
+          setUserVars(sender, "phase", "6");
+          let productObj7 = JSON.parse(await getUserVars(sender, "products"));
+          sendMsg.productPhase(sender_id, products(productObj7)); 
+        }
+        else { 
+          sendMsg.errorMsg(sender_id);
+
+        }
+        
+      break;
+
+      case "9.1":
+
+        let productCart = JSON.parse(
+          await getUserVars(sender, "cart")
+        );
+        productCart = productCart.items
+        const length9_1 = productCart.length;
+          console.log("---------product Cart---------",productCart)
+        if (
+          isNaN(message) === true ||
+          message > length9_1 ||
+          message <= 0
+        ) {
+          // send error msg
+          sendMsg.errorMsg(sender_id); 
+        } else  {
+          // Delete product from cart
+
+          let productCartIndex = message - 1; // index of product in cart
+          const deletedItem = productCart[productCartIndex];
+
+          const result = cartController.removeFromCart(sender, deletedItem)
+          console.log("--------deletedItem_ID ---------: ",deletedItem)
+          console.log("--------productCart ---------: ",productCart)
+          console.log("--------productCartIndex ---------: ",productCartIndex)
+
+          if (result) {
+            sendMsg.customMessage("تم حذف المنتج من السلة ارسل عرض السلة",sender_id)
+
+            let newCart9_1 =  JSON.parse( await getUserVars(sender, "cart"));
+            const purchases9_1 = showPurchases(newCart9_1.items) + ""
+           // sendMsg.showCart(sender_id, purchases9_1 ,newCart9_1.price, newCart9_1.tax, newCart9_1.total);
+            setUserVars(sender, "phase", "9"); 
+
+          }
+          else {            
+            sendMsg.customMessage("خطأ في عملية الحذف من السلة",sender_id)
+        }
+        }
+
+        break;
+      
     }
   }
 };

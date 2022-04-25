@@ -37,6 +37,8 @@ const getCategories = async (sender, store_id, type) => {
         where: {
           store_id: store_id,
           type: type,
+          parent_id: null,
+
         },
         include: {
           model: Category,
