@@ -146,8 +146,8 @@ const errorMsg = (senderID) => {
   sendTextMsg(`خطأ في الارسال`, senderID);
 };
 
-const customMessage = (message, senderID) => {
-  sendTextMsg( message, senderID);
+const customMessage = async (message, senderID) => {
+   sendTextMsg( message, senderID);
 }
 
 
