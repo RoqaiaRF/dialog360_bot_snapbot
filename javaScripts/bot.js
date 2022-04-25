@@ -311,7 +311,7 @@ const bot = async (
           setUserVars(sender, "phase", "4");
           sendMsg.categoryPhase(sender_id, "" + categories(categoryObj2));
         } else if (message <= 0 || message > length2) {
-          // send error msg
+         // send error msg
           sendMsg.errorMsg(sender_id);
           console.log("lenght ", length2);
         } else {
@@ -412,22 +412,25 @@ ${purchases9} `,sender_id)
           let productCartIndex = message - 1; // index of product in cart
           const deletedItem = productCart[productCartIndex];
 
-          const result = cartController.removeFromCart(sender, deletedItem)
+          const result = await cartController.removeFromCart(sender, deletedItem)
           console.log("--------deletedItem_ID ---------: ",deletedItem)
           console.log("--------productCart ---------: ",productCart)
           console.log("--------productCartIndex ---------: ",productCartIndex)
 
-          if (result) {
-            sendMsg.customMessage("تم حذف المنتج من السلة ارسل عرض السلة",sender_id)
-
+          if (result) { 
+            
             let newCart9_1 =  JSON.parse( await getUserVars(sender, "cart"));
-            const purchases9_1 = showPurchases(newCart9_1.items) + ""
-           // sendMsg.showCart(sender_id, purchases9_1 ,newCart9_1.price, newCart9_1.tax, newCart9_1.total);
+         
+            const purchases9_1 = showPurchases(newCart9_1.items) + "";
+
+            sendMsg.showCart(sender_id, purchases9_1 ,newCart9_1.price, newCart9_1.tax, newCart9_1.total);
             setUserVars(sender, "phase", "9"); 
 
           }
           else {            
             sendMsg.customMessage("خطأ في عملية الحذف من السلة",sender_id)
+            setUserVars(sender, "phase", "9"); 
+
         }
         }
 
@@ -438,6 +441,7 @@ ${purchases9} `,sender_id)
 };
 module.exports = bot;
 
+//TODO: Add Documentation for this module
 /** Phase numbering
  * phase 1 : welcome & language
  * phase 2 : location

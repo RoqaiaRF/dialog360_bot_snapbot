@@ -45,8 +45,8 @@ const addToCart = async (sender, item) => {
   const cart = JSON.parse(await client.get(`${sender}:cart`));
   if (cart) {
     const itemAdded = addItem(cart.items, item);
-    cart.total += item.price;
-    cart.price = cart.total - cart.tax;
+    cart.total += ( item.price * item.quantity );
+    cart.price =  cart.total - cart.tax;
     if (itemAdded) {
       await client.set(`${sender}:cart`, JSON.stringify(cart));
       return cart;
@@ -73,7 +73,7 @@ const removeFromCart = async (sender, item) => {
       cart.total = 0;
       cart.price = 0;
     } else {
-      cart.total -= item.price;
+      cart.total -= (item.price * item.quantity) ;
       cart.price = cart.total -  cart.tax;
 
     }
