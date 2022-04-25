@@ -4,9 +4,9 @@ const isReservation_Pay = require("../app/controllers/isReservation_PayControlle
 // Expected Outputs: English, العربية
 //^ Phase #1 welcome and choose Language
 /*----------------------------------------*/
-const welcomeLangPhase = (senderID, storeEN_Name, storeAR_Name, username) => {
+const welcomeLangPhase = async(senderID, storeEN_Name, storeAR_Name, username) => {
   
-  sendTextMsg(
+  await sendTextMsg(
     `Welcome ${username} at ${storeEN_Name}... 
                 please click on the right option
                 
@@ -129,6 +129,20 @@ const quantityProductPhase = (senderID)=>{
 
 }
 
+
+const showCart = (senderID, purchases, price, tax, total) => {
+  sendTextMsg(`تفاصيل السلة: 
+  ${purchases}
+
+المجموع : ${price} دينار 
+الرسوم : ${tax} دينار
+المجموع الكلي: ${total} دينار
+
+  1. الدفع
+  2. حدد المنتج لحذفه
+  3. أضافة منتجات`, senderID);
+};
+
 const errorMsg = (senderID) => {
   sendTextMsg(`خطأ في الارسال`, senderID);
 };
@@ -152,5 +166,6 @@ module.exports = {
   featuresPhase,
   showProduct, 
   getAllBranchesPhase,
-  quantityProductPhase
+  quantityProductPhase,
+  showCart
 }
