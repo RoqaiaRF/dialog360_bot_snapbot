@@ -129,9 +129,8 @@ const quantityProductPhase = (senderID)=>{
 
 }
 
-
-const showCart = (senderID, purchases, price, tax, total) => {
-  sendTextMsg(`تفاصيل السلة: 
+const showCart =  (senderID, purchases, price, tax, total) => {
+   sendTextMsg(`تفاصيل السلة: 
   ${purchases}
 
 المجموع : ${price} دينار 
