@@ -35,6 +35,9 @@ module.exports = (sequelize, Sequelize) => {
       status: {
         type: Sequelize.BOOLEAN,
       },
+      parent_id: {
+        type: Sequelize.BIGINT,
+      },
     },
     {
       timestamps: false,
