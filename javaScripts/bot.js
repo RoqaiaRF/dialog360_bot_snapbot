@@ -50,11 +50,24 @@ const branches = (branchesObj) => {
   return msg;
 }
 
-// get the purchases
+// get and show the purchases
 const showPurchases =(purchasesObj) => {
   let msg = "";
+  let featuresMsg = "";
+  if ( purchasesObj.features){featuresMsg= `  :الخدمات الاضافية:` }
    purchasesObj.forEach((element, index) => {
     msg += ` *${index + 1}* . ${element.name_ar},  عدد:  ${element.quantity}
+    ${featuresMsg} ${element.features}
+ `;
+  });
+  return msg;
+};
+
+//get and show features
+const showFeatures =(featuresObj) => {
+  let msg = "";
+  featuresObj.forEach((element, index) => {
+    msg += `( *${index + 1}* ) ${element.name_ar},  السعر:  ${element.price}
  `;
   });
   return msg;
@@ -82,17 +95,14 @@ const bot = async (
   const storObj = JSON.parse(
     JSON.stringify(await storeController.storeDetails(sender, receiver_id)) //هذه خليها سيندر وليس سندر اي دي لانه احنا مش مخزنين كود الدولة لهيك لازم نحذفه
   );
-  let cart = cartController.newCart(sender, 25); // TODO add real tax
+  let cart ;
   console.log(storObj);
   console.log(sender, receiver_id);
 
   const storeEN_Name = storObj.name_en; // اسم المتجر بالانجليزي
   const storeAR_Name = storObj.name_ar; // اسم المتجر في العربي
 
-  //  setUserVars(sender, "store_id", storObj.id);
-  //const store_id = await getUserVars(sender, "store_id"); // we need it to get the categories
-  //console.log("store_id", store_id);
-  // console.log(`store_id: ${store_id}`);
+ 
   console.log(storObj);
   let phase = await getUserVars(sender, "phase");
   console.log(`phase: ${phase}`);
@@ -164,6 +174,8 @@ const bot = async (
             latitude,
             longitude
           );
+          //TODO: تمرمير رسوم التوصيل الخاصة بالمتجر 
+          cart = cartController.newCart(sender, storObj.tax, 0 ); // TODO add real tax
 
           if (!nearestBranch) {
             setUserVars(sender, "phase", "2");
@@ -227,11 +239,12 @@ const bot = async (
           );
           //تخزين الفرع المختار مكان المتجر
           setUserVars(sender, "branch", JSON.stringify(selectedBranch));
+          cart = cartController.newCart(sender, storObj.tax); 
           setUserVars(sender, "phase", "3");
         }
         break;
 
-      case "4":
+      case "4"://عرض التصنيفات الفرعية 
         if (isNaN(message) == true) {
           sendMsg.errorMsg(sender_id);
           return;
@@ -336,10 +349,47 @@ const bot = async (
           setUserVars(sender, "phase", "8");
           sendMsg.quantityProductPhase(sender_id);
           console.log("اضف للسلة يا بني !");
-        } else {
+        }
+      
+         else {
           sendMsg.errorMsg(sender_id);
         }
         break;
+
+        case "7.1": //اختيار المميزات / الخدمات الاضافيه
+        let productDetails_7_1 = JSON.parse( await getUserVars(sender, "productDetails"));
+        const featuresCount = productDetails_7_1.features.length;
+        const newCart7_1 =  JSON.parse( await getUserVars(sender, "cart"));
+
+        if (isNaN(message) === true) {
+            sendMsg.errorMsg(sender_id);
+            return;
+          }
+          else if (message === "00") {
+            sendMsg.showProduct(sender_id, (productDetails_7_1) );
+            setUserVars(sender, "phase", "7");
+        
+          }
+          else if (message < 0 || message > featuresCount) {
+             sendMsg.errorMsg(sender_id);
+            }      
+            // add selected feature to the cart list
+          else{
+            
+           let features = JSON.parse( await getUserVars(sender, "features"));
+           const featureIndex = message - 1;
+           const selectedFeature = features[featureIndex];
+          // add selected feature to the cart list 
+          await cartController.addFeatureToCart(sender, productDetails_7_1,selectedFeature);
+
+          //عرض السلة بعد اضافة الخدمات الاضافية
+           const purchases7_1 = showPurchases(newCart7_1.items) + "";
+
+           sendMsg.showCart(sender_id, purchases7_1 ,newCart7_1.price, newCart7_1.tax, newCart7_1.total);
+            setUserVars(sender, "phase", "9"); 
+            
+          } 
+            break;
 
       case "8":
         if (isNaN(message) === true) {
@@ -354,20 +404,69 @@ const bot = async (
         if (parseInt(message) > parseInt(quantity) || parseInt(message) <= 0) {
           sendMsg.customMessage(`الكمية خاطئة! ادخل كمية اقل من ${quantity}`,sender_id);
         } else {
+          if (productDetails.features.length > 0){
+            console.log("productDetails.features.length ",productDetails.features.length)
+
           // اضافة الكمية التي اختارها المستخدم لمعلومات المنتج
           productDetails.quantity = parseInt(message);
-          await cartController.addToCart(sender, productDetails);
-          let newCart = JSON.parse( await getUserVars(sender, "cart"));
-          const purchases = showPurchases(newCart.items) + ""
-          console.log("----- newCart Details -------", newCart)
-          console.log("----- purchases -------", purchases)
+          productDetails.features = [];
+
+         await cartController.addToCart(sender, productDetails);
+          sendMsg.customMessage("هل تريد خدمات اضافية ؟ --- اختر نعم او لا", sender_id)
+          setUserVars(sender, "phase", "8.1"); 
+          }
+          else{
+
+          let newCart8 = JSON.parse( await getUserVars(sender, "cart"));
+          console.log("**********newCart8_1", newCart8);
+
+          const purchases8 = showPurchases(newCart8.items) + ""
+
           setUserVars(sender, "phase", "9");
+          sendMsg.showCart(sender_id, purchases8 , newCart8.price, newCart8.tax, newCart8.total);
+     
+          } 
 
-          sendMsg.showCart(sender_id, purchases , newCart.price, newCart.tax, newCart.total);
-
-        }
+        } 
 
         break;
+      case "8.1":
+        if(message === "نعم"){// show features
+
+          let productDetails = JSON.parse( await getUserVars(sender, "productDetails"));
+          const features = showFeatures(productDetails.features);
+          const featuresCount7 = productDetails.features.length;
+
+          if (featuresCount7 > 0 ){
+            sendMsg.featuresPhase(sender_id, features)
+            setUserVars(sender, "phase", "7.1");
+            setUserVars(
+              sender,
+              "features",
+              JSON.stringify(productDetails.features)
+            ); 
+          }else {
+
+            await sendMsg.customMessage("لا يوجد خدمات اضافية",sender_id);
+            sendMsg.showProduct(sender_id, (productDetails) );
+            console.log(JSON.stringify("productDetails",productDetails));
+            setUserVars(sender, "phase", "7");
+          }
+        }
+        else if(message === "لا"){ // show cart details
+
+          let newCart8_1 = JSON.parse( await getUserVars(sender, "cart"));
+          console.log("**********newCart8_1", newCart8_1);
+          const purchases8_1 = showPurchases(newCart8_1.items) + ""
+          setUserVars(sender, "phase", "9");
+          sendMsg.showCart(sender_id, purchases8_1 , newCart8_1.price, newCart8_1.tax, newCart8_1.total);
+     
+        }
+        else{ 
+          sendMsg.errorMsg(sender_id);
+
+        }
+          break
       case "9": // cart
         let newCart9 = JSON.parse( await getUserVars(sender, "cart"));
         const purchases9 = showPurchases(newCart9.items) + "";

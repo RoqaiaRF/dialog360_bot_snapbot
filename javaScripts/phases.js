@@ -102,7 +102,7 @@ const subCategoryPhase = async(senderID, subCategory) =>{
 }
 
 const featuresPhase = async(senderID, features) =>{
-  let message = `اختر احد الخدمات الاضافية الاتيه:   
+  let message = `اختر أحد المميزات/ الخدمات الاضافية لاضافتها للسلة :   
   `;
   sendTextMsg(` ${message} ${features}
   ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
