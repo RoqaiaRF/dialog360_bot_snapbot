@@ -133,3 +133,6 @@ const getNearestBranch = async (sender, phone, lat, lng) => {
   }
 };
 module.exports = { storeDetails, getNearestBranch, getAllBranchs };
+
+
+
