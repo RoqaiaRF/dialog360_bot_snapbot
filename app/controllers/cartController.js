@@ -20,14 +20,20 @@ function removeItem(arr, item) {
     return ele.id !== item.id;
   });
 }
-const newCart = async (sender, tax) => {
+const calcTax = (tax, amount) => {
+  const x = (amount * tax) / 100;
+  return parseFloat(x);
+};
+const newCart = async (sender, tax_parecent, fees = 0) => {
   const cart = JSON.parse(await client.get(`${sender}:cart`));
   if (cart) return false;
   const obj = {
     id: sender,
-    tax: tax,
     price: 0,
-    total: tax,
+    fees,
+    tax: 0,
+    tax_parecent,
+    total: this.tax + fees,
     items: [],
   };
   await client.set(`${sender}:cart`, JSON.stringify(obj));
@@ -45,8 +51,12 @@ const addToCart = async (sender, item) => {
   const cart = JSON.parse(await client.get(`${sender}:cart`));
   if (cart) {
     const itemAdded = addItem(cart.items, item);
-    cart.total += ( item.price * item.quantity );
-    cart.price =  cart.total - cart.tax;
+    /*     cart.total += item.price * item.quantity;
+    cart.price = cart.total - cart.tax; */
+    cart.price += parseInt(item.price) * parseInt(item.quantity);
+    console.log(parseInt(item.quantity));
+    cart.tax = calcTax(cart.tax_parecent, cart.price);
+    cart.total = cart.price + cart.tax + cart.fees;
     if (itemAdded) {
       await client.set(`${sender}:cart`, JSON.stringify(cart));
       return cart;
@@ -73,9 +83,8 @@ const removeFromCart = async (sender, item) => {
       cart.total = 0;
       cart.price = 0;
     } else {
-      cart.total -= (item.price * item.quantity) ;
-      cart.price = cart.total -  cart.tax;
-
+      cart.total -= item.price * item.quantity;
+      cart.price = cart.total - cart.tax;
     }
     await client.set(`${sender}:cart`, JSON.stringify(cart));
     return cart;

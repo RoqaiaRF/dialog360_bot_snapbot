@@ -10,8 +10,8 @@ const client = new Redis();
 var router = express.Router();
 
 router.get("/", async (req, res, next) => {
-  const cart = await newCart("ghghgh", 2);
-  const all = await removeFromCart("ghghgh", { id: 153, price: 30 });
+  const cart = await newCart("ghghgh", 5, 20);
+  const all = await addToCart("ghghgh", { id: 1, price: 200, quantity: 1 });
   console.log("test: ", "all");
 });
 
