@@ -132,7 +132,25 @@ const getNearestBranch = async (sender, phone, lat, lng) => {
     }
   }
 };
-module.exports = { storeDetails, getNearestBranch, getAllBranchs };
+
+const getFees = async(store_id, city_name) =>{
+  
+    const region = await Region.findOne(
+      {
+        where: {
+          store_id,
+          name_en: city_name,
+        },
+      },
+      {
+        attributes: [ 
+          "fees",
+        ],
+      } 
+    );
+    return region.fees;
+}
+module.exports = { storeDetails, getNearestBranch, getAllBranchs, getFees };
 
 
 

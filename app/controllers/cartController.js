@@ -9,8 +9,8 @@ function addItem(arr, item) {
     arr.push(item);
     return true;
   } else {
-    arr[item.id - 1] = item //TODO: FIX INDEX
-    console.log("Added item",  arr[item.id])
+    arr[item.id - 1] = item; //TODO: FIX INDEX
+    console.log("Added item", arr[item.id]);
     return true;
   }
 }
@@ -68,22 +68,25 @@ const addToCart = async (sender, item) => {
   } else {
     return false;
   }
-}
+};
 /*-------- Add Feature to Cart ----------------*/
 const addFeatureToCart = async (sender, item, feature) => {
   const cart = JSON.parse(await client.get(`${sender}:cart`));
   if (cart) {
     // Check if toe product is already added to cart and add it's feature to cart
-   if(cart.items.findIndex(x => x.id === item.id)){ //Product is already in cart
-    feature.quantity =1; // اجعل كمية المميزة هذه تساوي 1
-    const itemAdded = addItem(item.features, feature);// add selected feature to product in the cart
 
-    addToCart(sender, itemAdded)
-    if (itemAdded) {
-      await client.set(`${sender}:cart`, JSON.stringify(cart));
-      return cart;
-    } else {
-      return false;
+    if (cart.items.findIndex((x) => x.id === item.id)) {
+      //Product is already in cart
+      feature.quantity = 1; // اجعل كمية المميزةة هذه تساوي 1
+      const itemAdded = addItem(item.features, feature); // add selected feature to product in the cart
+
+      addToCart(sender, itemAdded);
+      if (itemAdded) {
+        await client.set(`${sender}:cart`, JSON.stringify(cart));
+        return cart;
+      } else {
+        return false;
+      }
     }
    } else {
     feature.quantity =1;
@@ -92,8 +95,9 @@ const addFeatureToCart = async (sender, item, feature) => {
 
    }
     
+
   }
-}
+};
 
 // Remove item from Cart
 /**
@@ -109,10 +113,12 @@ const removeFromCart = async (sender, item) => {
     cart.items = newItems;
     if (cart.items.length == 0) {
       cart.total = 0;
+      cart.fees = 0;
       cart.price = 0;
     } else {
-      cart.total -= item.price * item.quantity;
-      cart.price = cart.total - cart.tax;
+      cart.price -= item.price * item.quantity;
+      cart.tax = calcTax(cart.tax_parecent, cart.price);
+      cart.total = cart.price + cart.tax + cart.fees;
     }
     await client.set(`${sender}:cart`, JSON.stringify(cart));
     return cart;
@@ -120,4 +126,4 @@ const removeFromCart = async (sender, item) => {
     return false;
   }
 };
-module.exports = { removeFromCart, newCart, addToCart ,addFeatureToCart};
+module.exports = { removeFromCart, newCart, addToCart, addFeatureToCart };

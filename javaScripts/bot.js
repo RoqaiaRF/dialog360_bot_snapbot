@@ -2,7 +2,10 @@ const sendMsg = require("./phases");
 const getCategories = require("../app/controllers/categoryController");
 const storeController = require("../app/controllers/storeController");
 const cartController = require("../app/controllers/cartController");
-const getProducts = require("../app/controllers/productController");
+const {
+  getProducts,
+  getQuantity,
+} = require("../app/controllers/productController");
 const {
   setUserVars,
   getUserVars,
@@ -54,6 +57,7 @@ const showPurchases = async () => {
   let msg = "";
   const _showCart = JSON.parse(await getUserVars(sender, "cart"));
   let purchasesObj = _showCart.items;
+
   purchasesObj.forEach((element, index) => {
     msg += ` *${index + 1}* . ${element.name_ar},  عدد:  ${element.quantity}
     الخدمات الاضافية: ${showFeatures(element.features)} 
@@ -327,10 +331,13 @@ const bot = async (
           sendMsg.errorMsg(sender_id);
           console.log("lenght ", length2);
         } else {
+          let branch = JSON.parse(await getUserVars(sender, "branch"));
           let productObj6 = JSON.parse(await getUserVars(sender, "products"));
           setUserVars(sender, "phase", "7"); // اختيار المنتجات
           let productIndex6 = message - 1;
           let product6 = productObj6[productIndex6];
+
+          product6.qty = await getQuantity(branch.id, product6.id);
           sendMsg.showProduct(sender_id, product6);
           setUserVars(sender, "productDetails", JSON.stringify(product6));
           console.log("################################", product6);
@@ -358,6 +365,8 @@ const bot = async (
           await getUserVars(sender, "productDetails")
         );
         const featuresCount = productDetails_7_1.features.length;
+
+        const newCart7_1 = JSON.parse(await getUserVars(sender, "cart"));
 
         if (isNaN(message) === true) {
           sendMsg.errorMsg(sender_id);
@@ -389,6 +398,7 @@ const bot = async (
           //عرض السلة بعد اضافة الخدمات الاضافية
           const purchases7_1 = await showPurchases();
           console.log("newCart7_1.items", newCart7_1.items);
+
           sendMsg.showCart(
             sender_id,
             purchases7_1,
@@ -445,6 +455,7 @@ const bot = async (
             console.log("**********purchases8", purchases8);
             console.log("**********newCart8", newCart8);
 
+
             setUserVars(sender, "phase", "9");
             sendMsg.showCart(
               sender_id,
@@ -488,6 +499,7 @@ const bot = async (
           let newCart8_1 = JSON.parse(await getUserVars(sender, "cart"));
           console.log("**********newCart8_1", newCart8_1);
           const purchases8_1 = (await showPurchases()) + "";
+
           setUserVars(sender, "phase", "9");
           sendMsg.showCart(
             sender_id,
@@ -502,6 +514,7 @@ const bot = async (
         break;
       case "9": // cart
         const purchases9 = await showPurchases();
+
 
         if (message === "الدفع") {
           //TODO: عرض السلة كاملة مع رابط للدفع
@@ -547,6 +560,7 @@ ${purchases9} `,
           if (result) {
             let newCart9_1 = JSON.parse(await getUserVars(sender, "cart"));
             const purchases9_1 = await showPurchases();
+
 
             sendMsg.showCart(
               sender_id,
