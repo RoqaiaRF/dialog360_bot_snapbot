@@ -75,7 +75,7 @@ const addFeatureToCart = async (sender, item, feature) => {
   if (cart) {
     // Check if toe product is already added to cart and add it's feature to cart
    if(cart.items.findIndex(x => x.id === item.id)){ //Product is already in cart
-    feature.quantity =1; // اجعل كمية المميزةة هذه تساوي 1
+    feature.quantity =1; // اجعل كمية المميزة هذه تساوي 1
     const itemAdded = addItem(item.features, feature);// add selected feature to product in the cart
 
     addToCart(sender, itemAdded)
@@ -87,7 +87,7 @@ const addFeatureToCart = async (sender, item, feature) => {
     }
    } else {
     feature.quantity =1;
-    item.features = feature
+    item.features = [feature]
     addToCart(sender, item)
 
    }

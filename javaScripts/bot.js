@@ -48,24 +48,26 @@ const branches = (branchesObj) => {
  `;
   });
   return msg;
-}
-
+};
 // get and show the purchases
-const showPurchases =(purchasesObj) => {
+const showPurchases = async () => {
   let msg = "";
-  let featuresMsg = "";
-  if ( purchasesObj.features){featuresMsg= `  :الخدمات الاضافية:` }
-   purchasesObj.forEach((element, index) => {
+  const _showCart = JSON.parse(await getUserVars(sender, "cart"));
+  let purchasesObj = _showCart.items;
+  purchasesObj.forEach((element, index) => {
     msg += ` *${index + 1}* . ${element.name_ar},  عدد:  ${element.quantity}
-    ${featuresMsg} ${element.features}
- `;
+    الخدمات الاضافية: ${showFeatures(element.features)} 
+   `;
+
   });
+
   return msg;
 };
 
 //get and show features
-const showFeatures =(featuresObj) => {
-  let msg = "";
+const showFeatures = (featuresObj) => {
+  let msg= "" ;
+
   featuresObj.forEach((element, index) => {
     msg += `( *${index + 1}* ) ${element.name_ar},  السعر:  ${element.price}
  `;
@@ -95,14 +97,13 @@ const bot = async (
   const storObj = JSON.parse(
     JSON.stringify(await storeController.storeDetails(sender, receiver_id)) //هذه خليها سيندر وليس سندر اي دي لانه احنا مش مخزنين كود الدولة لهيك لازم نحذفه
   );
-  let cart ;
+  let cart;
   console.log(storObj);
   console.log(sender, receiver_id);
 
   const storeEN_Name = storObj.name_en; // اسم المتجر بالانجليزي
   const storeAR_Name = storObj.name_ar; // اسم المتجر في العربي
 
- 
   console.log(storObj);
   let phase = await getUserVars(sender, "phase");
   console.log(`phase: ${phase}`);
@@ -116,7 +117,6 @@ const bot = async (
     delUserVars(sender, "language");
     delUserVars(sender, "allbranches");
     delUserVars(sender, "productDetails");
-
 
     sendMsg.welcomeLangPhase(
       sender_id,
@@ -174,8 +174,8 @@ const bot = async (
             latitude,
             longitude
           );
-          //TODO: تمرمير رسوم التوصيل الخاصة بالمتجر 
-          cart = cartController.newCart(sender, storObj.tax, 0 ); // TODO add real tax
+          //TODO: تمرمير رسوم التوصيل الخاصة بالمتجر
+          cart = cartController.newCart(sender, storObj.tax, 0); // TODO add real tax
 
           if (!nearestBranch) {
             setUserVars(sender, "phase", "2");
@@ -239,12 +239,12 @@ const bot = async (
           );
           //تخزين الفرع المختار مكان المتجر
           setUserVars(sender, "branch", JSON.stringify(selectedBranch));
-          cart = cartController.newCart(sender, storObj.tax); 
+          cart = cartController.newCart(sender, storObj.tax);
           setUserVars(sender, "phase", "3");
         }
         break;
 
-      case "4"://عرض التصنيفات الفرعية 
+      case "4": //عرض التصنيفات الفرعية
         if (isNaN(message) == true) {
           sendMsg.errorMsg(sender_id);
           return;
@@ -285,18 +285,17 @@ const bot = async (
           await getUserVars(sender, "subcategories")
         );
         let categoryObj5 = JSON.parse(await getUserVars(sender, "cats"));
-        let length5;
-
-        if (message === "00") {
-          delUserVars(sender, "subcategories");
-          sendMsg.categoryPhase(sender_id, "" + categories(categoryObj5));
-        } else if (
-          isNaN(message) === true ||
-          message > length5 ||
-          message <= 0
-        ) {
+        let length5 = subCategories.length;
+        console.log("length: ", length5);
+        if (isNaN(message) == true) {
           // send error msg
           sendMsg.errorMsg(sender_id);
+        } else if (message > length5 || message <= 0) {
+          // send error msg
+          sendMsg.errorMsg(sender_id);
+        } else if (message === "00") {
+          delUserVars(sender, "subcategories");
+          sendMsg.categoryPhase(sender_id, "" + categories(categoryObj5));
         } else {
           let categoryIndex = message - 1;
           let category = subCategories[categoryIndex];
@@ -324,7 +323,7 @@ const bot = async (
           setUserVars(sender, "phase", "4");
           sendMsg.categoryPhase(sender_id, "" + categories(categoryObj2));
         } else if (message <= 0 || message > length2) {
-         // send error msg
+          // send error msg
           sendMsg.errorMsg(sender_id);
           console.log("lenght ", length2);
         } else {
@@ -347,49 +346,59 @@ const bot = async (
         //لا تتم الاضافة للسلة بعد , يجب تحديد الكمية وبعدها يضيف للسلة
         else if (message == "اضافة للسلة") {
           setUserVars(sender, "phase", "8");
-          sendMsg.quantityProductPhase(sender_id);
+          await sendMsg.quantityProductPhase(sender_id);
           console.log("اضف للسلة يا بني !");
-        }
-      
-         else {
+        } else {
           sendMsg.errorMsg(sender_id);
         }
         break;
 
-        case "7.1": //اختيار المميزات / الخدمات الاضافيه
-        let productDetails_7_1 = JSON.parse( await getUserVars(sender, "productDetails"));
+      case "7.1": //اختيار المميزات / الخدمات الاضافيه
+        let productDetails_7_1 = JSON.parse(
+          await getUserVars(sender, "productDetails")
+        );
         const featuresCount = productDetails_7_1.features.length;
-        const newCart7_1 =  JSON.parse( await getUserVars(sender, "cart"));
 
         if (isNaN(message) === true) {
-            sendMsg.errorMsg(sender_id);
-            return;
-          }
-          else if (message === "00") {
-            sendMsg.showProduct(sender_id, (productDetails_7_1) );
-            setUserVars(sender, "phase", "7");
-        
-          }
-          else if (message < 0 || message > featuresCount) {
-             sendMsg.errorMsg(sender_id);
-            }      
-            // add selected feature to the cart list
-          else{
-            
-           let features = JSON.parse( await getUserVars(sender, "features"));
-           const featureIndex = message - 1;
-           const selectedFeature = features[featureIndex];
-          // add selected feature to the cart list 
-          await cartController.addFeatureToCart(sender, productDetails_7_1,selectedFeature);
+          sendMsg.errorMsg(sender_id);
+          return;
+        } else if (message === "00") {
+          sendMsg.showProduct(sender_id, productDetails_7_1);
+          setUserVars(sender, "phase", "7");
+        } else if (message < 0 || message > featuresCount) {
+          sendMsg.errorMsg(sender_id);
+        }
+        // add selected feature to the cart list
+        else {
+          let features = JSON.parse(await getUserVars(sender, "features"));
+          const featureIndex = message - 1;
+          const selectedFeature = features[featureIndex];
+          // add selected feature to the cart list
+          await cartController.addFeatureToCart(
+            sender,
+            productDetails_7_1,
+            selectedFeature
+          );
+          console.log("selectedFeature: ", selectedFeature);
+          console.log("productDetails_7_1: ", productDetails_7_1);
+
+          const newCart7_1 = await JSON.parse(
+            await getUserVars(sender, "cart")
+          );
 
           //عرض السلة بعد اضافة الخدمات الاضافية
-           const purchases7_1 = showPurchases(newCart7_1.items) + "";
-
-           sendMsg.showCart(sender_id, purchases7_1 ,newCart7_1.price, newCart7_1.tax, newCart7_1.total);
-            setUserVars(sender, "phase", "9"); 
-            
-          } 
-            break;
+          const purchases7_1 = await showPurchases();
+          console.log("newCart7_1.items", newCart7_1.items);
+          sendMsg.showCart(
+            sender_id,
+            purchases7_1,
+            newCart7_1.price,
+            newCart7_1.tax,
+            newCart7_1.total
+          );
+          setUserVars(sender, "phase", "9");
+        }
+        break;
 
       case "8":
         if (isNaN(message) === true) {
@@ -397,145 +406,163 @@ const bot = async (
           sendMsg.errorMsg(sender_id);
           return;
         }
-        
+
         // Check the maximum quantity of this product
-        let productDetails = JSON.parse( await getUserVars(sender, "productDetails"));
+        let productDetails = JSON.parse(
+          await getUserVars(sender, "productDetails")
+        );
         const quantity = productDetails.quantity;
         if (parseInt(message) > parseInt(quantity) || parseInt(message) <= 0) {
-          sendMsg.customMessage(`الكمية خاطئة! ادخل كمية اقل من ${quantity}`,sender_id);
+          sendMsg.customMessage(
+            `الكمية خاطئة! ادخل كمية اقل من ${quantity}`,
+            sender_id
+          );
         } else {
-          if (productDetails.features.length > 0){
-            console.log("productDetails.features.length ",productDetails.features.length)
+          if (productDetails.features.length > 0) {
+            console.log(
+              "productDetails.features.length ",
+              productDetails.features.length
+            );
 
-          // اضافة الكمية التي اختارها المستخدم لمعلومات المنتج
-          productDetails.quantity = parseInt(message);
-          productDetails.features = [];
+            // اضافة الكمية التي اختارها المستخدم لمعلومات المنتج
+            productDetails.quantity = parseInt(message);
+            productDetails.features = [];
 
-         await cartController.addToCart(sender, productDetails);
-          sendMsg.customMessage("هل تريد خدمات اضافية ؟ --- اختر نعم او لا", sender_id)
-          setUserVars(sender, "phase", "8.1"); 
+            await cartController.addToCart(sender, productDetails);
+            console.log("productDetails.features", productDetails);
+            sendMsg.customMessage(
+              "هل تريد خدمات اضافية ؟ ---  اختر نعم او لا",
+              sender_id
+            );
+            setUserVars(sender, "phase", "8.1");
+          } else {
+            console.log("**********productDetails", productDetails);
+            productDetails.quantity = parseInt(message);
+            await cartController.addToCart(sender, productDetails);
+
+            let newCart8 = JSON.parse(await getUserVars(sender, "cart"));
+            const purchases8 = (await showPurchases()) + "";
+            console.log("**********purchases8", purchases8);
+            console.log("**********newCart8", newCart8);
+
+            setUserVars(sender, "phase", "9");
+            sendMsg.showCart(
+              sender_id,
+              purchases8,
+              newCart8.price,
+              newCart8.tax,
+              newCart8.total
+            );
           }
-          else{
-
-          let newCart8 = JSON.parse( await getUserVars(sender, "cart"));
-          console.log("**********newCart8_1", newCart8);
-
-          const purchases8 = showPurchases(newCart8.items) + ""
-
-          setUserVars(sender, "phase", "9");
-          sendMsg.showCart(sender_id, purchases8 , newCart8.price, newCart8.tax, newCart8.total);
-     
-          } 
-
-        } 
-
+        }
         break;
-      case "8.1":
-        if(message === "نعم"){// show features
+      //TODO: اضافة مرحلة لاضافة المزيد من الخدمات الاضافيه
 
-          let productDetails = JSON.parse( await getUserVars(sender, "productDetails"));
+      case "8.1":
+        if (message === "نعم") {
+          // show features
+
+          let productDetails = JSON.parse(
+            await getUserVars(sender, "productDetails")
+          );
           const features = showFeatures(productDetails.features);
           const featuresCount7 = productDetails.features.length;
 
-          if (featuresCount7 > 0 ){
-            sendMsg.featuresPhase(sender_id, features)
+          if (featuresCount7 > 0) {
+            sendMsg.featuresPhase(sender_id, features);
             setUserVars(sender, "phase", "7.1");
             setUserVars(
               sender,
               "features",
               JSON.stringify(productDetails.features)
-            ); 
-          }else {
-
-            await sendMsg.customMessage("لا يوجد خدمات اضافية",sender_id);
-            sendMsg.showProduct(sender_id, (productDetails) );
-            console.log(JSON.stringify("productDetails",productDetails));
+            );
+          } else {
+            await sendMsg.customMessage("لا يوجد خدمات اضافية", sender_id);
+            sendMsg.showProduct(sender_id, productDetails);
+            console.log(JSON.stringify("productDetails", productDetails));
             setUserVars(sender, "phase", "7");
           }
-        }
-        else if(message === "لا"){ // show cart details
+        } else if (message === "لا") {
+          // show cart details
 
-          let newCart8_1 = JSON.parse( await getUserVars(sender, "cart"));
+          let newCart8_1 = JSON.parse(await getUserVars(sender, "cart"));
           console.log("**********newCart8_1", newCart8_1);
-          const purchases8_1 = showPurchases(newCart8_1.items) + ""
+          const purchases8_1 = (await showPurchases()) + "";
           setUserVars(sender, "phase", "9");
-          sendMsg.showCart(sender_id, purchases8_1 , newCart8_1.price, newCart8_1.tax, newCart8_1.total);
-     
-        }
-        else{ 
+          sendMsg.showCart(
+            sender_id,
+            purchases8_1,
+            newCart8_1.price,
+            newCart8_1.tax,
+            newCart8_1.total
+          );
+        } else {
           sendMsg.errorMsg(sender_id);
-
         }
-          break
+        break;
       case "9": // cart
-        let newCart9 = JSON.parse( await getUserVars(sender, "cart"));
-        const purchases9 = showPurchases(newCart9.items) + "";
+        const purchases9 = await showPurchases();
 
-        if (message === "الدفع"){
+        if (message === "الدفع") {
           //TODO: عرض السلة كاملة مع رابط للدفع
-        }
-        else if (message === "حدد المنتج لحذفه"){
-          sendMsg.customMessage( `حدد رقم المنتج لحذفه: 
-${purchases9} `,sender_id)
-          setUserVars(sender, "phase", "9.1"); 
-        }
-        else if (message === "اضافة منتجات"){
+        } else if (message === "حدد المنتج لحذفه") {
+          sendMsg.customMessage(
+            `حدد رقم المنتج لحذفه: 
+${purchases9} `,
+            sender_id
+          );
+          setUserVars(sender, "phase", "9.1");
+        } else if (message === "اضافة منتجات") {
           setUserVars(sender, "phase", "6");
           let productObj7 = JSON.parse(await getUserVars(sender, "products"));
-          sendMsg.productPhase(sender_id, products(productObj7)); 
-        }
-        else { 
+          sendMsg.productPhase(sender_id, products(productObj7));
+        } else {
           sendMsg.errorMsg(sender_id);
-
         }
-        
-      break;
+
+        break;
 
       case "9.1":
-
-        let productCart = JSON.parse(
-          await getUserVars(sender, "cart")
-        );
-        productCart = productCart.items
+        let productCart = JSON.parse(await getUserVars(sender, "cart"));
+        productCart = productCart.items;
         const length9_1 = productCart.length;
-          console.log("---------product Cart---------",productCart)
-        if (
-          isNaN(message) === true ||
-          message > length9_1 ||
-          message <= 0
-        ) {
+        console.log("---------product Cart---------", productCart);
+        if (isNaN(message) === true || message > length9_1 || message <= 0) {
           // send error msg
-          sendMsg.errorMsg(sender_id); 
-        } else  {
+          sendMsg.errorMsg(sender_id);
+        } else {
           // Delete product from cart
 
           let productCartIndex = message - 1; // index of product in cart
           const deletedItem = productCart[productCartIndex];
 
-          const result = await cartController.removeFromCart(sender, deletedItem)
-          console.log("--------deletedItem_ID ---------: ",deletedItem)
-          console.log("--------productCart ---------: ",productCart)
-          console.log("--------productCartIndex ---------: ",productCartIndex)
+          const result = await cartController.removeFromCart(
+            sender,
+            deletedItem
+          );
+          console.log("--------deletedItem_ID ---------: ", deletedItem);
+          console.log("--------productCart ---------: ", productCart);
+          console.log("--------productCartIndex ---------: ", productCartIndex);
 
-          if (result) { 
-            
-            let newCart9_1 =  JSON.parse( await getUserVars(sender, "cart"));
-         
-            const purchases9_1 = showPurchases(newCart9_1.items) + "";
+          if (result) {
+            let newCart9_1 = JSON.parse(await getUserVars(sender, "cart"));
+            const purchases9_1 = await showPurchases();
 
-            sendMsg.showCart(sender_id, purchases9_1 ,newCart9_1.price, newCart9_1.tax, newCart9_1.total);
-            setUserVars(sender, "phase", "9"); 
-
+            sendMsg.showCart(
+              sender_id,
+              purchases9_1,
+              newCart9_1.price,
+              newCart9_1.tax,
+              newCart9_1.total
+            );
+            setUserVars(sender, "phase", "9");
+          } else {
+            sendMsg.customMessage("خطأ في عملية الحذف من السلة", sender_id);
+            setUserVars(sender, "phase", "9");
           }
-          else {            
-            sendMsg.customMessage("خطأ في عملية الحذف من السلة",sender_id)
-            setUserVars(sender, "phase", "9"); 
-
-        }
         }
 
         break;
-      
     }
   }
 };
