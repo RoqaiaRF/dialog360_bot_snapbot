@@ -39,8 +39,6 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.DOUBLE,
       },
 
-
-
       distance: {
         type: Sequelize.DOUBLE,
       },
@@ -69,6 +67,9 @@ module.exports = (sequelize, Sequelize) => {
 
       type_id: {
         type: Sequelize.BIGINT,
+      },
+      tax: {
+        type: Sequelize.DOUBLE,
       },
 
      

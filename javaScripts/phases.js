@@ -124,7 +124,7 @@ const showProduct = (senderID, product) => {
   للعودة للمرحلة السابقة ارسل 00
   للعودة للرئيسية ارسل 0`,senderID, "https://stores-logos.fra1.digitaloceanspaces.com/products/"+product.image);
 }  
-const quantityProductPhase = (senderID)=>{
+const quantityProductPhase = async (senderID)=>{
   sendTextMsg(`أدخل الكمية المناسبة بالارقام الانجليزية 1, 2, ...`, senderID);
 
 }

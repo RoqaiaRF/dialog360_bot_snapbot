@@ -74,6 +74,7 @@ const addFeatureToCart = async (sender, item, feature) => {
   const cart = JSON.parse(await client.get(`${sender}:cart`));
   if (cart) {
     // Check if toe product is already added to cart and add it's feature to cart
+
     if (cart.items.findIndex((x) => x.id === item.id)) {
       //Product is already in cart
       feature.quantity = 1; // اجعل كمية المميزةة هذه تساوي 1
@@ -86,11 +87,15 @@ const addFeatureToCart = async (sender, item, feature) => {
       } else {
         return false;
       }
-    } else {
-      feature.quantity = 1;
-      item.features = feature;
-      addToCart(sender, item);
     }
+   } else {
+    feature.quantity =1;
+    item.features = [feature]
+    addToCart(sender, item)
+
+   }
+    
+
   }
 };
 

@@ -52,25 +52,26 @@ const branches = (branchesObj) => {
   });
   return msg;
 };
-
 // get and show the purchases
-const showPurchases = (purchasesObj) => {
+const showPurchases = async () => {
   let msg = "";
-  let featuresMsg = "";
-  if (purchasesObj.features) {
-    featuresMsg = `  :الخدمات الاضافية:`;
-  }
+  const _showCart = JSON.parse(await getUserVars(sender, "cart"));
+  let purchasesObj = _showCart.items;
+
   purchasesObj.forEach((element, index) => {
     msg += ` *${index + 1}* . ${element.name_ar},  عدد:  ${element.quantity}
-    ${featuresMsg} ${element.features}
- `;
+    الخدمات الاضافية: ${showFeatures(element.features)} 
+   `;
+
   });
+
   return msg;
 };
 
 //get and show features
 const showFeatures = (featuresObj) => {
-  let msg = "";
+  let msg= "" ;
+
   featuresObj.forEach((element, index) => {
     msg += `( *${index + 1}* ) ${element.name_ar},  السعر:  ${element.price}
  `;
@@ -288,18 +289,17 @@ const bot = async (
           await getUserVars(sender, "subcategories")
         );
         let categoryObj5 = JSON.parse(await getUserVars(sender, "cats"));
-        let length5;
-
-        if (message === "00") {
-          delUserVars(sender, "subcategories");
-          sendMsg.categoryPhase(sender_id, "" + categories(categoryObj5));
-        } else if (
-          isNaN(message) === true ||
-          message > length5 ||
-          message <= 0
-        ) {
+        let length5 = subCategories.length;
+        console.log("length: ", length5);
+        if (isNaN(message) == true) {
           // send error msg
           sendMsg.errorMsg(sender_id);
+        } else if (message > length5 || message <= 0) {
+          // send error msg
+          sendMsg.errorMsg(sender_id);
+        } else if (message === "00") {
+          delUserVars(sender, "subcategories");
+          sendMsg.categoryPhase(sender_id, "" + categories(categoryObj5));
         } else {
           let categoryIndex = message - 1;
           let category = subCategories[categoryIndex];
@@ -353,7 +353,7 @@ const bot = async (
         //لا تتم الاضافة للسلة بعد , يجب تحديد الكمية وبعدها يضيف للسلة
         else if (message == "اضافة للسلة") {
           setUserVars(sender, "phase", "8");
-          sendMsg.quantityProductPhase(sender_id);
+          await sendMsg.quantityProductPhase(sender_id);
           console.log("اضف للسلة يا بني !");
         } else {
           sendMsg.errorMsg(sender_id);
@@ -365,6 +365,7 @@ const bot = async (
           await getUserVars(sender, "productDetails")
         );
         const featuresCount = productDetails_7_1.features.length;
+
         const newCart7_1 = JSON.parse(await getUserVars(sender, "cart"));
 
         if (isNaN(message) === true) {
@@ -387,9 +388,16 @@ const bot = async (
             productDetails_7_1,
             selectedFeature
           );
+          console.log("selectedFeature: ", selectedFeature);
+          console.log("productDetails_7_1: ", productDetails_7_1);
+
+          const newCart7_1 = await JSON.parse(
+            await getUserVars(sender, "cart")
+          );
 
           //عرض السلة بعد اضافة الخدمات الاضافية
-          const purchases7_1 = showPurchases(newCart7_1.items) + "";
+          const purchases7_1 = await showPurchases();
+          console.log("newCart7_1.items", newCart7_1.items);
 
           sendMsg.showCart(
             sender_id,
@@ -431,16 +439,22 @@ const bot = async (
             productDetails.features = [];
 
             await cartController.addToCart(sender, productDetails);
+            console.log("productDetails.features", productDetails);
             sendMsg.customMessage(
-              "هل تريد خدمات اضافية ؟ --- اختر نعم او لا",
+              "هل تريد خدمات اضافية ؟ ---  اختر نعم او لا",
               sender_id
             );
             setUserVars(sender, "phase", "8.1");
           } else {
-            let newCart8 = JSON.parse(await getUserVars(sender, "cart"));
-            console.log("**********newCart8_1", newCart8);
+            console.log("**********productDetails", productDetails);
+            productDetails.quantity = parseInt(message);
+            await cartController.addToCart(sender, productDetails);
 
-            const purchases8 = showPurchases(newCart8.items) + "";
+            let newCart8 = JSON.parse(await getUserVars(sender, "cart"));
+            const purchases8 = (await showPurchases()) + "";
+            console.log("**********purchases8", purchases8);
+            console.log("**********newCart8", newCart8);
+
 
             setUserVars(sender, "phase", "9");
             sendMsg.showCart(
@@ -452,8 +466,9 @@ const bot = async (
             );
           }
         }
-
         break;
+      //TODO: اضافة مرحلة لاضافة المزيد من الخدمات الاضافيه
+
       case "8.1":
         if (message === "نعم") {
           // show features
@@ -483,7 +498,8 @@ const bot = async (
 
           let newCart8_1 = JSON.parse(await getUserVars(sender, "cart"));
           console.log("**********newCart8_1", newCart8_1);
-          const purchases8_1 = showPurchases(newCart8_1.items) + "";
+          const purchases8_1 = (await showPurchases()) + "";
+
           setUserVars(sender, "phase", "9");
           sendMsg.showCart(
             sender_id,
@@ -497,8 +513,8 @@ const bot = async (
         }
         break;
       case "9": // cart
-        let newCart9 = JSON.parse(await getUserVars(sender, "cart"));
-        const purchases9 = showPurchases(newCart9.items) + "";
+        const purchases9 = await showPurchases();
+
 
         if (message === "الدفع") {
           //TODO: عرض السلة كاملة مع رابط للدفع
@@ -543,8 +559,8 @@ ${purchases9} `,
 
           if (result) {
             let newCart9_1 = JSON.parse(await getUserVars(sender, "cart"));
+            const purchases9_1 = await showPurchases();
 
-            const purchases9_1 = showPurchases(newCart9_1.items) + "";
 
             sendMsg.showCart(
               sender_id,
