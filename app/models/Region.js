@@ -20,6 +20,10 @@ module.exports = (sequelize, Sequelize) => {
       city_id: {
         type: Sequelize.INTEGER,
       },
+      fees: {
+        type: Sequelize.DOUBLE,
+      },
+
     },
     {
       timestamps: false,

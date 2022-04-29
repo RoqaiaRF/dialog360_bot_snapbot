@@ -1,5 +1,6 @@
 const db = require("../../database/connection");
 const Products = require("../models/Products")(db.sequelize, db.Sequelize);
+const Quantity = require("../models/Quantity")(db.sequelize, db.Sequelize);
 const redis = require("../../database/redis");
 // Products has Many features
 Products.hasMany(Products, {
@@ -15,7 +16,7 @@ Products.belongsTo(Products, {
 });
 
 // function get Products & features
- 
+
 const getProducts = async (sender, category_id) => {
   const products_list = await redis.getUserVars(sender, "products");
   if (products_list) {
@@ -27,7 +28,6 @@ const getProducts = async (sender, category_id) => {
         where: {
           category_id: category_id,
           parent_id: null,
-
         },
         include: {
           model: Products,
@@ -37,7 +37,6 @@ const getProducts = async (sender, category_id) => {
             as: "parent",
           },
         },
-       
       },
       { attributes: ["name_ar", "name_en", "category_id"] }
     );
@@ -47,5 +46,18 @@ const getProducts = async (sender, category_id) => {
   }
 };
 
-module.exports = getProducts;
- 
+const getQuantity = async (store_id, product_id) => {
+  const res = await Quantity.findOne(
+    {
+      where: {
+        store_id,
+        product_id,
+      },
+    },
+    {
+      attributes: ["quantity"],
+    }
+  );
+  return res.quantity;
+};
+module.exports = { getProducts, getQuantity };
