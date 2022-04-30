@@ -2,6 +2,7 @@ const sendMsg = require("./phases");
 const getCategories = require("../app/controllers/categoryController");
 const storeController = require("../app/controllers/storeController");
 const cartController = require("../app/controllers/cartController");
+const location = require("../app/helpers/location")
 const {
   getProducts,
   getQuantity,
@@ -59,7 +60,7 @@ const showPurchases = async () => {
   let purchasesObj = _showCart.items;
 
   purchasesObj.forEach((element, index) => {
-    msg += ` *${index + 1}* . ${element.name_ar},  عدد:  ${element.quantity}
+    msg += ` *${index + 1}* . ${element.name_ar},  عدد:  ${element.qty}
     الخدمات الاضافية: ${showFeatures(element.features)} 
    `;
 
@@ -90,6 +91,7 @@ const bot = async (
   latitude,
   username
 ) => {
+  
   // EX: Input: "whatsapp:+96512345678" ,Output: "12345678"
   receiver_id = receiver_id.replace("whatsapp:+141", "");
   sender = sender_id.replace("whatsapp:+962", "");
@@ -101,10 +103,10 @@ const bot = async (
   const storObj = JSON.parse(
     JSON.stringify(await storeController.storeDetails(sender, receiver_id)) //هذه خليها سيندر وليس سندر اي دي لانه احنا مش مخزنين كود الدولة لهيك لازم نحذفه
   );
-  let cart;
-  console.log(storObj);
-  console.log(sender, receiver_id);
+  let cart, cityName;
 
+
+  
   const storeEN_Name = storObj.name_en; // اسم المتجر بالانجليزي
   const storeAR_Name = storObj.name_ar; // اسم المتجر في العربي
 
@@ -112,6 +114,7 @@ const bot = async (
   let phase = await getUserVars(sender, "phase");
   console.log(`phase: ${phase}`);
   let language = await getUserVars(sender, "language");
+ 
 
   if (message == "0" || message == "العودة للرئيسية") {
     delUserVars(sender, "branch");
@@ -178,8 +181,11 @@ const bot = async (
             latitude,
             longitude
           );
-          //TODO: تمرمير رسوم التوصيل الخاصة بالمتجر
-          cart = cartController.newCart(sender, storObj.tax, 0); // TODO add real tax
+       
+         cityName = await location.getCityName(latitude, longitude);
+         const fees = await storeController.getFees(storObj.id, cityName)
+         cart = cartController.newCart(sender,storObj.id, latitude, longitude,storObj.tax, fees); 
+         
 
           if (!nearestBranch) {
             setUserVars(sender, "phase", "2");
@@ -243,7 +249,8 @@ const bot = async (
           );
           //تخزين الفرع المختار مكان المتجر
           setUserVars(sender, "branch", JSON.stringify(selectedBranch));
-          cart = cartController.newCart(sender, storObj.tax);
+          cart = cartController.newCart(sender,storObj.id, selectedBranch.lat, selectedBranch.lng,storObj.tax, fees); 
+
           setUserVars(sender, "phase", "3");
         }
         break;
@@ -421,7 +428,7 @@ const bot = async (
         let productDetails = JSON.parse(
           await getUserVars(sender, "productDetails")
         );
-        const quantity = productDetails.quantity;
+        const quantity = productDetails.qty;
         if (parseInt(message) > parseInt(quantity) || parseInt(message) <= 0) {
           sendMsg.customMessage(
             `الكمية خاطئة! ادخل كمية اقل من ${quantity}`,
@@ -435,7 +442,7 @@ const bot = async (
             );
 
             // اضافة الكمية التي اختارها المستخدم لمعلومات المنتج
-            productDetails.quantity = parseInt(message);
+            productDetails.qty = parseInt(message);
             productDetails.features = [];
 
             await cartController.addToCart(sender, productDetails);
@@ -447,7 +454,7 @@ const bot = async (
             setUserVars(sender, "phase", "8.1");
           } else {
             console.log("**********productDetails", productDetails);
-            productDetails.quantity = parseInt(message);
+            productDetails.qty = parseInt(message);
             await cartController.addToCart(sender, productDetails);
 
             let newCart8 = JSON.parse(await getUserVars(sender, "cart"));

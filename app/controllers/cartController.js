@@ -26,11 +26,14 @@ const calcTax = (tax, amount) => {
   const x = (amount * tax) / 100;
   return parseFloat(x);
 };
-const newCart = async (sender, tax_parecent, fees = 0) => {
+const newCart = async (sender,store_id, latitude, longitude, tax_parecent, fees = 0) => {
   const cart = JSON.parse(await client.get(`${sender}:cart`));
   if (cart) return false;
   const obj = {
     id: sender,
+    store_id: store_id,
+    latitude: latitude,
+    longitude: longitude,
     price: 0,
     fees,
     tax: 0,
@@ -97,7 +100,7 @@ const addFeatureToCart = async (sender, item, feature) => {
     
 
   }
-};
+
 
 // Remove item from Cart
 /**
