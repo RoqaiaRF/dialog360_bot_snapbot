@@ -1,17 +1,21 @@
 const Redis = require("ioredis");
-const client = new Redis();
-// "rediss://default:AVNS_JjFT4eRfCGRaYIy@db-redis-fra1-80366-do-user-9392750-0.b.db.ondigitalocean.com:25061"
+const client = new Redis(
+   "rediss://default:AVNS_JjFT4eRfCGRaYIy@db-redis-fra1-80366-do-user-9392750-0.b.db.ondigitalocean.com:25061"
+);
 
 // helper to add new item to items array
 function addItem(arr, item) {
+  console.log("array: ", arr);
+  console.log("item: ", item);
+
   var index = arr.findIndex((ele) => ele.id == item.id);
   if (index === -1) {
     arr.push(item);
     return true;
   } else {
-    arr[item.id - 1] = item; //TODO: FIX INDEX
-    console.log("Added item", arr[item.id]);
-    return true;
+    //arr[item.id - 1] = item; //TODO: FIX INDEX
+    //console.log("Added item", arr[item.id]);
+    return false;
   }
 }
 
@@ -74,27 +78,28 @@ const addToCart = async (sender, item) => {
 };
 /*-------- Add Feature to Cart ----------------*/
 const addFeatureToCart = async (sender, item, feature) => {
+  console.log("************ feature ", feature)
   const cart = JSON.parse(await client.get(`${sender}:cart`));
   if (cart) {
     // Check if toe product is already added to cart and add it's feature to cart
 
     if (cart.items.findIndex((x) => x.id === item.id)) {
       //Product is already in cart
-      feature.quantity = 1; // اجعل كمية المميزةة هذه تساوي 1
-      const itemAdded = addItem(item.features, feature); // add selected feature to product in the cart
+      feature.quantity = 1; // اجعل كمية المميزةة هذه تساوي 1 
+      const itemAdded = addItem(item.features, feature); // add selected feature to product in the cart 
 
-      addToCart(sender, itemAdded);
-      if (itemAdded) {
-        await client.set(`${sender}:cart`, JSON.stringify(cart));
-        return cart;
-      } else {
-        return false;
-      }
+      addToCart(sender, itemAdded);  
+      if (itemAdded) { 
+        await client.set(`${sender}:cart`, JSON.stringify(cart)); 
+        return cart; 
+      } else { 
+        return false; 
+      } 
     }
    } else {
     feature.quantity =1;
     item.features = [feature]
-    addToCart(sender, item)
+    addToCart(sender, item) 
 
    }
     

@@ -129,17 +129,26 @@ const quantityProductPhase = async (senderID)=>{
 
 }
 
-const showCart =  (senderID, purchases, price, tax, total) => {
+const showCart =  (senderID, purchases, price, tax, total , fees) => {
+   const sender = senderID.replace("whatsapp:+962", "");
+
+  const paymentLink = "https://e23f-154-242-188-137.ngrok.io/payment"
+  const countryCode =  "+962";
+
    sendTextMsg(`تفاصيل السلة: 
   ${purchases}
 
-المجموع : ${price} دينار 
-الرسوم : ${tax} دينار
+المجموع دون ضريبة : ${price} دينار 
+الضريبة : ${tax} دينار
+رسوم التوصيل ${fees} دينار
 المجموع الكلي: ${total} دينار
 
-  1. الدفع
-  2. حدد المنتج لحذفه
-  3. أضافة منتجات`, senderID);
+
+الررجاء أستخدام الرابط للدفع. 
+${paymentLink}?code=${countryCode}&sender=${sender}
+
+   حدد المنتج لحذفه
+   أضافة منتجات`, senderID);
 };
 
 const errorMsg = (senderID) => {
@@ -149,8 +158,6 @@ const errorMsg = (senderID) => {
 const customMessage = async (message, senderID) => {
    sendTextMsg( message, senderID);
 }
-
-
 
 
 module.exports = {

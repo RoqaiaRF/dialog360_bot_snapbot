@@ -55,12 +55,15 @@ const branches = (branchesObj) => {
 };
 // get and show the purchases
 const showPurchases = async () => {
+  
   let msg = "";
   const _showCart = JSON.parse(await getUserVars(sender, "cart"));
   let purchasesObj = _showCart.items;
+  console.log("purchasesObj: ", purchasesObj)
 
   purchasesObj.forEach((element, index) => {
-    msg += ` *${index + 1}* . ${element.name_ar},  عدد:  ${element.qty}
+
+        msg += ` *${index + 1}* . ${element.name_ar},  عدد:  ${element.qty}
     الخدمات الاضافية: ${showFeatures(element.features)} 
    `;
 
@@ -402,6 +405,7 @@ const bot = async (
             await getUserVars(sender, "cart")
           );
 
+          
           //عرض السلة بعد اضافة الخدمات الاضافية
           const purchases7_1 = await showPurchases();
           console.log("newCart7_1.items", newCart7_1.items);
@@ -411,7 +415,8 @@ const bot = async (
             purchases7_1,
             newCart7_1.price,
             newCart7_1.tax,
-            newCart7_1.total
+            newCart7_1.total,
+            newCart7_1.fees // رسوم التوصيل
           );
           setUserVars(sender, "phase", "9");
         }
@@ -469,7 +474,9 @@ const bot = async (
               purchases8,
               newCart8.price,
               newCart8.tax,
-              newCart8.total
+              newCart8.total,
+              newCart8.fees // رسوم التوصيل
+
             );
           }
         }
@@ -513,7 +520,9 @@ const bot = async (
             purchases8_1,
             newCart8_1.price,
             newCart8_1.tax,
-            newCart8_1.total
+            newCart8_1.total,
+            newCart8_1.fees // رسوم التوصيل
+
           );
         } else {
           sendMsg.errorMsg(sender_id);
@@ -574,7 +583,9 @@ ${purchases9} `,
               purchases9_1,
               newCart9_1.price,
               newCart9_1.tax,
-              newCart9_1.total
+              newCart9_1.total,
+              newCart9_1.fees // رسوم التوصيل
+
             );
             setUserVars(sender, "phase", "9");
           } else {
@@ -584,6 +595,8 @@ ${purchases9} `,
         }
 
         break;
+
+     
     }
   }
 };
