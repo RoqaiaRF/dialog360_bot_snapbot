@@ -1,36 +1,79 @@
 const Redis = require("ioredis");
-const client = new Redis(
-   "rediss://default:AVNS_JjFT4eRfCGRaYIy@db-redis-fra1-80366-do-user-9392750-0.b.db.ondigitalocean.com:25061"
-);
+const client = new Redis();
+// "rediss://default:AVNS_JjFT4eRfCGRaYIy@db-redis-fra1-80366-do-user-9392750-0.b.db.ondigitalocean.com:25061"
 
+
+//^ DONE!
 // helper to add new item to items array
-function addItem(arr, item) {
-  console.log("array: ", arr);
-  console.log("item: ", item);
+const addItem = async (arr, item, sender, cart) => {
 
-  var index = arr.findIndex((ele) => ele.id == item.id);
-  if (index === -1) {
+  // item doesn't exist in cart so add it
+  const foundedIndex = arr.findIndex((ele) => ele.id == item.id);
+  if (foundedIndex == -1) {
     arr.push(item);
     return true;
   } else {
-    //arr[item.id - 1] = item; //TODO: FIX INDEX
-    //console.log("Added item", arr[item.id]);
-    return false;
+    
+    // Checking array equality
+    const oldFeature = arr[foundedIndex].features;
+    const newFeature = item.features;
+    let result;
+    if (oldFeature.length === newFeature.length) {
+      if(oldFeature.length == 0){
+        result=  true;
+      }
+      else if(oldFeature[0].id === newFeature[0].id){
+        result = true
+        }
+        else { result =  false; }
+
+    }
+
+    //result = true => if incoming feature is equal to existing feature
+    if (result) {
+    
+      if (arr[foundedIndex].qty === item.qty) {
+
+        return false;
+      } else {
+        // احذف الموجود واستبدله بالجديد
+       // const foundedIndex1 = arr.findIndex((ele) => ele.id == item.id && ele.qty === item.qty);
+      // todo : اضافة خاصية الحذف من السله حسب شرط تساوي الكمية 
+       // await removeFromCart(sender, cart.items[foundedIndex1]) 
+       // await addToCart(sender,item);
+
+        return false;
+      }
+    }
+    else {
+      arr.push(item);
+      return true;
+    }
   }
 }
 
 // helper to remove  item from items array
 
-function removeItem(arr, item) {
-  return arr.filter(function (ele) {
-    return ele.id !== item.id;
-  });
+const  removeItem  = async (items, i) => {
+
+  items.splice(i, 1);
+  return items;
+ // return arr.filter(function (ele) {
+  //   return ele.id !== item.id;
+  // });
 }
 const calcTax = (tax, amount) => {
   const x = (amount * tax) / 100;
   return parseFloat(x);
 };
-const newCart = async (sender,store_id, latitude, longitude, tax_parecent, fees = 0) => {
+const newCart = async (
+  sender,
+  store_id,
+  latitude,
+  longitude,
+  tax_parecent,
+  fees = 0
+) => {
   const cart = JSON.parse(await client.get(`${sender}:cart`));
   if (cart) return false;
   const obj = {
@@ -59,11 +102,13 @@ const newCart = async (sender,store_id, latitude, longitude, tax_parecent, fees 
 const addToCart = async (sender, item) => {
   const cart = JSON.parse(await client.get(`${sender}:cart`));
   if (cart) {
-    const itemAdded = addItem(cart.items, item);
+    const itemAdded = addItem(cart.items , item ,sender, cart);
     /*     cart.total += item.price * item.quantity;
     cart.price = cart.total - cart.tax; */
-    cart.price += parseInt(item.price) * parseInt(item.quantity);
-    console.log(parseInt(item.quantity));
+    const itemIDinCart = cart.items[cart.items.length -1]
+
+    cart.price += parseInt(itemIDinCart.price) * parseInt(itemIDinCart.qty);
+
     cart.tax = calcTax(cart.tax_parecent, cart.price);
     cart.total = cart.price + cart.tax + cart.fees;
     if (itemAdded) {
@@ -76,37 +121,19 @@ const addToCart = async (sender, item) => {
     return false;
   }
 };
+
 /*-------- Add Feature to Cart ----------------*/
 const addFeatureToCart = async (sender, item, feature) => {
-  console.log("************ feature ", feature)
-  const cart = JSON.parse(await client.get(`${sender}:cart`));
-  if (cart) {
-    // Check if toe product is already added to cart and add it's feature to cart
+  
+  item.features = [feature]          
+  item.price = parseInt(item.price)+ feature.price ;
+  const quantity =  parseInt( await client.get(`${sender}:quantity`))
+  item.qty = quantity
 
-    if (cart.items.findIndex((x) => x.id === item.id)) {
-      //Product is already in cart
-      feature.quantity = 1; // اجعل كمية المميزةة هذه تساوي 1 
-      const itemAdded = addItem(item.features, feature); // add selected feature to product in the cart 
-
-      addToCart(sender, itemAdded);  
-      if (itemAdded) { 
-        await client.set(`${sender}:cart`, JSON.stringify(cart)); 
-        return cart; 
-      } else { 
-        return false; 
-      } 
-    }
-   } else {
-    feature.quantity =1;
-    item.features = [feature]
-    addToCart(sender, item) 
-
-   }
-    
-
-  }
-
-
+ await addToCart(sender, item)
+  console.log("  ------------------------ item ---------------",item);
+  
+}
 // Remove item from Cart
 /**
  *
@@ -114,17 +141,20 @@ const addFeatureToCart = async (sender, item, feature) => {
  * @param {*} item  // product object
  * @returns // cart or flase
  */
-const removeFromCart = async (sender, item) => {
+const removeFromCart = async (sender, item, productCartIndex) => {
   const cart = JSON.parse(await client.get(`${sender}:cart`));
   if (cart) {
-    const newItems = removeItem(cart.items, item);
+    const deletedItem =  cart.items[productCartIndex]
+    const newItems = await removeItem(cart.items, productCartIndex);
     cart.items = newItems;
     if (cart.items.length == 0) {
       cart.total = 0;
       cart.fees = 0;
       cart.price = 0;
+      cart.tax = 0;
+
     } else {
-      cart.price -= item.price * item.quantity;
+      cart.price -= deletedItem.price * deletedItem.qty;
       cart.tax = calcTax(cart.tax_parecent, cart.price);
       cart.total = cart.price + cart.tax + cart.fees;
     }
