@@ -54,15 +54,17 @@ const branches = (branchesObj) => {
   return msg;
 };
 // get and show the purchases
-const showPurchases = async () => {
-  
-  let msg = "";
-  const _showCart = JSON.parse(await getUserVars(sender, "cart"));
-  let purchasesObj = _showCart.items;
-  console.log("purchasesObj: ", purchasesObj)
 
+const showPurchases = async () => {
+
+ let msg = "";
+  const _showCart =   JSON.parse(await getUserVars(sender, "cart"));
+  let purchasesObj = _showCart.items;
+
+  
   purchasesObj.forEach((element, index) => {
 
+    
         msg += ` *${index + 1}* . ${element.name_ar},  عدد:  ${element.qty}
     الخدمات الاضافية: ${showFeatures(element.features)} 
    `;
@@ -71,6 +73,27 @@ const showPurchases = async () => {
 
   return msg;
 };
+
+
+const showFeaturesAlone = async ( ) => {
+
+  let msg = "";
+   const _showCart =   JSON.parse(await getUserVars(sender, "cart"));
+   let purchasesObj = _showCart.items;
+
+   
+   purchasesObj.forEach((element, index) => {
+
+         msg += ` *${index + 1}* . ${element.name_ar},  عدد:  ${element.qty}
+     الخدمات الاضافية: ${showFeatures(element.features)} 
+    `;
+ 
+   });
+ 
+   return msg;
+ };
+ 
+
 
 //get and show features
 const showFeatures = (featuresObj) => {
@@ -85,6 +108,8 @@ const showFeatures = (featuresObj) => {
 
 // receiver_id: رقم صاحب المتجر / رقم البوت
 // sender_id: رقم المرسل / الزبون
+
+
 
 const bot = async (
   sender_id,
@@ -102,7 +127,7 @@ const bot = async (
   //receiver_id = receiver_id.replace("whatsapp:+965", "");
   // sender = sender_id.replace("whatsapp:+965", "");
 
-  console.log(receiver_id);
+
   const storObj = JSON.parse(
     JSON.stringify(await storeController.storeDetails(sender, receiver_id)) //هذه خليها سيندر وليس سندر اي دي لانه احنا مش مخزنين كود الدولة لهيك لازم نحذفه
   );
@@ -122,11 +147,15 @@ const bot = async (
   if (message == "0" || message == "العودة للرئيسية") {
     delUserVars(sender, "branch");
     delUserVars(sender, "cats");
+    delUserVars(sender, "cart");
     delUserVars(sender, "subcategories");
     delUserVars(sender, "products");
     delUserVars(sender, "language");
     delUserVars(sender, "allbranches");
     delUserVars(sender, "productDetails");
+    delUserVars(sender, "quantity");
+    delUserVars(sender, "features");
+
 
     sendMsg.welcomeLangPhase(
       sender_id,
@@ -176,7 +205,7 @@ const bot = async (
       case "2":
         if (longitude == undefined || latitude == undefined) {
           sendMsg.errorMsg(sender_id);
-          console.log(longitude);
+
         } else {
           const nearestBranch = await storeController.getNearestBranch(
             sender,
@@ -218,7 +247,7 @@ const bot = async (
             JSON.stringify(await storeController.getAllBranchs(receiver_id))
           );
           sendMsg.getAllBranchesPhase(sender_id, "" + branches(branchObj));
-          console.log(branches(branchObj));
+
           setUserVars(sender, "phase", "3.1");
         } else if (message == "ابدأ الحجز") {
           const categoryObj = JSON.parse(
@@ -239,8 +268,8 @@ const bot = async (
         let indexBranches = message - 1;
         let branchesObj = JSON.parse(await getUserVars(sender, "allbranches"));
         let selectedBranch = branchesObj[indexBranches];
-        console.log("branchesList:", selectedBranch);
 
+        
         if (message > branchesObj.length || message <= 0) {
           // send error msg
           sendMsg.errorMsg(sender_id);
@@ -275,7 +304,7 @@ const bot = async (
           let subCategoriesCount = category.subCategories.length;
 
           if (subCategoriesCount > 0) {
-            console.log("********* Category *************", category);
+
             setUserVars(sender, "phase", "5");
             sendMsg.subCategoryPhase(
               sender_id,
@@ -300,7 +329,7 @@ const bot = async (
         );
         let categoryObj5 = JSON.parse(await getUserVars(sender, "cats"));
         let length5 = subCategories.length;
-        console.log("length: ", length5);
+
         if (isNaN(message) == true) {
           // send error msg
           sendMsg.errorMsg(sender_id);
@@ -339,7 +368,7 @@ const bot = async (
         } else if (message <= 0 || message > length2) {
           // send error msg
           sendMsg.errorMsg(sender_id);
-          console.log("lenght ", length2);
+
         } else {
           let branch = JSON.parse(await getUserVars(sender, "branch"));
           let productObj6 = JSON.parse(await getUserVars(sender, "products"));
@@ -350,7 +379,7 @@ const bot = async (
           product6.qty = await getQuantity(branch.id, product6.id);
           sendMsg.showProduct(sender_id, product6);
           setUserVars(sender, "productDetails", JSON.stringify(product6));
-          console.log("################################", product6);
+
         }
         break;
 
@@ -364,7 +393,7 @@ const bot = async (
         else if (message == "اضافة للسلة") {
           setUserVars(sender, "phase", "8");
           await sendMsg.quantityProductPhase(sender_id);
-          console.log("اضف للسلة يا بني !");
+
         } else {
           sendMsg.errorMsg(sender_id);
         }
@@ -398,8 +427,7 @@ const bot = async (
             productDetails_7_1,
             selectedFeature
           );
-          console.log("selectedFeature: ", selectedFeature);
-          console.log("productDetails_7_1: ", productDetails_7_1);
+         
 
           const newCart7_1 = await JSON.parse(
             await getUserVars(sender, "cart")
@@ -408,7 +436,6 @@ const bot = async (
           
           //عرض السلة بعد اضافة الخدمات الاضافية
           const purchases7_1 = await showPurchases();
-          console.log("newCart7_1.items", newCart7_1.items);
 
           sendMsg.showCart(
             sender_id,
@@ -441,33 +468,26 @@ const bot = async (
           );
         } else {
           if (productDetails.features.length > 0) {
-            console.log(
-              "productDetails.features.length ",
-              productDetails.features.length
-            );
-
+         
             // اضافة الكمية التي اختارها المستخدم لمعلومات المنتج
             productDetails.qty = parseInt(message);
-            productDetails.features = [];
+           // productDetails.features = [];
+            setUserVars(sender, "quantity", JSON.stringify(parseInt(message)));
+           // await cartController.addToCart(sender, productDetails);
 
-            await cartController.addToCart(sender, productDetails);
-            console.log("productDetails.features", productDetails);
             sendMsg.customMessage(
               "هل تريد خدمات اضافية ؟ ---  اختر نعم او لا",
               sender_id
             );
             setUserVars(sender, "phase", "8.1");
           } else {
-            console.log("**********productDetails", productDetails);
+
             productDetails.qty = parseInt(message);
             await cartController.addToCart(sender, productDetails);
 
             let newCart8 = JSON.parse(await getUserVars(sender, "cart"));
             const purchases8 = (await showPurchases()) + "";
-            console.log("**********purchases8", purchases8);
-            console.log("**********newCart8", newCart8);
-
-
+           
             setUserVars(sender, "phase", "9");
             sendMsg.showCart(
               sender_id,
@@ -493,7 +513,7 @@ const bot = async (
           const features = showFeatures(productDetails.features);
           const featuresCount7 = productDetails.features.length;
 
-          if (featuresCount7 > 0) {
+          if (featuresCount7 > 0) { 
             sendMsg.featuresPhase(sender_id, features);
             setUserVars(sender, "phase", "7.1");
             setUserVars(
@@ -504,14 +524,24 @@ const bot = async (
           } else {
             await sendMsg.customMessage("لا يوجد خدمات اضافية", sender_id);
             sendMsg.showProduct(sender_id, productDetails);
-            console.log(JSON.stringify("productDetails", productDetails));
+
             setUserVars(sender, "phase", "7");
           }
         } else if (message === "لا") {
           // show cart details
+          let productDetails8_1 = JSON.parse(
+            await getUserVars(sender, "productDetails")
+          );
+          const quantity8_1 =  parseInt(await getUserVars(sender, "quantity"));
 
-          let newCart8_1 = JSON.parse(await getUserVars(sender, "cart"));
-          console.log("**********newCart8_1", newCart8_1);
+          productDetails8_1.features = [];
+          productDetails8_1.qty = quantity8_1;
+
+
+          await cartController.addToCart(sender, productDetails8_1);
+
+           let newCart8_1 = JSON.parse(await getUserVars(sender, "cart"));
+
           const purchases8_1 = (await showPurchases()) + "";
 
           setUserVars(sender, "phase", "9");
@@ -555,7 +585,7 @@ ${purchases9} `,
         let productCart = JSON.parse(await getUserVars(sender, "cart"));
         productCart = productCart.items;
         const length9_1 = productCart.length;
-        console.log("---------product Cart---------", productCart);
+
         if (isNaN(message) === true || message > length9_1 || message <= 0) {
           // send error msg
           sendMsg.errorMsg(sender_id);
@@ -564,15 +594,13 @@ ${purchases9} `,
 
           let productCartIndex = message - 1; // index of product in cart
           const deletedItem = productCart[productCartIndex];
-
+      
           const result = await cartController.removeFromCart(
             sender,
-            deletedItem
+            deletedItem,
+            productCartIndex
           );
-          console.log("--------deletedItem_ID ---------: ", deletedItem);
-          console.log("--------productCart ---------: ", productCart);
-          console.log("--------productCartIndex ---------: ", productCartIndex);
-
+         
           if (result) {
             let newCart9_1 = JSON.parse(await getUserVars(sender, "cart"));
             const purchases9_1 = await showPurchases();
