@@ -1,6 +1,7 @@
 const Redis = require("ioredis");
-const client = new Redis();
-// "rediss://default:AVNS_JjFT4eRfCGRaYIy@db-redis-fra1-80366-do-user-9392750-0.b.db.ondigitalocean.com:25061"
+const client = new Redis( 
+  "rediss://default:AVNS_JjFT4eRfCGRaYIy@db-redis-fra1-80366-do-user-9392750-0.b.db.ondigitalocean.com:25061"
+);
 
 
 //^ DONE!
