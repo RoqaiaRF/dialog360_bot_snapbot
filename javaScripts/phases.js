@@ -133,7 +133,7 @@ const showCart =  (senderID, purchases, price, tax, total , fees) => {
    const sender = senderID.replace("whatsapp:+962", "");
 //todo: تمرير اذا كان حجز او طلب من اجل تحديد رابط الدفع
 // todo: بسياسة البيكاب يضيف زر " طلب بدون دفع" ومن ثم يحولها الى طلبية
-  const paymentLink = "https://e23f-154-242-188-137.ngrok.io/payment"
+  const paymentLink = `https://payment.snapbot.app?sender=${sender}`
   const countryCode =  "+962";
 
    sendTextMsg(`تفاصيل السلة: 
