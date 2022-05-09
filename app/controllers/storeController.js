@@ -126,6 +126,7 @@ const getNearestBranch = async (sender, phone, lat, lng) => {
     if (count > 0) {
       const nearest = await getNearestLocation({ lat, lng }, branchs);
       await redis.setUserVars(sender, "branch", JSON.stringify(nearest));
+      console.log("nearest branch ---------------------",nearest);
       return nearest;
     } else {
       return false;
@@ -148,6 +149,7 @@ const getFees = async(store_id, city_name) =>{
         ],
       } 
     );
+    
     return region.fees;
 }
 module.exports = { storeDetails, getNearestBranch, getAllBranchs, getFees };
