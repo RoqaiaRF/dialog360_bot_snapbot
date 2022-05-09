@@ -32,9 +32,6 @@ const getUserVars =  async(receiver_id, variable) => {
       }   
     }); 
   });}
-
-
-
   
 }
 

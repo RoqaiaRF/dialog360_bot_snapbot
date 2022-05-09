@@ -120,7 +120,6 @@ const showProduct = (senderID, product) => {
 
   sendMedia(` ${message}
   ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
-  للاضافة للسلة ارسل 1
   للعودة للمرحلة السابقة ارسل 00
   للعودة للرئيسية ارسل 0`,senderID, "https://stores-logos.fra1.digitaloceanspaces.com/products/"+product.image);
 }  
@@ -130,12 +129,12 @@ const quantityProductPhase = async (senderID)=>{
 }
 
 const showCart =  (senderID, purchases, price, tax, total , fees) => {
-   const sender = senderID.replace("whatsapp:+962", "");
+const sender = senderID.replace("whatsapp:+", "");
 //todo: تمرير اذا كان حجز او طلب من اجل تحديد رابط الدفع
 // todo: بسياسة البيكاب يضيف زر " طلب بدون دفع" ومن ثم يحولها الى طلبية
   const paymentLink = `https://payment.snapbot.app?sender=${sender}`
-  const countryCode =  "+962";
 
+  
    sendTextMsg(`تفاصيل السلة: 
   ${purchases}
 
@@ -143,10 +142,10 @@ const showCart =  (senderID, purchases, price, tax, total , fees) => {
 الضريبة : ${tax} دينار
 رسوم التوصيل ${fees} دينار
 المجموع الكلي: ${total} دينار
-
+🤗
 
 الررجاء أستخدام الرابط للدفع. 
-${paymentLink}?code=${countryCode}&sender=${sender}
+${paymentLink}
 
    حدد المنتج لحذفه
    أضافة منتجات`, senderID);

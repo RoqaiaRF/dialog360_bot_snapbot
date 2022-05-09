@@ -122,7 +122,7 @@ const bot = async (
   
   // EX: Input: "whatsapp:+96512345678" ,Output: "12345678"
   receiver_id = receiver_id.replace("whatsapp:+141", "");
-  sender = sender_id.replace("whatsapp:+962", "");
+  sender = sender_id.replace("whatsapp:+", "");
   //TODO: UNCOMMENT THIS
   //receiver_id = receiver_id.replace("whatsapp:+965", "");
   // sender = sender_id.replace("whatsapp:+965", "");
@@ -134,7 +134,6 @@ const bot = async (
   let cart, cityName;
 
 
-  
   const storeEN_Name = storObj.name_en; // اسم المتجر بالانجليزي
   const storeAR_Name = storObj.name_ar; // اسم المتجر في العربي
 
@@ -207,6 +206,10 @@ const bot = async (
           sendMsg.errorMsg(sender_id);
 
         } else {
+          console.log("sender", sender)
+          console.log("longitude", longitude)
+          console.log("latitude", latitude)
+
           const nearestBranch = await storeController.getNearestBranch(
             sender,
             receiver_id,
@@ -215,6 +218,7 @@ const bot = async (
           );
        
          cityName = await location.getCityName(latitude, longitude);
+
          const fees = await storeController.getFees(storObj.id, cityName)
          cart = cartController.newCart(sender,storObj.id, latitude, longitude,storObj.tax, fees); 
          
@@ -331,15 +335,18 @@ const bot = async (
         let length5 = subCategories.length;
 
         if (isNaN(message) == true) {
-          // send error msg
+ 
           sendMsg.errorMsg(sender_id);
-        } else if (message > length5 || message <= 0) {
-          // send error msg
-          sendMsg.errorMsg(sender_id);
-        } else if (message === "00") {
+        }
+         if (message == "00") {
           delUserVars(sender, "subcategories");
+          setUserVars(sender, "phase", "4");
           sendMsg.categoryPhase(sender_id, "" + categories(categoryObj5));
-        } else {
+        } 
+        else if (message > length5 || message <= 0) {
+          // send error msg
+          sendMsg.errorMsg(sender_id);
+        }  else {
           let categoryIndex = message - 1;
           let category = subCategories[categoryIndex];
           setUserVars(sender, "phase", "6"); // اختيار المنتجات
