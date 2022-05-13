@@ -36,14 +36,7 @@ const storeDetails = async (sender, phone) => {
           phone: phone,
           parent_id: null,
         },
-        /*         include: {
-          model: Store,
-          as: "branchs",
-          include: {
-            model: Store,
-            as: "parent",
-          },
-        }, */
+     
       },
       {
         attributes: [
@@ -54,6 +47,11 @@ const storeDetails = async (sender, phone) => {
           "parent_id", 
           "phone",
           "type_id",
+          "pay_when_receiving",
+          "pay_after_receiving",
+          "pickup_Policy",
+          "is_order",
+          "is_reservation"
         ],
       } 
     );
@@ -84,6 +82,11 @@ const getAllBranchs = async (phone) => {
           "parent_id",
           "phone",
           "type",
+          "pay_when_receiving",
+          "pay_after_receiving",
+          "pickup_Policy",
+          "is_order",
+          "is_reservation"
         ],
       }
     );
@@ -149,8 +152,12 @@ const getFees = async(store_id, city_name) =>{
         ],
       } 
     );
-    
-    return region.fees;
+
+    if(region == null || region == undefined)
+    return -1
+    else     
+       return region.fees;
+
 }
 module.exports = { storeDetails, getNearestBranch, getAllBranchs, getFees };
 

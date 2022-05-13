@@ -74,7 +74,7 @@ const showPurchases = async () => {
   return msg;
 };
 
-
+/*
 const showFeaturesAlone = async ( ) => {
 
   let msg = "";
@@ -92,7 +92,7 @@ const showFeaturesAlone = async ( ) => {
  
    return msg;
  };
- 
+ */
 
 
 //get and show features
@@ -121,9 +121,10 @@ const bot = async (
 ) => {
   
   // EX: Input: "whatsapp:+96512345678" ,Output: "12345678"
+  //TODO:  تغيير تخزين الرقم الى رقم كامل مع كود الدولة والزائد
   receiver_id = receiver_id.replace("whatsapp:+141", "");
   sender = sender_id.replace("whatsapp:+", "");
-  //TODO: UNCOMMENT THIS
+
   //receiver_id = receiver_id.replace("whatsapp:+965", "");
   // sender = sender_id.replace("whatsapp:+965", "");
 
@@ -154,6 +155,7 @@ const bot = async (
     delUserVars(sender, "productDetails");
     delUserVars(sender, "quantity");
     delUserVars(sender, "features");
+    delUserVars(sender, "pickup_Policy");
 
 
     sendMsg.welcomeLangPhase(
@@ -181,7 +183,6 @@ const bot = async (
           username,
           storObj
         );
-
         //Store phase # 1 EX: (key, value) => ( whatsapp:+96563336437 , 1 )
         setUserVars(sender, "phase", "1");
         break;
@@ -189,8 +190,20 @@ const bot = async (
       case "1":
         if (message === "العربية") {
           setUserVars(sender, "language", "ar");
-          sendMsg.locationPhase(sender_id);
-          setUserVars(sender, "phase", "2");
+          const pickup_Policy = storObj.pickup_Policy;
+
+          console.log("pickup_Policy-----------------",pickup_Policy)
+          //  بنحكيله بدك نوصل لك لبيتك او بدك تيجي للمحل حسب اذا كان فيه باكاب او لا 
+          if (pickup_Policy){
+           sendMsg.pickupPhase(sender_id)
+           setUserVars(sender, "phase", "1.1");
+
+          }
+          else { 
+           sendMsg.locationPhase(sender_id);
+           setUserVars(sender, "phase", "2");
+          }
+
         } else if (message === "English") {
           setUserVars(sender, "language", "en");
           englishBot(sender_id, receiver_id, message, longitude, latitude);
@@ -201,6 +214,27 @@ const bot = async (
         }
         break;
 
+      case "1.1": 
+        if (message == "توصيل لبيتي") {
+
+          sendMsg.locationPhase(sender_id);
+          setUserVars(sender, "phase", "2");
+          setUserVars(sender, "pickup_Policy", "false");
+
+        }
+        else if (message == "استلام من المتجر"){
+          setUserVars(sender, "pickup_Policy", "true");
+
+          //احضر الفروع كلها من الداتابيز
+          const branchObj = JSON.parse(
+            JSON.stringify(await storeController.getAllBranchs(receiver_id))
+          );
+          sendMsg.getAllBranchesPhase(sender_id, "" + branches(branchObj));
+          setUserVars(sender, "phase", "3.1");
+        }
+
+        break;
+      
       case "2":
         if (longitude == undefined || latitude == undefined) {
           sendMsg.errorMsg(sender_id);
@@ -220,9 +254,19 @@ const bot = async (
          cityName = await location.getCityName(latitude, longitude);
 
          const fees = await storeController.getFees(storObj.id, cityName)
-         cart = cartController.newCart(sender,storObj.id, latitude, longitude,storObj.tax, fees); 
-         
-
+console.log("fees", fees)
+        if(fees == -1){
+          setUserVars(sender, "phase", "2");
+          sendMsg.customMessage(
+            "عذرا لا نقدم خدمات ضمن موقعك الجغرافي",
+            sender_id
+          );
+          sendMsg.locationPhase(sender_id);
+        }
+        else{ 
+         let branch = JSON.parse(await getUserVars(sender, "branch"));
+         cart = cartController.newCart(sender,branch.id, latitude, longitude,storObj.tax, fees); 
+      
           if (!nearestBranch) {
             setUserVars(sender, "phase", "2");
             sendMsg.customMessage(
@@ -235,6 +279,9 @@ const bot = async (
             setUserVars(sender, "phase", "3");
           }
         }
+         
+
+        }
         break;
       case "3":
         if (message == "ابدأ الطلب") {
@@ -245,6 +292,8 @@ const bot = async (
           sendMsg.categoryPhase(sender_id, "" + categories(categoryObj));
         } else if (message === "اختر فرع اخر") {
           delUserVars(sender, "branch"); // احذف الفرع الموجود
+          delUserVars(sender, "cart"); // احذف الفرع الموجود
+
 
           //احضر الفروع كلها من الداتابيز
           const branchObj = JSON.parse(
@@ -272,7 +321,6 @@ const bot = async (
         let indexBranches = message - 1;
         let branchesObj = JSON.parse(await getUserVars(sender, "allbranches"));
         let selectedBranch = branchesObj[indexBranches];
-
         
         if (message > branchesObj.length || message <= 0) {
           // send error msg
@@ -283,9 +331,12 @@ const bot = async (
             `اهلا بك في  ${selectedBranch.name_ar}`,
             sender_id
           );
+
           //تخزين الفرع المختار مكان المتجر
           setUserVars(sender, "branch", JSON.stringify(selectedBranch));
-          cart = cartController.newCart(sender,storObj.id, selectedBranch.lat, selectedBranch.lng,storObj.tax, fees); 
+          const fees = 0; // ستكون خدمة الباكاب وبالتالي لا يودجد توصيل
+
+          cart = cartController.newCart(sender,selectedBranch.id, selectedBranch.lat, selectedBranch.lng,storObj.tax, fees); 
 
           setUserVars(sender, "phase", "3");
         }
@@ -361,8 +412,13 @@ const bot = async (
           sendMsg.errorMsg(sender_id);
           return;
         }
-
         let productObj = JSON.parse(await getUserVars(sender, "products"));
+
+        if (productObj === {}) {
+          sendMsg.customMessage("لا يوجد بيانات  لعرضها!",sender_id);
+          setUserVars(sender, "phase", "1");
+
+        }
 
         let length2 = productObj.length;
         let categoryObj2 = JSON.parse(await getUserVars(sender, "cats"));

@@ -11,8 +11,8 @@ const getCityName = async (lat, lng) => {
   await axios
     .get(baseUrl + `latlng=${lat},${lng}&key=${key}`)
     .then((res) => {
-      console.log("res",res);
-    for(let j=0; j < res.data.results.length ;j++){
+
+      for(let j=0; j < res.data.results.length ;j++){
 
       let address_components = res.data.results[j].address_components;
 

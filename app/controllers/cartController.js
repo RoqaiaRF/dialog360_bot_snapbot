@@ -1,6 +1,6 @@
 const Redis = require("ioredis");
 const client = new Redis( 
-  "rediss://default:AVNS_JjFT4eRfCGRaYIy@db-redis-fra1-80366-do-user-9392750-0.b.db.ondigitalocean.com:25061"
+  //"rediss://default:AVNS_JjFT4eRfCGRaYIy@db-redis-fra1-80366-do-user-9392750-0.b.db.ondigitalocean.com:25061"
 );
 
 
@@ -69,7 +69,7 @@ const calcTax = (tax, amount) => {
 };
 const newCart = async (
   sender,
-  store_id,
+  branch_id,
   latitude,
   longitude,
   tax_parecent,
@@ -79,7 +79,7 @@ const newCart = async (
   if (cart) return false;
   const obj = {
     id: sender,
-    store_id: store_id,
+    branch_id: branch_id,
     latitude: latitude,
     longitude: longitude,
     price: 0,

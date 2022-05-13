@@ -8,9 +8,6 @@ module.exports = (sequelize, Sequelize) => {
       name_en: {
         type: Sequelize.STRING,
       },
-      type_product: {
-        type: Sequelize.BOOLEAN,
-      },
       category_id: {
         type: Sequelize.BIGINT,
       },

@@ -1,7 +1,7 @@
 
 
 const isReservation_Pay = (storObj) => {
- 
+ /*
     const reservations = storObj.reservations_policy
     const pay1 = storObj.pay_when_receiving
     const pay2 = storObj.pay_after_receiving
@@ -13,7 +13,23 @@ const isReservation_Pay = (storObj) => {
       return "onlyReservation" 
      }
     else { return "Pay_Reservation_together" }
-console.log("********store obj", storObj);
-}
 
+*/
+const is_order = storObj.is_order
+const is_reservation = storObj.is_reservation
+
+ //اذا كان المتجر يستخدم سياسة الطلب ارجع 1 واذا كان يستخدم سياسة الحجز ارجع 0
+if (is_order && !is_reservation ) { // سياسة دفع فقط
+  return "onlyOrders"
+}
+else if (is_reservation && !is_order) {
+  return "onlyReservation" 
+ }
+ else if (is_reservation && is_order) {
+  return "Orders_Reservation_together" 
+ }
+ else {return "error"}
+ 
+
+  }
   module.exports = isReservation_Pay

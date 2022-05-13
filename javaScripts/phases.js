@@ -1,6 +1,8 @@
 const sendTextMsg = require("./sendMsgFunctions");
 const sendMedia = require("./sendMedia");
-const isReservation_Pay = require("../app/controllers/isReservation_PayController")
+const isReservation_Pay = require("../app/controllers/isReservation_OrdersController")
+const paymentPolicy = require("../app/controllers/payment_PolicyController")
+
 // Expected Outputs: English, العربية
 //^ Phase #1 welcome and choose Language
 /*----------------------------------------*/
@@ -10,7 +12,7 @@ const welcomeLangPhase = async(senderID, storeEN_Name, storeAR_Name, username) =
     `Welcome ${username} at ${storeEN_Name}... 
                 please click on the right option
                 
-                حياك الله في   ${storeAR_Name }..  ${username}شرفتنا يا    .. 
+                حياك الله في   ${storeAR_Name }..  ${username} شرفتنا يا    .. 
                 😄
            للحصول على المساعدة اارسل *
            دائما للعودة للرئيسية اضغط 0 
@@ -19,6 +21,19 @@ const welcomeLangPhase = async(senderID, storeEN_Name, storeAR_Name, username) =
   );
   sendTextMsg(`اختر اللغة المناسبة للطلب`, senderID);
 };
+//^Phase #1.1
+// TODO: عمل تيمبليت فيه زر اختيار التوصيل حسب اللوكيشن او انك ستذهب للمطعم 
+//"توصيل لبيتي"
+//"استلام من المتجر"
+const pickupPhase = (senderID) => {
+  sendTextMsg(
+    `ما طريقة استلام المنتج التي تفضلها ؟`,
+    senderID
+  );
+}
+
+
+
 
 /*----------------------------------------*/
 //  Expected Outputs: user Location contain langitude and latitude
@@ -35,7 +50,7 @@ const locationPhase = (senderID) => {
 const nearestLocation = (senderID, storeName, storObj) => {
   
   const _isReservation_Pay = isReservation_Pay(storObj);
-  if (_isReservation_Pay === "onlyPay" ) {   sendTextMsg(
+  if (_isReservation_Pay === "onlyOrders" ) {   sendTextMsg(
     `أقرب فرع لك هو ${storeName} ومتاح لخدمتك الان`,
     senderID
   );}
@@ -46,10 +61,14 @@ const nearestLocation = (senderID, storeName, storObj) => {
     senderID
   );} 
   //TODO:  عمل تيمبليت له فيه الحجز والطلب
-  else if  (_isReservation_Pay === "Pay_Reservation_together" ) {   sendTextMsg(
+  else if  (_isReservation_Pay === "Orders_Reservation_together" ) {   sendTextMsg(
     `أقرب فرع لك هو ${storeName} ومتاح لخدمتك الان`,
     senderID
   );} 
+  else if  (_isReservation_Pay === "error" ) {   sendTextMsg(
+    `نعتذر عن هذا الخطأ , يرجى التحدث مع خددمة العملاء`,
+    senderID
+  );}
 }
 
 
@@ -173,5 +192,6 @@ module.exports = {
   showProduct, 
   getAllBranchesPhase,
   quantityProductPhase,
-  showCart
+  showCart,
+  pickupPhase
 }
