@@ -23,7 +23,8 @@ const getProducts = async (sender, category_id) => {
     console.log("from cache");
     return JSON.parse(products_list);
   } else {
-    let list = await Products.findAll(
+    try{ 
+      let list = await Products.findAll(
       {
         where: {
           category_id: category_id,
@@ -42,12 +43,20 @@ const getProducts = async (sender, category_id) => {
     );
     await redis.setUserVars(sender, "products", JSON.stringify(list));
     console.log("from db");
+    
     return list;
+    }
+  catch(error ){
+    console.log("ERROR: ",error);
+    return {}
+  }
+    
   }
 };
 
 const getQuantity = async (store_id, product_id) => {
-  const res = await Quantity.findOne(
+  try{ 
+     const res = await Quantity.findOne( 
     {
       where: {
         store_id,
@@ -59,5 +68,11 @@ const getQuantity = async (store_id, product_id) => {
     }
   );
   return res.quantity;
+  }
+  catch(error){
+    console.log("ERROR: ", error)
+    return null
+  }
+ 
 };
 module.exports = { getProducts, getQuantity };

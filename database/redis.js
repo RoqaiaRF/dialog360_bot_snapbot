@@ -1,14 +1,14 @@
 //set data to the redis session
-//const redis = require("ioredis");
+
 const Redis = require("ioredis");
 require("dotenv").config();
 
 const client = new Redis( 
-  "rediss://default:AVNS_JjFT4eRfCGRaYIy@db-redis-fra1-80366-do-user-9392750-0.b.db.ondigitalocean.com:25061"
+//  "rediss://default:AVNS_JjFT4eRfCGRaYIy@db-redis-fra1-80366-do-user-9392750-0.b.db.ondigitalocean.com:25061"
 );
 
-
 const setUserVars = async (receiver_id, variable, value) => {
+  //TODO: تغيير مدة موت الريديس الى 7200
   await client.set(`${receiver_id}:${variable}`, value, "EX", 50000000);
 };
 
@@ -45,8 +45,3 @@ const deleteAllKeys = async () => {
 };
 
 module.exports = { setUserVars, getUserVars, delUserVars, deleteAllKeys };
-
-
-
-
-
