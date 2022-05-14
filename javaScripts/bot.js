@@ -156,6 +156,11 @@ const bot = async (
     delUserVars(sender, "quantity");
     delUserVars(sender, "features");
     delUserVars(sender, "pickup_Policy");
+    delUserVars(sender, "location");
+    delUserVars(sender, "isorder");
+
+
+    
 
 
     sendMsg.welcomeLangPhase(
@@ -246,6 +251,9 @@ const bot = async (
           console.log("sender:", sender)
           console.log("longitude: ", longitude)
           console.log("latitude: ", latitude)
+          const location2 = `{"lat":${latitude},"lng":${longitude} }`
+          // store location in redis
+          setUserVars(sender, "location", `${location2}`);
 
           const nearestBranch = await storeController.getNearestBranch(
             sender,
@@ -321,6 +329,7 @@ const bot = async (
           const categoryObj = JSON.parse(
             JSON.stringify(await getCategories(sender, storObj.id, 1))
           );
+          setUserVars(sender, "isorder", true);
           setUserVars(sender, "phase", "4");
           sendMsg.categoryPhase(sender_id, "" + categories(categoryObj));
         } else if (message === "اختر فرع اخر") {
@@ -339,6 +348,8 @@ const bot = async (
           const categoryObj = JSON.parse(
             JSON.stringify(await getCategories(sender, storObj.id, 0))
           );
+          setUserVars(sender, "isorder", false);
+
           setUserVars(sender, "phase", "4");
           sendMsg.categoryPhase(sender_id, "" + categories(categoryObj));
         } else {
@@ -375,12 +386,13 @@ const bot = async (
           }
           else {
           // todo: احضار اللوكيشن للشخص
+          const location3_1 =  JSON.parse(await getUserVars(sender, "location"));
+          lat= location3_1.lat;
+          lng= branch3_1.lng
+
           }
 
-
           console.log(" -----selectedBranch-------------- ", branch3_1)
-
-          
           cart = cartController.newCart(sender,selectedBranch.id,lat, lng,storObj.tax, fees); 
 
           setUserVars(sender, "phase", "3");
@@ -451,14 +463,14 @@ const bot = async (
         }
         break;
 
-      case "6": //  المنتجات
-        if (isNaN(message) === true) {
-          // send error msg
-          sendMsg.errorMsg(sender_id);
-          return;
-        }
+      case "6": //  المنتجات 
+        if (isNaN(message) === true) { 
+          // send error msg 
+          sendMsg.errorMsg(sender_id);  
+          return; 
+        } 
         let productObj = JSON.parse(await getUserVars(sender, "products"));
-
+        console.log("productObj: ",productObj)
         if (productObj === {}) {
           sendMsg.customMessage("لا يوجد بيانات  لعرضها!",sender_id);
           setUserVars(sender, "phase", "1");
