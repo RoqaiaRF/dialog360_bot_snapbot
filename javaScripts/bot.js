@@ -219,11 +219,11 @@ const bot = async (
 
           sendMsg.locationPhase(sender_id);
           setUserVars(sender, "phase", "2");
-          setUserVars(sender, "pickup_Policy", "false");
+          setUserVars(sender, "pickup_Policy", false);
 
         }
         else if (message == "استلام من المتجر"){
-          setUserVars(sender, "pickup_Policy", "true");
+          setUserVars(sender, "pickup_Policy", true);
 
           //احضر الفروع كلها من الداتابيز
           const branchObj = JSON.parse(
@@ -255,7 +255,7 @@ const bot = async (
           );
        
          cityName = await location.getCityName(latitude, longitude);
-
+         console.log("  258 latitude, longitude: ", latitude, longitude)
          const fees = await storeController.getFees(storObj.id, cityName)
 
          if(fees == -1){// هذا يعني ان المدينة التي ارسلها اليوزر غير موجوده في قواعد البيانات لدينا 
@@ -267,6 +267,7 @@ const bot = async (
           sendMsg.locationPhase(sender_id);
         }
         else{ 
+          console.log("  270 latitude, longitude: ", latitude, longitude)
          let branch = JSON.parse(await getUserVars(sender, "branch"));
          cart = cartController.newCart(sender,branch.id, latitude, longitude,storObj.tax, fees); 
           if (!nearestBranch) {
@@ -282,7 +283,6 @@ const bot = async (
           }
         }
          
-
         }
         break;
 
@@ -293,12 +293,8 @@ const bot = async (
             sendMsg.errorMsg(sender_id);
   
           } else {
-            console.log("sender:", sender)
-            console.log("longitude: ", longitude)
-            console.log("latitude: ", latitude)
-  
-         
-           cityName = await location.getCityName(latitude, longitude);
+            console.log("  296 latitude, longitude: ", latitude, longitude)
+            cityName = await location.getCityName(latitude, longitude);
            const fees = await storeController.getFees(branch2_1.id, cityName)
   
            if(fees == -1){// هذا يعني ان المدينة التي ارسلها اليوزر غير موجوده في قواعد البيانات لدينا 
@@ -310,12 +306,10 @@ const bot = async (
             sendMsg.locationPhase(sender_id);
           }
           else{ 
+           console.log("  309 latitude, longitude: ", latitude, longitude)
            cart = cartController.newCart(sender,branch2_1.id, latitude, longitude,storObj.tax, fees); 
            setUserVars(sender, "phase", "3");
-           sendMsg.customMessage(
-            `اهلا بك في  ${selectedBranch.name_ar}`,
-            sender_id
-          );
+           sendMsg.nearestLocation(sender_id,selectedBranch.name_ar, storObj);
 
           }
         }  
@@ -331,7 +325,7 @@ const bot = async (
           sendMsg.categoryPhase(sender_id, "" + categories(categoryObj));
         } else if (message === "اختر فرع اخر") {
           delUserVars(sender, "branch"); // احذف الفرع الموجود
-         //todo:check if correct or not delUserVars(sender, "cart"); // احذف الفرع الموجود
+          delUserVars(sender, "cart"); // احذف الفرع الموجود
 
 
           //احضر الفروع كلها من الداتابيز
@@ -365,20 +359,19 @@ const bot = async (
           // send error msg
           sendMsg.errorMsg(sender_id);
         } else {
-          //TODO: Convert this message to template with 3 buttons:  ابدأ الطلب, ابدأ الحجز , العودة للرئيسية
-          sendMsg.customMessage(
-            `اهلا بك في  ${selectedBranch.name_ar}`,
-            sender_id
-          );
+          //TODO: wait for approve Convert this message to template with 3 buttons:  ابدأ الطلب, ابدأ الحجز , العودة للرئيسية
+          sendMsg.nearestLocation(sender_id,selectedBranch.name_ar, storObj);
 
           //تخزين الفرع المختار مكان المتجر
           setUserVars(sender, "branch", JSON.stringify(selectedBranch));
           const fees = 0; // ستكون خدمة الباكاب وبالتالي لا يودجد توصيل
-          const pickup_Policy = getUserVars(sender, "pickup_Policy");
+          const pickup_Policy = JSON.parse( await getUserVars(sender, "pickup_Policy"));
           let lat, lng;
-          if (pickup_Policy === "true"){//  ااذ يريد خدمة الباكاب فاجعل العنوان هو نفسه عنوان المتجر
-            lat= selectedBranch.lat;
-            lng= selectedBranch.lng
+          let branch3_1 = JSON.parse(await getUserVars(sender, "branch"));
+
+          if (pickup_Policy === true){//  ااذ يريد خدمة الباكاب فاجعل العنوان هو نفسه عنوان المتجر
+            lat= branch3_1.lat;
+            lng= branch3_1.lng
           }
           // else {
           //   sendMsg.locationPhase(sender_id);
@@ -386,7 +379,10 @@ const bot = async (
 
           // }
 
+          console.log("  381 lat, : ", lat)
+          console.log(" -----selectedBranch-------------- ", branch3_1)
 
+          
           cart = cartController.newCart(sender,selectedBranch.id,lat, lng,storObj.tax, fees); 
 
           setUserVars(sender, "phase", "3");
