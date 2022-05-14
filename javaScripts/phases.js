@@ -22,7 +22,7 @@ const welcomeLangPhase = async(senderID, storeEN_Name, storeAR_Name, username) =
   sendTextMsg(`اختر اللغة المناسبة للطلب`, senderID);
 };
 //^Phase #1.1
-// TODO: عمل تيمبليت فيه زر اختيار التوصيل حسب اللوكيشن او انك ستذهب للمطعم 
+  //TODO: Wait approve template
 //"توصيل لبيتي"
 //"استلام من المتجر"
 const pickupPhase = (senderID) => {
@@ -50,19 +50,23 @@ const locationPhase = (senderID) => {
 const nearestLocation = (senderID, storeName, storObj) => {
   
   const _isReservation_Pay = isReservation_Pay(storObj);
+  console.log(` ............_isReservation_Pay.................... ${_isReservation_Pay}`)
+
   if (_isReservation_Pay === "onlyOrders" ) {   sendTextMsg(
     `أقرب فرع لك هو ${storeName} ومتاح لخدمتك الان`,
     senderID
   );}
-  //TODO: عمل تيمبليت لها فيه الجدز فقط
 
+  //TODO: Wait approve template
   else if  (_isReservation_Pay === "onlyReservation" ) {  sendTextMsg(
-    `أقرب فرع لك هو ${storeName} ومتاح لخدمتك الان`,
+
+    `أقرب فرع لك هو  ${storeName} وهو متاح لخدمتك الان`,
     senderID
   );} 
-  //TODO:  عمل تيمبليت له فيه الحجز والطلب
+  //TODO: Wait approve template
   else if  (_isReservation_Pay === "Orders_Reservation_together" ) {   sendTextMsg(
-    `أقرب فرع لك هو ${storeName} ومتاح لخدمتك الان`,
+
+    ` أقرب فرع لك ${storeName} ومتاح لخدمتك الان`,
     senderID
   );} 
   else if  (_isReservation_Pay === "error" ) {   sendTextMsg(

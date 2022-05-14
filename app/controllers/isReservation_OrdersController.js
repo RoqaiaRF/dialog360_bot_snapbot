@@ -16,7 +16,7 @@ else if (is_reservation && !is_order) {
   return "Orders_Reservation_together" 
  }
  else {return "error"}
- 
+
 
   }
   module.exports = isReservation_Pay
