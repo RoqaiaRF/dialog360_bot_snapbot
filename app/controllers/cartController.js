@@ -1,6 +1,6 @@
 const Redis = require("ioredis");
 const client = new Redis( 
-  //"rediss://default:AVNS_JjFT4eRfCGRaYIy@db-redis-fra1-80366-do-user-9392750-0.b.db.ondigitalocean.com:25061"
+ // "rediss://default:AVNS_JjFT4eRfCGRaYIy@db-redis-fra1-80366-do-user-9392750-0.b.db.ondigitalocean.com:25061"
 );
 
 
@@ -59,9 +59,6 @@ const  removeItem  = async (items, i) => {
 
   items.splice(i, 1);
   return items;
- // return arr.filter(function (ele) {
-  //   return ele.id !== item.id;
-  // });
 }
 const calcTax = (tax, amount) => {
   const x = (amount * tax) / 100;
@@ -75,6 +72,9 @@ const newCart = async (
   tax_parecent,
   fees = 0
 ) => {
+  const isOrder = JSON.parse( await getUserVars(sender, "isorder"));
+  const pickup_Policy = JSON.parse( await getUserVars(sender, "pickup_Policy"));
+
   const cart = JSON.parse(await client.get(`${sender}:cart`));
   if (cart) return false;
   const obj = {
@@ -87,6 +87,8 @@ const newCart = async (
     tax: 0,
     tax_parecent,
     total: this.tax + fees,
+    pickup_policy: pickup_Policy ,
+    isOrder: isOrder,
     items: [],
   };
   await client.set(`${sender}:cart`, JSON.stringify(obj));
