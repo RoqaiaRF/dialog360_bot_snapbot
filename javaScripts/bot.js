@@ -121,7 +121,7 @@ const bot = async (
 ) => {
   
   // EX: Input: "whatsapp:+96512345678" ,Output: "12345678"
-  //TODO:  تغيير تخزين الرقم الى رقم كامل مع كود الدولة والزائد
+
   receiver_id = receiver_id.replace("whatsapp:+", "");
   sender = sender_id.replace("whatsapp:+", "");
 
@@ -373,13 +373,11 @@ const bot = async (
             lat= branch3_1.lat;
             lng= branch3_1.lng
           }
-          // else {
-          //   sendMsg.locationPhase(sender_id);
-          //   setUserVars(sender, "phase", "2.1");
+          else {
+          // todo: احضار اللوكيشن للشخص
+          }
 
-          // }
 
-          console.log("  381 lat, : ", lat)
           console.log(" -----selectedBranch-------------- ", branch3_1)
 
           
