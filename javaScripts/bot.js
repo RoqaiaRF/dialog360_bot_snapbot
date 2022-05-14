@@ -197,7 +197,7 @@ const bot = async (
           if (pickup_Policy){
            sendMsg.pickupPhase(sender_id)
            setUserVars(sender, "phase", "1.1");
-
+  
           }
           else { 
            sendMsg.locationPhase(sender_id);
