@@ -122,7 +122,7 @@ const bot = async (
   
   // EX: Input: "whatsapp:+96512345678" ,Output: "12345678"
   //TODO:  تغيير تخزين الرقم الى رقم كامل مع كود الدولة والزائد
-  receiver_id = receiver_id.replace("whatsapp:+141", "");
+  receiver_id = receiver_id.replace("whatsapp:+", "");
   sender = sender_id.replace("whatsapp:+", "");
 
   //receiver_id = receiver_id.replace("whatsapp:+965", "");
@@ -232,6 +232,9 @@ const bot = async (
           sendMsg.getAllBranchesPhase(sender_id, "" + branches(branchObj));
           setUserVars(sender, "phase", "3.1");
         }
+        else {
+          sendMsg.errorMsg(sender_id);
+        }
 
         break;
       
@@ -240,9 +243,9 @@ const bot = async (
           sendMsg.errorMsg(sender_id);
 
         } else {
-          console.log("sender", sender)
-          console.log("longitude", longitude)
-          console.log("latitude", latitude)
+          console.log("sender:", sender)
+          console.log("longitude: ", longitude)
+          console.log("latitude: ", latitude)
 
           const nearestBranch = await storeController.getNearestBranch(
             sender,
@@ -254,8 +257,8 @@ const bot = async (
          cityName = await location.getCityName(latitude, longitude);
 
          const fees = await storeController.getFees(storObj.id, cityName)
-console.log("fees", fees)
-        if(fees == -1){
+
+         if(fees == -1){// هذا يعني ان المدينة التي ارسلها اليوزر غير موجوده في قواعد البيانات لدينا 
           setUserVars(sender, "phase", "2");
           sendMsg.customMessage(
             "عذرا لا نقدم خدمات ضمن موقعك الجغرافي",
@@ -266,7 +269,6 @@ console.log("fees", fees)
         else{ 
          let branch = JSON.parse(await getUserVars(sender, "branch"));
          cart = cartController.newCart(sender,branch.id, latitude, longitude,storObj.tax, fees); 
-      
           if (!nearestBranch) {
             setUserVars(sender, "phase", "2");
             sendMsg.customMessage(
@@ -283,6 +285,43 @@ console.log("fees", fees)
 
         }
         break;
+
+        case "2.1":
+
+          let branch2_1 = JSON.parse(await getUserVars(sender, "branch"));
+          if (longitude == undefined || latitude == undefined) {
+            sendMsg.errorMsg(sender_id);
+  
+          } else {
+            console.log("sender:", sender)
+            console.log("longitude: ", longitude)
+            console.log("latitude: ", latitude)
+  
+         
+           cityName = await location.getCityName(latitude, longitude);
+           const fees = await storeController.getFees(branch2_1.id, cityName)
+  
+           if(fees == -1){// هذا يعني ان المدينة التي ارسلها اليوزر غير موجوده في قواعد البيانات لدينا 
+            setUserVars(sender, "phase", "2");
+            sendMsg.customMessage(
+              "عذرا لا نقدم خدمات ضمن موقعك الجغرافي",
+              sender_id
+            );
+            sendMsg.locationPhase(sender_id);
+          }
+          else{ 
+           cart = cartController.newCart(sender,branch2_1.id, latitude, longitude,storObj.tax, fees); 
+           setUserVars(sender, "phase", "3");
+           sendMsg.customMessage(
+            `اهلا بك في  ${selectedBranch.name_ar}`,
+            sender_id
+          );
+
+          }
+        }  
+          break;
+
+
       case "3":
         if (message == "ابدأ الطلب") {
           const categoryObj = JSON.parse(
@@ -292,7 +331,7 @@ console.log("fees", fees)
           sendMsg.categoryPhase(sender_id, "" + categories(categoryObj));
         } else if (message === "اختر فرع اخر") {
           delUserVars(sender, "branch"); // احذف الفرع الموجود
-          delUserVars(sender, "cart"); // احذف الفرع الموجود
+         //todo:check if correct or not delUserVars(sender, "cart"); // احذف الفرع الموجود
 
 
           //احضر الفروع كلها من الداتابيز
@@ -335,8 +374,20 @@ console.log("fees", fees)
           //تخزين الفرع المختار مكان المتجر
           setUserVars(sender, "branch", JSON.stringify(selectedBranch));
           const fees = 0; // ستكون خدمة الباكاب وبالتالي لا يودجد توصيل
+          const pickup_Policy = getUserVars(sender, "pickup_Policy");
+          let lat, lng;
+          if (pickup_Policy === "true"){//  ااذ يريد خدمة الباكاب فاجعل العنوان هو نفسه عنوان المتجر
+            lat= selectedBranch.lat;
+            lng= selectedBranch.lng
+          }
+          // else {
+          //   sendMsg.locationPhase(sender_id);
+          //   setUserVars(sender, "phase", "2.1");
 
-          cart = cartController.newCart(sender,selectedBranch.id, selectedBranch.lat, selectedBranch.lng,storObj.tax, fees); 
+          // }
+
+
+          cart = cartController.newCart(sender,selectedBranch.id,lat, lng,storObj.tax, fees); 
 
           setUserVars(sender, "phase", "3");
         }
