@@ -330,11 +330,15 @@ const bot = async (
             JSON.stringify(await getCategories(sender, storObj.id, 1))
           );
           setUserVars(sender, "isorder", true);
+          let cart3 =   JSON.parse(await getUserVars(sender, "cart"));
+          cart3.isOrder = true;
+          setUserVars(sender, "cart",JSON.stringify(cart3));
+
           setUserVars(sender, "phase", "4");
           sendMsg.categoryPhase(sender_id, "" + categories(categoryObj));
         } else if (message === "اختر فرع اخر") {
           delUserVars(sender, "branch"); // احذف الفرع الموجود
-          delUserVars(sender, "cart"); // احذف الفرع الموجود
+          delUserVars(sender, "cart"); // احذف السله الموجود
 
 
           //احضر الفروع كلها من الداتابيز
@@ -349,6 +353,9 @@ const bot = async (
             JSON.stringify(await getCategories(sender, storObj.id, 0))
           );
           setUserVars(sender, "isorder", false);
+          let cart3r =   JSON.parse(await getUserVars(sender, "cart"));
+          cart3r.isOrder = false;
+          setUserVars(sender, "cart",JSON.stringify(cart3r));
 
           setUserVars(sender, "phase", "4");
           sendMsg.categoryPhase(sender_id, "" + categories(categoryObj));
@@ -385,7 +392,7 @@ const bot = async (
             lng= branch3_1.lng
           }
           else {
-          // todo: احضار اللوكيشن للشخص
+
           const location3_1 =  JSON.parse(await getUserVars(sender, "location"));
           lat= location3_1.lat;
           lng= branch3_1.lng
@@ -510,9 +517,36 @@ const bot = async (
           sendMsg.productPhase(sender_id, products(productObj7));
         }
         //لا تتم الاضافة للسلة بعد , يجب تحديد الكمية وبعدها يضيف للسلة
+        // ااذا كانت السياسه حجز فسيضيف للسله عادي
         else if (message == "اضافة للسلة") {
-          setUserVars(sender, "phase", "8");
-          await sendMsg.quantityProductPhase(sender_id);
+          const isorder7 = JSON.parse( await getUserVars(sender, "isorder"));
+          if (isorder7 === true){
+            setUserVars(sender, "phase", "8");
+            await sendMsg.quantityProductPhase(sender_id);
+          }
+          else if (isorder7 === false){ 
+            setUserVars(sender, "quantity", "1");
+            let productDetails_7 = JSON.parse(
+              await getUserVars(sender, "productDetails")
+            );
+
+            await cartController.addToCart(sender, productDetails_7);
+            let newCart7 = JSON.parse(await getUserVars(sender, "cart"));
+            const purchases7 = (await showPurchases()) + "";
+           
+            setUserVars(sender, "phase", "9");
+            sendMsg.showCart(
+              sender_id,
+              purchases7,
+              newCart7.price,
+              newCart7.tax,
+              newCart7.total,
+              newCart7.fees // رسوم التوصيل
+
+            );
+
+          }
+
 
         } else {
           sendMsg.errorMsg(sender_id);
@@ -616,7 +650,6 @@ const bot = async (
               newCart8.tax,
               newCart8.total,
               newCart8.fees // رسوم التوصيل
-
             );
           }
         }

@@ -72,8 +72,10 @@ const newCart = async (
   tax_parecent,
   fees = 0
 ) => {
-  const isOrder = JSON.parse( await getUserVars(sender, "isorder"));
-  const pickup_Policy = JSON.parse( await getUserVars(sender, "pickup_Policy"));
+  const isOrder = JSON.parse( await client.get(`${sender}:isorder`));
+
+  console.log("********isOrder*********",isOrder);
+  const pickup_Policy = JSON.parse( await  client.get(`${sender}:pickup_Policy`));
 
   const cart = JSON.parse(await client.get(`${sender}:cart`));
   if (cart) return false;
