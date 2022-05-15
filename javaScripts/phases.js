@@ -1,8 +1,11 @@
 const sendTextMsg = require("./sendMsgFunctions");
 const sendMedia = require("./sendMedia");
 const isReservation_Pay = require("../app/controllers/isReservation_OrdersController");
-const paymentPolicy = require("../app/controllers/payment_PolicyController");
-
+//const paymentPolicy = require("../app/controllers/payment_PolicyController");
+const Redis = require("ioredis");
+const client = new Redis( 
+ // "rediss://default:AVNS_JjFT4eRfCGRaYIy@db-redis-fra1-80366-do-user-9392750-0.b.db.ondigitalocean.com:25061"
+);
 // Expected Outputs: English, العربية
 //^ Phase #1 welcome and choose Language
 /*----------------------------------------*/
@@ -170,13 +173,13 @@ const quantityProductPhase = async (senderID) => {
   sendTextMsg(`أدخل الكمية المناسبة بالارقام الانجليزية 1, 2, ...`, senderID);
 };
 
-const showCart = (senderID, purchases, price, tax, total, fees) => {
-  const isOrder = JSON.parse( await getUserVars(sender, "isorder"));
+const showCart = async(senderID, purchases, price, tax, total, fees) => {
   let paymentLink = '';
 
-  
+    
   const sender = senderID.replace("whatsapp:+", "");
-  
+  const isOrder = JSON.parse( await client.get(`${sender}:isorder`));
+
   if (isOrder === true){
      paymentLink = `http://payment.snapbot.app/order?sender=${sender}`;
   }
