@@ -135,7 +135,7 @@ module.exports = {
   categoryPhase,
   productPhase,
   errorMsg,
-  nearestLocation,
+  nearestLocation, 
   customMessage,
   subCategoryPhase,
   featuresPhase,
