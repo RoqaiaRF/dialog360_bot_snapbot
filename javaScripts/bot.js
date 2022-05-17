@@ -173,9 +173,15 @@ const bot = async (
     setUserVars(sender, "phase", "1");
   } else if (message == "*") {
     //TODO: المستخدم بحاجة للمساعدة قم بارسال اشعار للداشبورد
-  } else if (message == "JGHFds547fdgl;kj78-=l';fasdSw4@*fe+sdfa+sd54sadfa68") {
- //حذف كل شيء بالريديس
+  } else if (message == "JGHFds547fdgl;kj78") {
+ //حذف كل شيء بالريديس 
+sendMsg.customMessage(
+      "تم حذف كل شيء في الريديس بنجاح انتظر شي 3 دقائق حتى تعود الخدمات لشكلها الصحيح",
+      sender_id
+    );
+
     deleteAllKeys();
+   
 }
    else if (language == "en") {
     englishBot(sender_id, receiver_id, message, longitude, latitude);
