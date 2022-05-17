@@ -71,6 +71,7 @@ const getAllBranchs = async (phone) => {
       {
         where: {
           phone: phone,
+          deleted_at: null
         },
       },
       {

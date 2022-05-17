@@ -14,6 +14,9 @@ module.exports = (sequelize, Sequelize) => {
       parent_id: {
         type: Sequelize.BIGINT,
       },
+      deleted_at: {
+        type: Sequelize.DATE,
+      },
     },
     {
       timestamps: false,

@@ -629,10 +629,7 @@ const bot = async (
             setUserVars(sender, "quantity", JSON.stringify(parseInt(message)));
            // await cartController.addToCart(sender, productDetails);
 
-            sendMsg.customMessage(
-              "هل تريد خدمات اضافية ؟ ---  اختر نعم او لا",
-              sender_id
-            );
+           sendMsg.addedDetails(sender_id)
             setUserVars(sender, "phase", "8.1");
           } else {
 

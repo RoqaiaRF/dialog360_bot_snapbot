@@ -1,6 +1,6 @@
 const Redis = require("ioredis");
 const client = new Redis( 
- // "rediss://default:AVNS_JjFT4eRfCGRaYIy@db-redis-fra1-80366-do-user-9392750-0.b.db.ondigitalocean.com:25061"
+  "rediss://default:AVNS_JjFT4eRfCGRaYIy@db-redis-fra1-80366-do-user-9392750-0.b.db.ondigitalocean.com:25061"
 );
 
 
@@ -62,7 +62,7 @@ const  removeItem  = async (items, i) => {
 }
 const calcTax = (tax, amount) => {
   const x = (amount * tax) / 100;
-  return parseFloat(x);
+  return parseFloat(x).toFixed(2);
 };
 const newCart = async (
   sender,
@@ -112,7 +112,7 @@ const addToCart = async (sender, item) => {
     cart.price = cart.total - cart.tax; */
     const itemIDinCart = cart.items[cart.items.length -1]
 
-    cart.price += parseInt(itemIDinCart.price) * parseInt(itemIDinCart.qty);
+    cart.price += parseFloat(itemIDinCart.price).toFixed(2) * parseInt(itemIDinCart.qty);
 
     cart.tax = calcTax(cart.tax_parecent, cart.price);
     cart.total = cart.price + cart.tax + cart.fees;
@@ -131,7 +131,7 @@ const addToCart = async (sender, item) => {
 const addFeatureToCart = async (sender, item, feature) => {
   
   item.features = [feature]          
-  item.price = parseInt(item.price)+ feature.price ;
+  item.price = parseFloat(item.price).toFixed(2) + feature.price ;
   const quantity =  parseInt( await client.get(`${sender}:quantity`))
   item.qty = quantity
 

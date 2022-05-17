@@ -38,6 +38,7 @@ const getCategories = async (sender, store_id, type) => {
           store_id: store_id,
           type: type,
           parent_id: null,
+          deleted_at: null
 
         },
         include: {

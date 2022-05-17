@@ -77,7 +77,9 @@ module.exports = (sequelize, Sequelize) => {
       pickup_Policy:{
         type: Sequelize.BOOLEAN,
       },
-      
+      deleted_at: {
+        type: Sequelize.DATE,
+      },
      
     },
     {
