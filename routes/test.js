@@ -8,7 +8,7 @@ const {
 const { getFees } = require("../app/controllers/storeController");
 const { getQuantity } = require("../app/controllers/productController");
 const client = new Redis();
-// "rediss://default:AVNS_JjFT4eRfCGRaYIy@db-redis-fra1-80366-do-user-9392750-0.b.db.ondigitalocean.com:25061"
+("rediss://default:AVNS_JjFT4eRfCGRaYIy@db-redis-fra1-80366-do-user-9392750-0.b.db.ondigitalocean.com:25061");
 var router = express.Router();
 
 router.get("/", async (req, res, next) => {
