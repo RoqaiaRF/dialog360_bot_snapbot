@@ -57,16 +57,19 @@ const branches = (branchesObj) => {
 
 const showPurchases = async () => {
 
- let msg = "";
+ let msg = "", addedFeatures = "";
   const _showCart =   JSON.parse(await getUserVars(sender, "cart"));
   let purchasesObj = _showCart.items;
 
   
   purchasesObj.forEach((element, index) => {
+    addedFeatures = `    الخدمات الاضافية: ${showFeatures(element.features)} 
+    `
+
 
     
-        msg += ` *${index + 1}* . ${element.name_ar},  عدد:  ${element.qty}
-    الخدمات الاضافية: ${showFeatures(element.features)} 
+        msg += ` *${index + 1}* . ${element.name_ar},  عدد:  ${element.qty}  المدة:  ${element.duration} دقيقه
+        ${addedFeatures}
    `;
 
   });
@@ -158,9 +161,6 @@ const bot = async (
     delUserVars(sender, "pickup_Policy");
     delUserVars(sender, "location");
     delUserVars(sender, "isorder");
-
-
-    
 
 
     sendMsg.welcomeLangPhase(
@@ -556,7 +556,6 @@ sendMsg.customMessage(
             );
 
           }
-
 
         } else {
           sendMsg.errorMsg(sender_id);

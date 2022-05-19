@@ -1,7 +1,6 @@
 const sendTextMsg = require("./sendMsgFunctions");
 const sendMedia = require("./sendMedia");
 const isReservation_Pay = require("../app/controllers/isReservation_OrdersController");
-//const paymentPolicy = require("../app/controllers/payment_PolicyController");
 const Redis = require("ioredis");
 const client = new Redis( 
   "rediss://default:AVNS_JjFT4eRfCGRaYIy@db-redis-fra1-80366-do-user-9392750-0.b.db.ondigitalocean.com:25061"
@@ -153,6 +152,8 @@ const showProduct = (senderID, product) => {
   الوصف: ${product.description_ar}
   السعر: ${product.price}
   `;
+
+  sendTextMsg(`تفاصيل المنتج `, senderID );
   console.log("product.image : ", product.image);
   if (product.image != null || product.image != undefined) {
 
@@ -201,10 +202,10 @@ const showCart = async(senderID, purchases, price, tax, total, fees) => {
 const msg = `
 ${purchases}
 
-المجموع دون ضريبة : ${price} دينار 
+المجموع دون ضريبة : ${price.toFixed(2)} دينار 
 الضريبة : ${tax} دينار
 رسوم التوصيل ${fees} دينار
-المجموع الكلي: ${total} دينار
+المجموع الكلي: ${total.toFixed(2)} دينار
 🤗
 
 الررجاء أستخدام الرابط لتأكيد الطلب. 

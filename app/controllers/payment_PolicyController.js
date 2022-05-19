@@ -7,10 +7,10 @@ const paymentPolicy = (storObj) => {
     return "pay_when_receiving";//  فقط دفع قبل الاستلام
   } 
   else if (pay_after_receiving && !pay_when_receiving) {
-    return "pay_after_receiving"; //  فقط دفع بعد الاستلام او الباكاب 
+    return "pay_after_receiving"; //  فقط دفع بعد الاستلام  
   } 
   else if (pay_after_receiving && pay_when_receiving) {
-    return "before_and_after_payment"; // يوجد لديه خدمة الدفع قبل او بعد او الباكاب
+    return "before_and_after_payment"; // يوجد لديه خدمة الدفع قبل او بعد 
   } 
  
   else {

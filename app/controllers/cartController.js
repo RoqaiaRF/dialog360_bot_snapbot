@@ -1,4 +1,5 @@
 const Redis = require("ioredis");
+const payment_PolicyController = require("./payment_PolicyController");
 const client = new Redis( 
   "rediss://default:AVNS_JjFT4eRfCGRaYIy@db-redis-fra1-80366-do-user-9392750-0.b.db.ondigitalocean.com:25061"
 );
@@ -62,7 +63,7 @@ const  removeItem  = async (items, i) => {
 }
 const calcTax = (tax, amount) => {
   const x = (amount * tax) / 100;
-  return parseFloat(x).toFixed(2);
+  return parseFloat(x);
 };
 const newCart = async (
   sender,
@@ -73,8 +74,12 @@ const newCart = async (
   fees = 0
 ) => {
   const isOrder = JSON.parse( await client.get(`${sender}:isorder`));
+  const storObj = JSON.parse( await client.get(`${sender}:store`));
 
+  const payment_Policy = payment_PolicyController(storObj)
   console.log("********isOrder*********",isOrder);
+
+  console.log("********payment_Policy*********",payment_Policy);
   const pickup_Policy = JSON.parse( await  client.get(`${sender}:pickup_Policy`));
 
   const cart = JSON.parse(await client.get(`${sender}:cart`));
@@ -91,8 +96,10 @@ const newCart = async (
     total: this.tax + fees,
     pickup_policy: pickup_Policy ,
     isOrder: isOrder,
+    payment_Policy: payment_Policy,
     items: [],
   };
+  console.log("cart: ",obj);
   await client.set(`${sender}:cart`, JSON.stringify(obj));
   return cart;
 };
@@ -112,7 +119,7 @@ const addToCart = async (sender, item) => {
     cart.price = cart.total - cart.tax; */
     const itemIDinCart = cart.items[cart.items.length -1]
 
-    cart.price += parseFloat(itemIDinCart.price).toFixed(2) * parseInt(itemIDinCart.qty);
+    cart.price += parseFloat(itemIDinCart.price) * parseInt(itemIDinCart.qty);
 
     cart.tax = calcTax(cart.tax_parecent, cart.price);
     cart.total = cart.price + cart.tax + cart.fees;
@@ -131,7 +138,7 @@ const addToCart = async (sender, item) => {
 const addFeatureToCart = async (sender, item, feature) => {
   
   item.features = [feature]          
-  item.price = parseFloat(item.price).toFixed(2) + feature.price ;
+  item.price = (parseFloat(item.price) + feature.price ).toFixed(2);
   const quantity =  parseInt( await client.get(`${sender}:quantity`))
   item.qty = quantity
 
