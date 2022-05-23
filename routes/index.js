@@ -3,6 +3,12 @@ const router = express.Router();
 const bot = require("../javaScripts/bot");
 
 router.post("/", function (req, res, next) {
+  if (!req.body) {
+    return res.status(400).json({
+      status: "Bad Request",
+      message: "req body cannot be empty!",
+    });
+  }
   let message = req.body.Body; // text message sent
   let sender_ID = req.body.From; // End-User Phone number
   let receiver_id = req.body.To; // store owner Phone number

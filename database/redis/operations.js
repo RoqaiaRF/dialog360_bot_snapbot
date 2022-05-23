@@ -2,17 +2,6 @@ const redis = require("redis");
 const client = redis.createClient();
 
 
-//^ listen for connect events
-/* //TODO: REMOVE THIS FUNCTION
-const isConnect = () => {
-  let isConnected = false;
-  client.on("connect", function () {
-    console.log("Connected!");
-    isConnected = true;
-  });
-  return isConnected;
-};
-*/
 //^ Checking the existence of keys
 
 const isExists = (key) => {
