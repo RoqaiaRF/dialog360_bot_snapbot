@@ -9,7 +9,7 @@ const client = new Redis(
 
 const setUserVars = async (receiver_id, variable, value) => {
   //TODO: تغيير مدة موت الريديس الى 7200
-  await client.set(`${receiver_id}:${variable}`, value, "EX", 50000000);
+  await client.set(`${receiver_id}:${variable}`, value, "EX", 7200);
 };
 
 //get the stored data from the redis session

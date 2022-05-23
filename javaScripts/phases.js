@@ -150,7 +150,9 @@ const showProduct = (senderID, product) => {
   let message = `
   اسم المنتج: ${product.name_ar}
   الوصف: ${product.description_ar}
-  السعر: ${product.price}
+  السعر: ${product.price} دينار
+  المدة: ${product.duaration}
+
   `;
 
   sendTextMsg(`تفاصيل المنتج `, senderID );
