@@ -1,23 +1,37 @@
-var express = require("express");
+let express = require("express");
 const bodyParser = require("body-parser");
 
-var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/users");
-//var demoRouter = require("./routes/demo");
+const i18next = require("i18next");
+const Backend = require("i18next-fs-backend");
+const middleware = require('i18next-express-middleware');
 
-var app = express();
+
+const indexRouter = require("./routes/index");
+//let demoRouter = require("./routes/demo");
+const app = express();
+
+// For multiLanguage
+i18next
+  .use(Backend)
+  .use(middleware.LanguageDetector)
+  .init({
+    backend: {
+      loadPath: "./locales/{{lng}}/translation.json",
+    },
+    fallbackLng: "ar",
+    preload: ["en", "ar"],
+    saveMissing: true,
+  });
+//TODO: Handle Language Using "i18next"
+//app.use(middleware.handle(i18next));
 
 //Here we are configuring express to use body-parser as middle-ware.
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use("/", indexRouter);
-app.use("/users", usersRouter);
 //app.use("/demo", demoRouter);
-
 
 app.listen(8080, () => {
   console.log(`Example app listening at http://localhost:8080`);
 });
-
-

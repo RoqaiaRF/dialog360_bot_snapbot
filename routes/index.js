@@ -9,6 +9,7 @@ router.post("/", function (req, res, next) {
       message: "req body cannot be empty!",
     });
   }
+
   let message = req.body.Body; // text message sent
   let sender_ID = req.body.From; // End-User Phone number
   let receiver_id = req.body.To; // store owner Phone number

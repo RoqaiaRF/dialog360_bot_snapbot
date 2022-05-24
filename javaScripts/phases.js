@@ -5,6 +5,8 @@ const Redis = require("ioredis");
 const client = new Redis( 
   "rediss://default:AVNS_JjFT4eRfCGRaYIy@db-redis-fra1-80366-do-user-9392750-0.b.db.ondigitalocean.com:25061"
 );
+
+
 // Expected Outputs: English, العربية
 //^ Phase #1 welcome and choose Language
 /*----------------------------------------*/
@@ -15,12 +17,11 @@ const welcomeLangPhase = async (
   username
 ) => {
   await sendTextMsg(
-    `Welcome ${username} at ${storeEN_Name}... 
-                please click on the right option
+    `Welcome ${username} at ${storeEN_Name}...  please click on the right option
                 
                 حياك الله في   ${storeAR_Name}..  ${username} شرفتنا يا    .. 
                 😄
-           للحصول على المساعدة اارسل *
+           للحصول على المساعدة ارسل *
            دائما للعودة للرئيسية اضغط 0 
                 `,
     senderID
@@ -28,9 +29,7 @@ const welcomeLangPhase = async (
   sendTextMsg(`اختر اللغة المناسبة للطلب`, senderID);
 };
 //^Phase #1.1
-//TODO: Wait approve template
-//"توصيل لبيتي"
-//"استلام من المتجر"
+// Expected Outputs: "توصيل لبيتي", "استلام من المتجر"
 const pickupPhase = async(senderID) => {
 await  sendTextMsg(`ما طريقة استلام المنتج التي تفضلها ؟`, senderID);
   sendTextMsg(`🚙 🏪`, senderID);
@@ -58,11 +57,11 @@ const nearestLocation = (senderID, storeName, storObj) => {
     sendTextMsg(`أقرب فرع لك هو ${storeName} ومتاح لخدمتك الان`, senderID);
   }
 
-  //TODO: Wait approve template
+
   else if (_isReservation_Pay === "onlyReservation") {
     sendTextMsg(`أقرب فرع لك هو  ${storeName} وهو متاح لخدمتك الان`, senderID);
   }
-  //TODO: Wait approve template
+
   else if (_isReservation_Pay === "Orders_Reservation_together") {
     sendTextMsg(` أقرب فرع لك ${storeName} ومتاح لخدمتك الان`, senderID);
   } else if (_isReservation_Pay === "error") {
@@ -151,18 +150,14 @@ const showProduct = (senderID, product) => {
   اسم المنتج: ${product.name_ar}
   الوصف: ${product.description_ar}
   السعر: ${product.price} دينار
-  المدة: ${product.duaration}
+  المدة: ${product.duration} دقيقة
 
   `;
 
-  sendTextMsg(`تفاصيل المنتج `, senderID );
-  console.log("product.image : ", product.image);
-  if (product.image != null || product.image != undefined) {
-
-    
+  if (product.image != null || product.image != undefined) {  
     sendMedia(
       ` ${message}
-  ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
+  ــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
   للعودة للمرحلة السابقة ارسل 00
   للعودة للرئيسية ارسل 0`,
       senderID,
@@ -178,7 +173,9 @@ const showProduct = (senderID, product) => {
   للعودة للرئيسية ارسل 0`,
       senderID
     );
-  }
+  }  
+  sendTextMsg(`تفاصيل المنتج ${product.name_ar}`, senderID );
+
 };
 const quantityProductPhase = async (senderID) => {
   sendTextMsg(`أدخل الكمية المناسبة بالارقام الانجليزية 1, 2, ...`, senderID);
