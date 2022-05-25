@@ -7,11 +7,12 @@ const middleware = require('i18next-express-middleware');
 
 
 const indexRouter = require("./routes/index");
-//let demoRouter = require("./routes/demo");
+//const demoRouter = require("./routes/demo");
 const app = express();
 
+//TODO: Handle Language Using "i18next" -- not very important
 // For multiLanguage
-i18next
+/*i18next
   .use(Backend)
   .use(middleware.LanguageDetector)
   .init({
@@ -22,7 +23,7 @@ i18next
     preload: ["en", "ar"],
     saveMissing: true,
   });
-//TODO: Handle Language Using "i18next"
+  */
 //app.use(middleware.handle(i18next));
 
 //Here we are configuring express to use body-parser as middle-ware.

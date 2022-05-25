@@ -13,7 +13,7 @@ const {
   delUserVars,
   deleteAllKeys,
 } = require("../database/redis");
-const englishBot = require("../javaScripts/englishBot");
+
 let expiration_time = 7200; // مدة صلاحية انتهاء المفاتيح في ريديس تساوي ساعتان
 //Print Categories
 
