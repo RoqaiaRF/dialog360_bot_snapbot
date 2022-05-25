@@ -5,16 +5,16 @@ require("dotenv").config();
 
 const ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
 const AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
-const senderID = process.env.SENDER_ID;
+
 
 const client = twilio(ACCOUNT_SID, AUTH_TOKEN, { lazyloading: false }); //lazyloading:  speed of sending /true or false
 
 //Send text & emoji message to specific number
-const sendTextMsg = async (message, receiverID) => {
+const sendTextMsg = async (message,senderID,receiverID) => {
   await client.messages
     .create({
-      from: senderID,
-      to: receiverID,
+      from: receiverID,
+      to: senderID,
       body: message,
     })
     .then((message) => {

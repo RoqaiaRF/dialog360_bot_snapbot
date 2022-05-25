@@ -5,17 +5,17 @@ require("dotenv").config();
 
 const ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
 const AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
-const senderID = process.env.SENDER_ID;
+
 
 const client = twilio(ACCOUNT_SID, AUTH_TOKEN, { lazyloading: false }); //lazyloading:  speed of sending /true or false
 
 //Send text & media message to specific number
 
-const sendMedia = async (message, receiverID, mediaUrl) => {
+const sendMedia = async (message, senderID, mediaUrl,receiverID) => {
   await client.messages
     .create({
-      from: senderID,
-      to: receiverID,
+      from: receiverID,
+      to: senderID,
       body: message,
       mediaUrl: mediaUrl,
     })
@@ -26,7 +26,7 @@ const sendMedia = async (message, receiverID, mediaUrl) => {
     .catch((error) => {
       console.log(`Error at sending message: ${error}`);
     });
-  console.log(senderID);
-};
+
+  };
 
 module.exports = sendMedia;
