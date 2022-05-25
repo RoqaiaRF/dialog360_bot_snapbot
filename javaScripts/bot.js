@@ -56,10 +56,11 @@ const branches = (branchesObj) => {
 // get and show the purchases
 
 const showPurchases = async () => {
-  let msg = "",
-    addedFeatures = "";
+  let msg = "", addedFeatures = "", quantity= "";
   const _showCart = JSON.parse(await getUserVars(sender, "cart"));
   let purchasesObj = _showCart.items;
+  const isOrder = JSON.parse( await getUserVars(sender,"isorder"));
+
 
   purchasesObj.forEach((element, index) => {
     if (element.features.length != 0)
@@ -67,9 +68,14 @@ const showPurchases = async () => {
       `;
     else addedFeatures = "";
 
-    msg += ` *${index + 1}* . ${element.name_ar},  عدد:  ${
-      element.qty
-    }  المدة:  ${element.duration} دقيقه
+    if (isOrder === true)
+      quantity = `عدد:  ${
+        element.qty
+      } `
+    else 
+      quantity= "";
+   
+    msg += ` *${index + 1}* . ${element.name_ar},  ${quantity} المدة:  ${element.duration} دقيقه
       ${addedFeatures}
    `;
   });
@@ -139,6 +145,7 @@ const bot = async (
   let language = await getUserVars(sender, "language");
 
   if (message == "0" || message == "العودة للرئيسية") {
+    //احذف هذه الاشياء من الريديس
     delUserVars(sender, "branch");
     delUserVars(sender, "cats");
     delUserVars(sender, "cart");
