@@ -2,9 +2,10 @@ const Redis = require("ioredis");
 const payment_PolicyController = require("./payment_PolicyController");
 require("dotenv").config();
 
-const REDIS_URL = process.env.REDIS_URL;
-const client = new Redis(  REDIS_URL);
-
+const {
+  setUserVars,
+  getUserVars,
+} = require("../../database/redis");
 
 //^ DONE!
 // helper to add new item to items array
@@ -74,16 +75,16 @@ const newCart = async (
   tax_parecent,
   fees = 0
 ) => {
-  const isOrder = JSON.parse( await client.get(`${sender}:isorder`));
-  const storObj = JSON.parse( await client.get(`${sender}:store`));
+  const isOrder = JSON.parse (await getUserVars(sender, "isorder"));
+  const storObj = JSON.parse( await getUserVars(sender, "store"));
 
   const payment_Policy = payment_PolicyController(storObj)
   console.log("********isOrder*********",isOrder);
 
   console.log("********payment_Policy*********",payment_Policy);
-  const pickup_Policy = JSON.parse( await  client.get(`${sender}:pickup_Policy`));
+  const pickup_Policy = JSON.parse( await getUserVars(sender, "pickup_Policy"));
 
-  const cart = JSON.parse(await client.get(`${sender}:cart`));
+  const cart = JSON.parse(await getUserVars(sender, "cart"));
   if (cart) return false;
   const obj = {
     id: sender,
@@ -101,7 +102,7 @@ const newCart = async (
     items: [],
   };
   console.log("cart: ",obj);
-  await client.set(`${sender}:cart`, JSON.stringify(obj));
+  await  setUserVars(sender, "cart", JSON.stringify(obj)); 
   return cart;
 };
 
@@ -113,7 +114,7 @@ const newCart = async (
  * @returns // cart or flase
  */
 const addToCart = async (sender, item) => {
-  const cart = JSON.parse(await client.get(`${sender}:cart`));
+  const cart = JSON.parse(await getUserVars(sender, "cart"));
   if (cart) {
     const itemAdded = addItem(cart.items , item ,sender, cart);
     /*     cart.total += item.price * item.quantity;
@@ -125,7 +126,7 @@ const addToCart = async (sender, item) => {
     cart.tax = calcTax(cart.tax_parecent, cart.price);
     cart.total = cart.price + cart.tax + cart.fees;
     if (itemAdded) {
-      await client.set(`${sender}:cart`, JSON.stringify(cart));
+      await  setUserVars(sender, "cart", JSON.stringify(cart));
       return cart;
     } else {
       return false;
@@ -140,7 +141,7 @@ const addFeatureToCart = async (sender, item, feature) => {
   
   item.features = [feature]          
   item.price = (parseFloat(item.price) + feature.price ).toFixed(2);
-  const quantity =  parseInt( await client.get(`${sender}:quantity`))
+  const quantity =  parseInt(await getUserVars(sender, "quantity"));
   item.qty = quantity
 
  await addToCart(sender, item)
@@ -155,7 +156,7 @@ const addFeatureToCart = async (sender, item, feature) => {
  * @returns // cart or flase
  */
 const removeFromCart = async (sender, item, productCartIndex) => {
-  const cart = JSON.parse(await client.get(`${sender}:cart`));
+  const cart = JSON.parse(await getUserVars(sender, "cart"));
   if (cart) {
     const deletedItem =  cart.items[productCartIndex]
     const newItems = await removeItem(cart.items, productCartIndex);
@@ -171,7 +172,7 @@ const removeFromCart = async (sender, item, productCartIndex) => {
       cart.tax = calcTax(cart.tax_parecent, cart.price);
       cart.total = cart.price + cart.tax + cart.fees;
     }
-    await client.set(`${sender}:cart`, JSON.stringify(cart));
+    await  setUserVars(sender, "cart", JSON.stringify(cart));
     return cart;
   } else {
     return false;

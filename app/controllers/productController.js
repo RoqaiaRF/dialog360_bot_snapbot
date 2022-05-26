@@ -17,8 +17,8 @@ Products.belongsTo(Products, {
 
 // function get Products & features
 
-const getProducts = async (sender, category_id) => {
-  const products_list = await redis.getUserVars(sender, "products");
+const getProducts = async (receiver_id,sender, category_id) => {
+  const products_list = await redis.getUserVars(receiver_id,sender, "products");
   if (products_list) {
     console.log("from cache");
     return JSON.parse(products_list);

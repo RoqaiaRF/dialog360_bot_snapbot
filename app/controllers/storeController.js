@@ -25,7 +25,7 @@ Store.hasMany(Region, {
 });
 // find store with phone number with branchs
 const storeDetails = async (sender, phone) => {
-  const store = await redis.getUserVars(sender, "store");
+  const store = await redis.getUserVars(phone,sender, "store");
   
   if (store) {
     return JSON.parse(store);
@@ -55,13 +55,13 @@ const storeDetails = async (sender, phone) => {
         ],
       } 
     );
-    await redis.setUserVars(sender, "store", JSON.stringify(store));
+    await redis.setUserVars(phone,sender, "store", JSON.stringify(store));
     return store;
   }
 };
 // جلب جميع الفروع عن طريق رقم الهاتف
 const getAllBranchs = async (phone) => {
-  const branches = await redis.getUserVars(sender, "allbranches");
+  const branches = await redis.getUserVars(phone,sender, "allbranches");
   if (branches) {
     console.log("from cache");
     return JSON.parse(branches);
@@ -91,7 +91,7 @@ const getAllBranchs = async (phone) => {
         ],
       }
     );
-    await redis.setUserVars(sender, "allbranches", JSON.stringify(list));
+    await redis.setUserVars(phone, sender, "allbranches", JSON.stringify(list));
     console.log("from db");
     return list;
   }
@@ -120,7 +120,7 @@ const branchsCount = async (phone, lat, lng) => {
 
 // تحتاج الى تمرير رقم الهاتف والاحداثيات
 const getNearestBranch = async (sender, phone, lat, lng) => {
-  const branch = await redis.getUserVars(sender, "branch");
+  const branch = await redis.getUserVars(phone,sender, "branch");
   if (branch) {
     return JSON.parse(branch);
   } else {
@@ -129,7 +129,7 @@ const getNearestBranch = async (sender, phone, lat, lng) => {
     //return branchs;
     if (count > 0) {
       const nearest = await getNearestLocation({ lat, lng }, branchs);
-      await redis.setUserVars(sender, "branch", JSON.stringify(nearest));
+      await redis.setUserVars(phone,sender, "branch", JSON.stringify(nearest));
       console.log("nearest branch ---------------------",nearest);
       return nearest;
     } else {

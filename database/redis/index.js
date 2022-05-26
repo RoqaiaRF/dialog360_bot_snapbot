@@ -5,23 +5,26 @@ require("dotenv").config();
 
 //get the REDIS URL frim env file and connect to the server 
 const REDIS_URL = process.env.REDIS_URL;
-const client = new Redis(  REDIS_URL);
+const client = new Redis( 
+   //REDIS_URL
+   );
 
-const setUserVars = async (receiver_id, variable, value) => {
+const setUserVars = async (store_phone, receiver_id, variable, value) => {
   //TODO: تغيير مدة موت الريديس الى 7200 يعني ساعتين
-  await client.set(`${receiver_id}:${variable}`, value, "EX", 7200);
+  await client.set(`${store_phone}:${receiver_id}:${variable}`, value, "EX", 7200);
+  
 };
 
 //get the stored data from the redis session
-const getUserVars =  async(receiver_id, variable) => {
-  const myKeyValue =  await client.get(`${receiver_id}:${variable}`);
+const getUserVars =  async(store_phone,receiver_id, variable) => {
+  const myKeyValue =  await client.get(`${store_phone}:${receiver_id}:${variable}`);
   if (myKeyValue) {
     console.log("Success!: get data from redis!")
     console.log( myKeyValue)
     return myKeyValue;
   } else{  
      new Promise((resolve, reject) => {
-     client.get(`${receiver_id}:${variable}`, (err, data) => {
+     client.get(`${store_phone}:${receiver_id}:${variable}`, (err, data) => {
       if (data != null || data != undefined) {
         console.log("Redis Success! but can't get data");
         return resolve(data);
@@ -36,8 +39,8 @@ const getUserVars =  async(receiver_id, variable) => {
 }
 
 //delete the stored data from the redis session
-const delUserVars = async (sender, variable) => {
-  await client.del(`${sender}:${variable}`);
+const delUserVars = async (store_phone,receiver_id, variable) => {
+  await client.del(`${store_phone}:${receiver_id}:${variable}`);
 };
 // delete all data from all databases in redis
 const deleteAllKeys = async () => {

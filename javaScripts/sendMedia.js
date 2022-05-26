@@ -11,7 +11,12 @@ const client = twilio(ACCOUNT_SID, AUTH_TOKEN, { lazyloading: false }); //lazylo
 
 //Send text & media message to specific number
 
-const sendMedia = async (message, senderID, mediaUrl,receiverID) => {
+const sendMedia = async (message, senderID, mediaUrl,receiver_ID) => {
+  let result = receiver_ID.includes("whatsapp:+");
+  let receiverID =receiver_ID
+  if (!result) {
+    receiverID = "whatsapp:+"+ receiver_ID
+  }
   await client.messages
     .create({
       from: receiverID,

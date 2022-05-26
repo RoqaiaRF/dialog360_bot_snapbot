@@ -16,9 +16,12 @@ router.post("/", function (req, res, next) {
   let longitude = req.body.Longitude;
   let latitude = req.body.Latitude;
   let username = req.body.ProfileName;
+
+  
   console.log(req.body)
 
   bot(sender_ID, receiver_id ,message, longitude, latitude, username);
+
 });
 
 module.exports = router;

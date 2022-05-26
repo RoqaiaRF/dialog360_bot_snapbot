@@ -4,19 +4,9 @@ const isReservation_Pay = require("../app/controllers/isReservation_OrdersContro
 const Redis = require("ioredis");
 require("dotenv").config(); // env مكتبة جلب المتغيرات من ال 
 
-const REDIS_URL = process.env.REDIS_URL;
-const client = new Redis(  REDIS_URL);
+const { getUserVars } = require("../database/redis");
 
-// استرجاع رقم المتجر 
-const receiverID= async (senderID)=>{
-  const sender = senderID.replace("whatsapp:+", "");
-  const store = JSON.parse(await client.get(`${sender}:store`));
-  console.log ("store:  ", store )
-  const result = `whatsapp:+${store.phone}`;
 
-  return result;
-
-}
 // Expected Outputs: English, العربية
 //^ Phase #1 welcome and choose Language
 /*----------------------------------------*/
@@ -25,7 +15,8 @@ const welcomeLangPhase = async (
   storeEN_Name,
   storeAR_Name,
   username, 
-  store_obj
+  store_obj,
+  receiverID
 ) => {
   const store_phone = `whatsapp:+${store_obj.phone}`
   await sendTextMsg(
@@ -43,9 +34,9 @@ const welcomeLangPhase = async (
 };
 //^Phase #1.1
 // Expected Outputs: "توصيل لبيتي", "استلام من المتجر"
-const pickupPhase = async(senderID) => {
-await  sendTextMsg(`ما طريقة استلام المنتج التي تفضلها ؟`, senderID, await receiverID(senderID));
-  sendTextMsg(`🚙 🏪`, senderID, await receiverID(senderID));
+const pickupPhase = async(senderID,receiverID) => {
+await  sendTextMsg(`ما طريقة استلام المنتج التي تفضلها ؟`, senderID,  receiverID);
+  sendTextMsg(`🚙 🏪`, senderID,  receiverID);
 
 };
 
@@ -53,46 +44,46 @@ await  sendTextMsg(`ما طريقة استلام المنتج التي تفضل�
 //  Expected Outputs: user Location contain langitude and latitude
 //^ Phase #2 request user location
 
-const locationPhase = async(senderID) => {
+const locationPhase = async(senderID,receiverID) => {
   sendTextMsg(
     `  ارسل اللوكيشن لموقعك حتى نساعدك بمعرفة اقرب فرع لك 🇰🇼 😊`,
-    senderID, await receiverID(senderID)
+    senderID,  receiverID
   );
 };
 
-const nearestLocation =async (senderID, storeName, storObj) => {
+const nearestLocation =async (senderID, storeName, storObj,receiverID) => {
   const _isReservation_Pay = isReservation_Pay(storObj);
   console.log(
     ` ............_isReservation_Pay.................... ${_isReservation_Pay}`
   );
 
   if (_isReservation_Pay === "onlyOrders") {
-    sendTextMsg(`أقرب فرع لك هو ${storeName} ومتاح لخدمتك الان`, senderID, await receiverID(senderID));
+    sendTextMsg(`أقرب فرع لك هو ${storeName} ومتاح لخدمتك الان`, senderID,  receiverID);
   }
 
 
   else if (_isReservation_Pay === "onlyReservation") {
-    sendTextMsg(`أقرب فرع لك هو  ${storeName} وهو متاح لخدمتك الان`, senderID,await receiverID(senderID));
+    sendTextMsg(`أقرب فرع لك هو  ${storeName} وهو متاح لخدمتك الان`, senderID, receiverID);
   }
 
   else if (_isReservation_Pay === "Orders_Reservation_together") {
-    sendTextMsg(` أقرب فرع لك ${storeName} ومتاح لخدمتك الان`, senderID,await receiverID(senderID));
+    sendTextMsg(` أقرب فرع لك ${storeName} ومتاح لخدمتك الان`, senderID, receiverID);
   } else if (_isReservation_Pay === "error") {
-    sendTextMsg(`نعتذر عن هذا الخطأ , يرجى التحدث مع خددمة العملاء`, senderID, await receiverID(senderID));
+    sendTextMsg(`نعتذر عن هذا الخطأ , يرجى التحدث مع خددمة العملاء`, senderID,  receiverID);
   }
 };
 
 /*----------------------------------------*/
 //^ Phase #2.1 Choose one of these branches
 
-const getAllBranchesPhase = async (senderID, branches) => {
+const getAllBranchesPhase = async (senderID, branches,receiverID) => {
   let message = `اختر احد هذه الفروع التالية: 
 `;
   sendTextMsg(
     ` ${message} ${branches}
   ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
   للعودة للرئيسية ارسل 0`,
-    senderID, await receiverID(senderID)
+    senderID,  receiverID
   );
 };
 
@@ -100,14 +91,14 @@ const getAllBranchesPhase = async (senderID, branches) => {
 //  Expected Outputs: the category number: 1, 2 ,3,...
 //^ Phase #3 send main category and request to choose the right category by sending category_index
 
-const categoryPhase = async (senderID, categories) => {
+const categoryPhase = async (senderID, categories,receiverID) => {
   let message = `اختر احد هذه التصنيفات: 
 `;
   sendTextMsg(
     ` ${message} ${categories}
   ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
   للعودة للرئيسية ارسل 0`,
-    senderID, await receiverID(senderID)
+    senderID,  receiverID
   );
 };
 
@@ -115,7 +106,7 @@ const categoryPhase = async (senderID, categories) => {
 //  Expected Outputs: the product number: 1, 2 ,3,...
 //^ Phase #3 send products and request to choose the right product by sending product_index of it's category
 
-const productPhase = async (senderID, products) => {
+const productPhase = async (senderID, products,receiverID) => {
   let message = `اختر احد هذه المنتجات: 
 `;
   sendTextMsg(
@@ -123,10 +114,10 @@ const productPhase = async (senderID, products) => {
 ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
 للعودة للمرحلة السابقة ارسل 00
 للعودة للرئيسية ارسل 0`,
-    senderID, await receiverID(senderID)
+    senderID,  receiverID
   );
 };
-const subCategoryPhase = async (senderID, subCategory) => {
+const subCategoryPhase = async (senderID, subCategory,receiverID) => {
   let message = `اختر احد التصنيفات الفرعيه الاتيه:   
   `;
   sendTextMsg(
@@ -134,19 +125,19 @@ const subCategoryPhase = async (senderID, subCategory) => {
   ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
   للعودة للمرحلة السابقة ارسل 00
   للعودة للرئيسية ارسل 0`,
-    senderID, await receiverID(senderID)
+    senderID,  receiverID
   );
 };
 
-const addedDetails = async (senderID)=>{
+const addedDetails = async (senderID,receiverID)=>{
   sendTextMsg(
 "هل تريد خدمات اضافية ؟",
-senderID, await receiverID(senderID)
+senderID,  receiverID
 );
 }
 
 
-const featuresPhase = async (senderID, features) => {
+const featuresPhase = async (senderID, features,receiverID) => {
   let message = `اختر أحد المميزات/ الخدمات الاضافية لاضافتها للسلة :   
   `;
   sendTextMsg(
@@ -154,11 +145,11 @@ const featuresPhase = async (senderID, features) => {
   ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
   للعودة للمرحلة السابقة ارسل 00
   للعودة للرئيسية ارسل 0`,
-    senderID, await receiverID(senderID)
+    senderID,  receiverID
   );
 };
 
-const showProduct =async (senderID, product) => {
+const showProduct =async (senderID, product,receiverID) => {
   let message = `
   اسم المنتج: ${product.name_ar}
   الوصف: ${product.description_ar}
@@ -175,7 +166,7 @@ const showProduct =async (senderID, product) => {
   للعودة للرئيسية ارسل 0`,
       senderID,
       "https://stores-logos.fra1.digitaloceanspaces.com/products/" +
-        product.image, await receiverID(senderID)
+        product.image,  receiverID
     );
   }
   else { 
@@ -184,22 +175,22 @@ const showProduct =async (senderID, product) => {
   ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
   للعودة للمرحلة السابقة ارسل 00
   للعودة للرئيسية ارسل 0`,
-      senderID, await receiverID(senderID)
+      senderID,  receiverID
     );
   }  
-  sendTextMsg(`تفاصيل المنتج ${product.name_ar}`, senderID ,await receiverID(senderID));
+  sendTextMsg(`تفاصيل المنتج ${product.name_ar}`, senderID , receiverID);
 
 };
-const quantityProductPhase = async (senderID) => {
-  sendTextMsg(`أدخل الكمية المناسبة بالارقام الانجليزية 1, 2, ...`, senderID, await receiverID(senderID));
+const quantityProductPhase = async (senderID,receiverID) => {
+  sendTextMsg(`أدخل الكمية المناسبة بالارقام الانجليزية 1, 2, ...`, senderID,  receiverID);
 };
 
-const showCart = async(senderID, purchases, price, tax, total, fees) => {
+const showCart = async(senderID, purchases, price, tax, total, fees,receiverID) => {
   let paymentLink = '';
 
     
   const sender = senderID.replace("whatsapp:+", "");
-  const isOrder = JSON.parse( await client.get(`${sender}:isorder`));
+  const isOrder = JSON.parse( await getUserVars(sender, "isorder"));
 
   if (isOrder === true){
      paymentLink = `http://payment.snapbot.app/orders?sender=${sender}`;
@@ -225,20 +216,20 @@ ${paymentLink}`
 
   await sendTextMsg(
     `تفاصيل السلة :`,
-    senderID, await receiverID(senderID)
+    senderID,  receiverID
   );
   sendTextMsg(
     `${msg}`,
-    senderID, await receiverID(senderID)
+    senderID,  receiverID
   );
 };
 
-const errorMsg = async (senderID) => {
-  sendTextMsg(`خطأ في الارسال`, senderID, await receiverID(senderID));
+const errorMsg = async (senderID,receiverID) => {
+  sendTextMsg(`خطأ في الارسال`, senderID,  receiverID);
 };
 
-const customMessage = async (message, senderID) => {
-  sendTextMsg(message, senderID, await receiverID(senderID));
+const customMessage = async (message, senderID,receiverID) => {
+  sendTextMsg(message, senderID,  receiverID);
 };
 
 module.exports = {
@@ -256,5 +247,5 @@ module.exports = {
   quantityProductPhase,
   showCart,
   pickupPhase,
-  addedDetails
+  addedDetails,
 };
