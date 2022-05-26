@@ -137,7 +137,24 @@ const bot = async (
   const storObj = JSON.parse(
     JSON.stringify(await storeController.storeDetails(sender, receiver_id))
   );
-  let cart, cityName;
+  let cart = {
+    id: "",
+    branch_id: "",
+    latitude: 0,
+    longitude: 0,
+    price: 0,
+    fees: 0,
+    tax: 0,
+    tax_parecent: 0,
+    total: 0,
+    pickup_policy: true,
+    isOrder: false,
+    items: []
+}
+
+await setUserVars(receiver_id, sender, "cart", JSON.stringify(cart));
+
+  let cityName;
 
   const storeEN_Name = storObj.name_en; // اسم المتجر بالانجليزي
   const storeAR_Name = storObj.name_ar; // اسم المتجر في العربي
@@ -265,7 +282,6 @@ const bot = async (
           );
 
           cityName = await location.getCityName(latitude, longitude);
-          console.log("  258 latitude, longitude: ", latitude, longitude);
           const fees = await storeController.getFees(storObj.id, cityName);
 
           if (fees == -1) {
@@ -277,7 +293,7 @@ const bot = async (
             );
             sendMsg.locationPhase(sender_id,receiver_id);
           } else {
-            console.log("  270 latitude, longitude: ", latitude, longitude);
+
             let branch = JSON.parse(await getUserVars( receiver_id, sender, "branch"));
             cart = cartController.newCart(
               sender,
@@ -285,7 +301,8 @@ const bot = async (
               latitude,
               longitude,
               storObj.tax,
-              fees
+              fees,
+              receiver_id
             );
             if (!nearestBranch) {
               setUserVars( receiver_id, sender, "phase", "2");
@@ -331,7 +348,8 @@ const bot = async (
               latitude,
               longitude,
               storObj.tax,
-              fees
+              fees,
+              receiver_id
             );
             setUserVars( receiver_id, sender, "phase", "3");
             sendMsg.nearestLocation(sender_id, selectedBranch.name_ar, storObj,receiver_id);
@@ -346,13 +364,9 @@ const bot = async (
       case "3":
         if (message == "ابدأ الطلب") {
           const categoryObj = JSON.parse(
-            JSON.stringify(await getCategories(receiver_id,sender, storObj.id, 0))
+            JSON.stringify(await getCategories(receiver_id,sender, storObj.id, 1))
           );
           setUserVars( receiver_id, sender, "isorder", true);
-          let cart3 = JSON.parse(await getUserVars( receiver_id, sender, "cart"));
-          cart3.isOrder = true;
-          setUserVars( receiver_id, sender, "cart", JSON.stringify(cart3));
-
           setUserVars( receiver_id, sender, "phase", "4");
           sendMsg.categoryPhase(sender_id, "" + categories(categoryObj),receiver_id);
         } else if (message === "اختر فرع اخر") {
@@ -369,14 +383,14 @@ const bot = async (
           setUserVars( receiver_id, sender, "phase", "3.1");
         } else if (message == "ابدأ الحجز") {
           const categoryObj = JSON.parse(
-            JSON.stringify(await getCategories(sender, storObj.id, 1))
+            JSON.stringify(await getCategories(receiver_id,sender, storObj.id, 0))
           );
           //خزن ان اليوزر اختار الحجز وليس الطلب
           setUserVars( receiver_id, sender, "isorder", false);
           // في السلة الى ان الشخص اختار ان يحجز  isOrderغير قيمة  
-          let cart3r = JSON.parse(await getUserVars( receiver_id, sender, "cart"));
-          cart3r.isOrder = false;
-          setUserVars( receiver_id, sender, "cart", JSON.stringify(cart3r));
+          // let cart3r = JSON.parse(await getUserVars( receiver_id, sender, "cart"));
+          // cart3r.isOrder = false;
+          //setUserVars( receiver_id, sender, "order_policy", false);
 
           setUserVars( receiver_id, sender, "phase", "4");
           sendMsg.categoryPhase(sender_id, "" + categories(categoryObj),receiver_id);
@@ -432,7 +446,8 @@ const bot = async (
             lat,
             lng,
             storObj.tax,
-            fees
+            fees,
+            receiver_id
           );
 
           setUserVars( receiver_id, sender, "phase", "3");
@@ -600,6 +615,7 @@ const bot = async (
           const selectedFeature = features[featureIndex];
           // add selected feature to the cart list
           await cartController.addFeatureToCart(
+            receiver_id,
             sender,
             productDetails_7_1,
             selectedFeature
@@ -765,6 +781,7 @@ ${purchases9} `,
           const deletedItem = productCart[productCartIndex];
 
           const result = await cartController.removeFromCart(
+            receiver_id,
             sender,
             deletedItem,
             productCartIndex

@@ -41,7 +41,7 @@ const getProducts = async (receiver_id,sender, category_id) => {
       },
       { attributes: ["name_ar", "name_en", "category_id"] }
     );
-    await redis.setUserVars(sender, "products", JSON.stringify(list));
+    await redis.setUserVars(receiver_id,sender, "products", JSON.stringify(list));
     console.log("from db");
     
     return list;

@@ -2,67 +2,57 @@ const Redis = require("ioredis");
 const payment_PolicyController = require("./payment_PolicyController");
 require("dotenv").config();
 
-const {
-  setUserVars,
-  getUserVars,
-} = require("../../database/redis");
+const { setUserVars, getUserVars } = require("../../database/redis");
 
 //^ DONE!
 // helper to add new item to items array
 const addItem = async (arr, item, sender, cart) => {
-
   // item doesn't exist in cart so add it
   const foundedIndex = arr.findIndex((ele) => ele.id == item.id);
   if (foundedIndex == -1) {
     arr.push(item);
     return true;
   } else {
-    
     // Checking array equality
     const oldFeature = arr[foundedIndex].features;
     const newFeature = item.features;
     let result;
     if (oldFeature.length === newFeature.length) {
-      if(oldFeature.length == 0){
-        result=  true;
+      if (oldFeature.length == 0) {
+        result = true;
+      } else if (oldFeature[0].id === newFeature[0].id) {
+        result = true;
+      } else {
+        result = false;
       }
-      else if(oldFeature[0].id === newFeature[0].id){
-        result = true
-        }
-        else { result =  false; }
-
     }
 
     //result = true => if incoming feature is equal to existing feature
     if (result) {
-    
       if (arr[foundedIndex].qty === item.qty) {
-
         return false;
       } else {
         // احذف الموجود واستبدله بالجديد
-       // const foundedIndex1 = arr.findIndex((ele) => ele.id == item.id && ele.qty === item.qty);
-      // todo : اضافة خاصية الحذف من السله حسب شرط تساوي الكمية 
-       // await removeFromCart(sender, cart.items[foundedIndex1]) 
-       // await addToCart(sender,item);
+        // const foundedIndex1 = arr.findIndex((ele) => ele.id == item.id && ele.qty === item.qty);
+        // todo : اضافة خاصية الحذف من السله حسب شرط تساوي الكمية
+        // await removeFromCart(sender, cart.items[foundedIndex1])
+        // await addToCart(sender,item);
 
         return false;
       }
-    }
-    else {
+    } else {
       arr.push(item);
       return true;
     }
   }
-}
+};
 
 // helper to remove  item from items array
 
-const  removeItem  = async (items, i) => {
-
+const removeItem = async (items, i) => {
   items.splice(i, 1);
   return items;
-}
+};
 const calcTax = (tax, amount) => {
   const x = (amount * tax) / 100;
   return parseFloat(x);
@@ -73,18 +63,18 @@ const newCart = async (
   latitude,
   longitude,
   tax_parecent,
-  fees = 0
+  fees = 0,
+  receiver_id
 ) => {
-  const isOrder = JSON.parse (await getUserVars(sender, "isorder"));
-  const storObj = JSON.parse( await getUserVars(sender, "store"));
+  const storObj = JSON.parse(await getUserVars(receiver_id, sender, "store"));
+  const payment_Policy = payment_PolicyController(storObj);
 
-  const payment_Policy = payment_PolicyController(storObj)
-  console.log("********isOrder*********",isOrder);
+  console.log("********payment_Policy*********", payment_Policy);
+  const pickup_Policy = JSON.parse(
+    await getUserVars(receiver_id, sender, "pickup_Policy")
+  );
 
-  console.log("********payment_Policy*********",payment_Policy);
-  const pickup_Policy = JSON.parse( await getUserVars(sender, "pickup_Policy"));
-
-  const cart = JSON.parse(await getUserVars(sender, "cart"));
+  const cart = JSON.parse(await getUserVars(receiver_id, sender, "cart"));
   if (cart) return false;
   const obj = {
     id: sender,
@@ -96,13 +86,12 @@ const newCart = async (
     tax: 0,
     tax_parecent,
     total: this.tax + fees,
-    pickup_policy: pickup_Policy ,
-    isOrder: isOrder,
+    pickup_policy: pickup_Policy,
     payment_Policy: payment_Policy,
     items: [],
   };
-  console.log("cart: ",obj);
-  await  setUserVars(sender, "cart", JSON.stringify(obj)); 
+  console.log("cart: ", obj);
+  await setUserVars(sender, "cart", JSON.stringify(obj));
   return cart;
 };
 
@@ -113,20 +102,21 @@ const newCart = async (
  * @param {*} item  // product object
  * @returns // cart or flase
  */
-const addToCart = async (sender, item) => {
-  const cart = JSON.parse(await getUserVars(sender, "cart"));
+const addToCart = async (receiver_id, sender, item) => {
+  console.log("receiver_id, sender",receiver_id, sender)
+  const cart = JSON.parse(await getUserVars(receiver_id, sender, "cart"));
   if (cart) {
-    const itemAdded = addItem(cart.items , item ,sender, cart);
+    const itemAdded = addItem(cart.items, item, sender, cart);
     /*     cart.total += item.price * item.quantity;
     cart.price = cart.total - cart.tax; */
-    const itemIDinCart = cart.items[cart.items.length -1]
+    const itemIDinCart = cart.items[cart.items.length - 1];
 
     cart.price += parseFloat(itemIDinCart.price) * parseInt(itemIDinCart.qty);
 
     cart.tax = calcTax(cart.tax_parecent, cart.price);
     cart.total = cart.price + cart.tax + cart.fees;
     if (itemAdded) {
-      await  setUserVars(sender, "cart", JSON.stringify(cart));
+      await setUserVars(sender, "cart", JSON.stringify(cart));
       return cart;
     } else {
       return false;
@@ -137,17 +127,15 @@ const addToCart = async (sender, item) => {
 };
 
 /*-------- Add Feature to Cart ----------------*/
-const addFeatureToCart = async (sender, item, feature) => {
-  
-  item.features = [feature]          
-  item.price = (parseFloat(item.price) + feature.price ).toFixed(2);
-  const quantity =  parseInt(await getUserVars(sender, "quantity"));
-  item.qty = quantity
+const addFeatureToCart = async (receiver_id, sender, item, feature) => {
+  item.features = [feature];
+  item.price = (parseFloat(item.price) + feature.price).toFixed(2);
+  const quantity = parseInt(await getUserVars(receiver_id, sender, "quantity"));
+  item.qty = quantity;
 
- await addToCart(sender, item)
-  console.log("  ------------------------ item ---------------",item);
-  
-}
+  await addToCart(receiver_id, sender, item);
+  console.log("  ------------------------ item ---------------", item);
+};
 // Remove item from Cart
 /**
  *
@@ -155,10 +143,10 @@ const addFeatureToCart = async (sender, item, feature) => {
  * @param {*} item  // product object
  * @returns // cart or flase
  */
-const removeFromCart = async (sender, item, productCartIndex) => {
-  const cart = JSON.parse(await getUserVars(sender, "cart"));
+const removeFromCart = async (receiver_id, sender, item, productCartIndex) => {
+  const cart = JSON.parse(await getUserVars(receiver_id, sender, "cart"));
   if (cart) {
-    const deletedItem =  cart.items[productCartIndex]
+    const deletedItem = cart.items[productCartIndex];
     const newItems = await removeItem(cart.items, productCartIndex);
     cart.items = newItems;
     if (cart.items.length == 0) {
@@ -166,13 +154,12 @@ const removeFromCart = async (sender, item, productCartIndex) => {
       cart.fees = 0;
       cart.price = 0;
       cart.tax = 0;
-
     } else {
       cart.price -= deletedItem.price * deletedItem.qty;
       cart.tax = calcTax(cart.tax_parecent, cart.price);
       cart.total = cart.price + cart.tax + cart.fees;
     }
-    await  setUserVars(sender, "cart", JSON.stringify(cart));
+    await setUserVars(sender, "cart", JSON.stringify(cart));
     return cart;
   } else {
     return false;
