@@ -130,6 +130,7 @@ const bot = async (
 
   receiver_id = receiver_id.replace("whatsapp:+", "");
   sender = sender_id.replace("whatsapp:+", "");
+  //TODO : Replace "JSON.parse(JSON.stringify(object))" with "StructuredClone(object)" when available
 // get store details 
   const storObj = JSON.parse(
     JSON.stringify(await storeController.storeDetails(sender, receiver_id))
@@ -170,7 +171,7 @@ const bot = async (
     setUserVars(sender, "phase", "1");
   } else if (message == "*") {
     //TODO: المستخدم بحاجة للمساعدة قم بارسال اشعار للداشبورد
-  } else if (message == "JGHFds547fdgl;kj78") {
+  } else if (message == "JGHFds547fdglkj78") {
     //حذف كل شيء بالريديس
     sendMsg.customMessage(
       "تم حذف كل شيء في الريديس بنجاح انتظر شي 3 دقائق حتى تعود الخدمات لشكلها الصحيح",
@@ -307,7 +308,7 @@ const bot = async (
         if (longitude == undefined || latitude == undefined) {
           sendMsg.errorMsg(sender_id);
         } else {
-          console.log("  296 latitude, longitude: ", latitude, longitude);
+
           cityName = await location.getCityName(latitude, longitude);
           const fees = await storeController.getFees(branch2_1.id, cityName);
 
@@ -320,7 +321,7 @@ const bot = async (
             );
             sendMsg.locationPhase(sender_id);
           } else {
-            console.log("  309 latitude, longitude: ", latitude, longitude);
+
             cart = cartController.newCart(
               sender,
               branch2_1.id,
@@ -335,6 +336,10 @@ const bot = async (
         }
         break;
 
+        /* Phase 3:
+        ستم تخيير اليوزر بين احد ثلاثة خيارات وهم : بدء الطلب او بدء الحجز او اختيار فرع اخر
+        تظهر ازرار بدءالطلب او الحجز او كلاهما حسب سياسة المتجر في الحجز والطلب
+        */
       case "3":
         if (message == "ابدأ الطلب") {
           const categoryObj = JSON.parse(
@@ -355,14 +360,17 @@ const bot = async (
           const branchObj = JSON.parse(
             JSON.stringify(await storeController.getAllBranchs(receiver_id))
           );
+          // ارسل رسالة تحتوي جميع الفروع الموجوده مع المتجر الرئيسي واعرضها لليوزر
           sendMsg.getAllBranchesPhase(sender_id, "" + branches(branchObj));
-
+          // اذهب للمرحلة رقم 3.1 
           setUserVars(sender, "phase", "3.1");
         } else if (message == "ابدأ الحجز") {
           const categoryObj = JSON.parse(
             JSON.stringify(await getCategories(sender, storObj.id, 0))
           );
+          //خزن ان اليوزر اختار الحجز وليس الطلب
           setUserVars(sender, "isorder", false);
+          // في السلة الى ان الشخص اختار ان يحجز  isOrderغير قيمة  
           let cart3r = JSON.parse(await getUserVars(sender, "cart"));
           cart3r.isOrder = false;
           setUserVars(sender, "cart", JSON.stringify(cart3r));
@@ -370,11 +378,13 @@ const bot = async (
           setUserVars(sender, "phase", "4");
           sendMsg.categoryPhase(sender_id, "" + categories(categoryObj));
         } else {
+          // error message
           sendMsg.errorMsg(sender_id);
         }
         break;
 
       case "3.1":
+        // اذا ادخل المستخدم شيء غير الارقام ارسل رسالة خطأ 
         if (isNaN(message) == true) {
           sendMsg.errorMsg(sender_id);
           return;
@@ -387,7 +397,7 @@ const bot = async (
           // send error msg
           sendMsg.errorMsg(sender_id);
         } else {
-          //TODO: wait for approve Convert this message to template with 3 buttons:  ابدأ الطلب, ابدأ الحجز , العودة للرئيسية
+
           sendMsg.nearestLocation(sender_id, selectedBranch.name_ar, storObj);
 
           //تخزين الفرع المختار مكان المتجر
@@ -400,7 +410,7 @@ const bot = async (
           let branch3_1 = JSON.parse(await getUserVars(sender, "branch"));
 
           if (pickup_Policy === true) {
-            //  ااذ يريد خدمة الباكاب فاجعل العنوان هو نفسه عنوان المتجر
+            //  ااذ يريد خدمة الباكاب فاجعل العنوان الجغرافي هو نفسه عنوان المتجر
             lat = branch3_1.lat;
             lng = branch3_1.lng;
           } else {
@@ -412,6 +422,7 @@ const bot = async (
           }
 
           console.log(" -----selectedBranch-------------- ", branch3_1);
+          // املأ االسلة بالمعلومات الاساسية
           cart = cartController.newCart(
             sender,
             selectedBranch.id,
@@ -714,7 +725,7 @@ const bot = async (
         const purchases9 = await showPurchases();
 
         if (message === "الدفع") {
-          //TODO: عرض السلة كاملة مع رابط للدفع
+          // عرض السلة كاملة مع رابط للدفع
         } else if (message === "حدد المنتج لحذفه") {
           sendMsg.customMessage(
             `حدد رقم المنتج لحذفه: 

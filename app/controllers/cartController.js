@@ -1,8 +1,9 @@
 const Redis = require("ioredis");
 const payment_PolicyController = require("./payment_PolicyController");
-const client = new Redis( 
-  //"rediss://default:AVNS_JjFT4eRfCGRaYIy@db-redis-fra1-80366-do-user-9392750-0.b.db.ondigitalocean.com:25061"
-);
+require("dotenv").config();
+
+const REDIS_URL = process.env.REDIS_URL;
+const client = new Redis(  REDIS_URL);
 
 
 //^ DONE!

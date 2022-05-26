@@ -3,9 +3,9 @@
 const Redis = require("ioredis");
 require("dotenv").config();
 
-const client = new Redis( 
- // "rediss://default:AVNS_JjFT4eRfCGRaYIy@db-redis-fra1-80366-do-user-9392750-0.b.db.ondigitalocean.com:25061"
-);
+//get the REDIS URL frim env file and connect to the server 
+const REDIS_URL = process.env.REDIS_URL;
+const client = new Redis(  REDIS_URL);
 
 const setUserVars = async (receiver_id, variable, value) => {
   //TODO: تغيير مدة موت الريديس الى 7200 يعني ساعتين
