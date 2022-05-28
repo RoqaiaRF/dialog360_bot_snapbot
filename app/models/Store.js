@@ -22,13 +22,13 @@ module.exports = (sequelize, Sequelize) => {
       pay_when_receiving: {
         type: Sequelize.BOOLEAN,
       },
-      pay_after_receiving:{
+      pay_after_receiving: {
         type: Sequelize.BOOLEAN,
       },
       is_store: {
         type: Sequelize.BOOLEAN,
       },
-      states: { 
+      states: {
         type: Sequelize.STRING,
       },
 
@@ -68,19 +68,18 @@ module.exports = (sequelize, Sequelize) => {
       tax: {
         type: Sequelize.DOUBLE,
       },
-      is_reservation:{
+      is_reservation: {
         type: Sequelize.BOOLEAN,
       },
-      is_order:{
+      is_order: {
         type: Sequelize.BOOLEAN,
       },
-      pickup_Policy:{
+      pickup_Policy: {
         type: Sequelize.BOOLEAN,
       },
       deleted_at: {
         type: Sequelize.DATE,
       },
-     
     },
     {
       timestamps: false,

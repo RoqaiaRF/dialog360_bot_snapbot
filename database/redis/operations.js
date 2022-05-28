@@ -1,7 +1,6 @@
 const redis = require("redis");
 const client = redis.createClient();
 
-
 //^ Checking the existence of keys
 
 const isExists = (key) => {
@@ -33,29 +32,27 @@ const giveExpirationTime = (key, time) => {
   client.expire(key, time); //EX: client.expire('status', 300);
 };
 
-
 //^ Incrementing and decrementing for numeric keys
 
 const incrementbyValue = (key, value) => {
-  client.incrby(key, value, function(err, reply) {
-    console.log(reply); 
+  client.incrby(key, value, function (err, reply) {
+    console.log(reply);
   });
-}
+};
 
 const decrementbyValue = (key, value) => {
-  client.decrby(key, value, function(err, reply) {
-    console.log(reply); 
+  client.decrby(key, value, function (err, reply) {
+    console.log(reply);
   });
-}
-
+};
 
 module.exports = {
-//  isConnect,
+  //  isConnect,
   isExists,
   deleteKeys,
   giveExpirationTime,
   incrementbyValue,
-  decrementbyValue
+  decrementbyValue,
 };
 
 /*

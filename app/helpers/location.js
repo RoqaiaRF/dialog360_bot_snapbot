@@ -11,28 +11,23 @@ const getCityName = async (lat, lng) => {
   await axios
     .get(baseUrl + `latlng=${lat},${lng}&key=${key}`)
     .then((res) => {
+      for (let j = 0; j < res.data.results.length; j++) {
+        let address_components = res.data.results[j].address_components;
 
-      for(let j=0; j < res.data.results.length ;j++){
-
-      let address_components = res.data.results[j].address_components;
-
-       for (let i = 0; i < address_components.length; i++) {
-        if (
-          address_components[i].types[0] === "locality" &&
-          address_components[i].types[1] === "political"
-        ) {
-         
-          city = address_components[i].long_name;
+        for (let i = 0; i < address_components.length; i++) {
+          if (
+            address_components[i].types[0] === "locality" &&
+            address_components[i].types[1] === "political"
+          ) {
+            city = address_components[i].long_name;
+          }
         }
-       
       }
-    }
-     
     })
     .catch((err) => {
       throw err;
     });
-    console.log("City name:  ",city);
+  console.log("City name:  ", city);
   return city;
 };
 

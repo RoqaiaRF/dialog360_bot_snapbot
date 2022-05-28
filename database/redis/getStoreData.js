@@ -4,7 +4,6 @@
 const redis = require("redis");
 const client = redis.createClient();
 
-
 //^ store a simple string
 
 //EX: client.set('framework', 'ReactJS');

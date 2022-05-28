@@ -25,8 +25,8 @@ Store.hasMany(Region, {
 });
 // find store with phone number with branchs
 const storeDetails = async (sender, phone) => {
-  const store = await redis.getUserVars(phone,sender, "store");
-  
+  const store = await redis.getUserVars(phone, sender, "store");
+
   if (store) {
     return JSON.parse(store);
   } else {
@@ -36,7 +36,6 @@ const storeDetails = async (sender, phone) => {
           phone: phone,
           parent_id: null,
         },
-     
       },
       {
         attributes: [
@@ -44,34 +43,33 @@ const storeDetails = async (sender, phone) => {
           "name_en",
           "lat",
           "lng",
-          "parent_id", 
+          "parent_id",
           "phone",
           "type_id",
           "pay_when_receiving",
           "pay_after_receiving",
           "pickup_Policy",
           "is_order",
-          "is_reservation"
+          "is_reservation",
         ],
-      } 
+      }
     );
-    await redis.setUserVars(phone,sender, "store", JSON.stringify(store));
+    await redis.setUserVars(phone, sender, "store", JSON.stringify(store));
     return store;
   }
 };
 // جلب جميع الفروع عن طريق رقم الهاتف
 const getAllBranchs = async (phone) => {
-  const branches = await redis.getUserVars(phone,sender, "allbranches");
+  const branches = await redis.getUserVars(phone, sender, "allbranches");
   if (branches) {
     console.log("from cache");
     return JSON.parse(branches);
-  } 
-  else{
+  } else {
     let list = await Store.findAll(
       {
         where: {
           phone: phone,
-          deleted_at: null
+          deleted_at: null,
         },
       },
       {
@@ -87,7 +85,7 @@ const getAllBranchs = async (phone) => {
           "pay_after_receiving",
           "pickup_Policy",
           "is_order",
-          "is_reservation"
+          "is_reservation",
         ],
       }
     );
@@ -95,7 +93,6 @@ const getAllBranchs = async (phone) => {
     console.log("from db");
     return list;
   }
-
 };
 
 // جلب عدد الفروع بحسب الهاتف واحدثيات المسخدم
@@ -120,7 +117,7 @@ const branchsCount = async (phone, lat, lng) => {
 
 // تحتاج الى تمرير رقم الهاتف والاحداثيات
 const getNearestBranch = async (sender, phone, lat, lng) => {
-  const branch = await redis.getUserVars(phone,sender, "branch");
+  const branch = await redis.getUserVars(phone, sender, "branch");
   if (branch) {
     return JSON.parse(branch);
   } else {
@@ -129,8 +126,8 @@ const getNearestBranch = async (sender, phone, lat, lng) => {
     //return branchs;
     if (count > 0) {
       const nearest = await getNearestLocation({ lat, lng }, branchs);
-      await redis.setUserVars(phone,sender, "branch", JSON.stringify(nearest));
-      console.log("nearest branch ---------------------",nearest);
+      await redis.setUserVars(phone, sender, "branch", JSON.stringify(nearest));
+      console.log("nearest branch ---------------------", nearest);
       return nearest;
     } else {
       return false;
@@ -138,29 +135,20 @@ const getNearestBranch = async (sender, phone, lat, lng) => {
   }
 };
 
-const getFees = async(store_id, city_name) =>{
-  
-    const region = await Region.findOne(
-      {
-        where: {
-          store_id,
-          name_en: city_name,
-        },
+const getFees = async (store_id, city_name) => {
+  const region = await Region.findOne(
+    {
+      where: {
+        store_id,
+        name_en: city_name,
       },
-      {
-        attributes: [ 
-          "fees",
-        ],
-      } 
-    );
+    },
+    {
+      attributes: ["fees"],
+    }
+  );
 
-    if(region == null || region == undefined)
-    return -1
-    else     
-       return region.fees;
-
-}
+  if (region == null || region == undefined) return -1;
+  else return region.fees;
+};
 module.exports = { storeDetails, getNearestBranch, getAllBranchs, getFees };
-
-
-

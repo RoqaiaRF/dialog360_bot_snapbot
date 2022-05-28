@@ -3,10 +3,9 @@ module.exports = (sequelize, Sequelize) => {
     name_ar: {
       type: Sequelize.STRING,
     },
-    name_en: { 
+    name_en: {
       type: Sequelize.STRING,
     },
   });
   return order;
 };
- 

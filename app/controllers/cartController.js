@@ -91,7 +91,7 @@ const newCart = async (
     items: [],
   };
   console.log("cart: ", obj);
-  await setUserVars(sender, "cart", JSON.stringify(obj));
+  await setUserVars(receiver_id, sender, "cart", JSON.stringify(obj));
   return cart;
 };
 
@@ -103,8 +103,8 @@ const newCart = async (
  * @returns // cart or flase
  */
 const addToCart = async (receiver_id, sender, item) => {
-  console.log("receiver_id, sender",receiver_id, sender)
   const cart = JSON.parse(await getUserVars(receiver_id, sender, "cart"));
+
   if (cart) {
     const itemAdded = addItem(cart.items, item, sender, cart);
     /*     cart.total += item.price * item.quantity;
@@ -116,7 +116,7 @@ const addToCart = async (receiver_id, sender, item) => {
     cart.tax = calcTax(cart.tax_parecent, cart.price);
     cart.total = cart.price + cart.tax + cart.fees;
     if (itemAdded) {
-      await setUserVars(sender, "cart", JSON.stringify(cart));
+      await setUserVars(receiver_id, sender, "cart", JSON.stringify(cart));
       return cart;
     } else {
       return false;
@@ -159,7 +159,7 @@ const removeFromCart = async (receiver_id, sender, item, productCartIndex) => {
       cart.tax = calcTax(cart.tax_parecent, cart.price);
       cart.total = cart.price + cart.tax + cart.fees;
     }
-    await setUserVars(sender, "cart", JSON.stringify(cart));
+    await setUserVars(receiver_id, sender, "cart", JSON.stringify(cart));
     return cart;
   } else {
     return false;

@@ -23,7 +23,6 @@ module.exports = (sequelize, Sequelize) => {
       fees: {
         type: Sequelize.DOUBLE,
       },
-
     },
     {
       timestamps: false,
