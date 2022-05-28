@@ -104,7 +104,6 @@ const bot = async (
   longitude,
   latitude,
   username,
-  locales
 ) => {
   // EX: Input: "whatsapp:+96512345678" ,Output: "12345678"
 
@@ -126,8 +125,11 @@ const bot = async (
   let phase = await getUserVars(receiver_id, sender, "phase");
   console.log(`phase: ${phase}`);
   let language = await getUserVars(receiver_id, sender, "language");
+  if (language == undefined) language = "ar";
 
-  if (message == "0" || message == "العودة للرئيسية") {
+  const translation = require(`../locales/${language}`)
+
+  if (message == "0" || message == translation.go_home) {
     //احذف هذه الاشياء من الريديس
     delUserVars(receiver_id, sender, "branch");
     delUserVars(receiver_id, sender, "cats");
@@ -163,9 +165,8 @@ const bot = async (
     );
 
     deleteAllKeys();
-  } else if (language == "en") {
-    //todo
-  } else {
+  }
+  else {
     switch (phase) {
       case "0":
       case null:
@@ -184,7 +185,7 @@ const bot = async (
         break;
 
       case "1":
-        if (message === "العربية") {
+        if (message === translation.Arabic) {
           setUserVars(receiver_id, sender, "language", "ar");
           const pickup_Policy = storObj.pickup_Policy;
 
@@ -199,8 +200,16 @@ const bot = async (
           }
         } else if (message === "English") {
           setUserVars(receiver_id, sender, "language", "en");
-          englishBot(sender_id, receiver_id, message, longitude, latitude);
-          break;
+          const pickup_Policy = storObj.pickup_Policy;
+
+          //  بنحكيله بدك نوصل لك لبيتك او بدك تيجي للمحل حسب اذا كان فيه باكاب او لا
+          if (pickup_Policy) {
+            sendMsg.pickupPhase(sender_id, receiver_id);
+            setUserVars(receiver_id, sender, "phase", "1.1");
+          } else {
+            sendMsg.locationPhase(sender_id, receiver_id);
+            setUserVars(receiver_id, sender, "phase", "2");
+          }
         } else {
           //Send ERROR message : If the message sent is wrong
           sendMsg.errorMsg(sender_id, receiver_id);

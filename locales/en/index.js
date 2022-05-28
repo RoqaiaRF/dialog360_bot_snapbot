@@ -1,4 +1,5 @@
 const en = {
+  go_home: "Home",
   help_text : "need help! send *",
   go_home_text : "go home! send 0",
   total_without_tax : "Total without Tax:",
