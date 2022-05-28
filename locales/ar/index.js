@@ -5,7 +5,7 @@ const ar =
   go_home_text : "دائما للعودة للرئيسية اضغط 0 ",
   total_without_tax : "المجموع دون ضريبة : ",
   welcome_message : "حياك الله في  ",
- select_Language : "اختر اللغة المناسبة للطلب",
+ select_language : "اختر اللغة المناسبة للطلب",
   arabic : "العربية",
   english : "English",
   how_to_receive_the_product : "ما طريقة استلام المنتج التي تفضلها ؟",
