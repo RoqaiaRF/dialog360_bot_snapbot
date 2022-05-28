@@ -35,7 +35,7 @@ const welcomeLangPhase = async (
 //^Phase #1.1
 // Expected Outputs: "توصيل لبيتي", "استلام من المتجر"
 const pickupPhase = async (senderID, receiverID) => {
-  let language = await getUserVars(receiver_id, sender, "language");
+  let language = await getUserVars(receiverID, senderID, "language");
   if (language == undefined) language = "ar";
 
   const translation = require(`../locales/${language}`);
@@ -52,7 +52,7 @@ const pickupPhase = async (senderID, receiverID) => {
 //^ Phase #2 request user location
 
 const locationPhase = async (senderID, receiverID) => {
-  let language = await getUserVars(receiver_id, sender, "language");
+  let language = await getUserVars(receiverID, senderID, "language");
   if (language == undefined) language = "ar";
 
   const translation = require(`../locales/${language}`);
@@ -60,7 +60,7 @@ const locationPhase = async (senderID, receiverID) => {
 };
 
 const nearestLocation = async (senderID, storeName, storObj, receiverID) => {
-  let language = await getUserVars(receiver_id, sender, "language");
+  let language = await getUserVars(receiverID, senderID, "language");
   if (language == undefined) language = "ar";
 
   const translation = require(`../locales/${language}`);
@@ -96,7 +96,7 @@ const nearestLocation = async (senderID, storeName, storObj, receiverID) => {
 //^ Phase #2.1 Choose one of these branches
 
 const getAllBranchesPhase = async (senderID, branches, receiverID) => {
-  let language = await getUserVars(receiver_id, sender, "language");
+  let language = await getUserVars(receiverID, senderID, "language");
   if (language == undefined) language = "ar";
 
   const translation = require(`../locales/${language}`);
@@ -116,7 +116,7 @@ const getAllBranchesPhase = async (senderID, branches, receiverID) => {
 //^ Phase #3 send main category and request to choose the right category by sending category_index
 
 const categoryPhase = async (senderID, categories, receiverID) => {
-  let language = await getUserVars(receiver_id, sender, "language");
+  let language = await getUserVars(receiverID, senderID, "language");
   if (language == undefined) language = "ar";
 
   const translation = require(`../locales/${language}`);
@@ -125,7 +125,7 @@ const categoryPhase = async (senderID, categories, receiverID) => {
   sendTextMsg(
     ` ${message} ${categories}
   ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
-  ${To_return_to_the_main}`,
+  ${translation.To_return_to_the_main}`,
     senderID,
     receiverID
   );
@@ -136,7 +136,7 @@ const categoryPhase = async (senderID, categories, receiverID) => {
 //^ Phase #3 send products and request to choose the right product by sending product_index of it's category
 
 const productPhase = async (senderID, products, receiverID) => {
-  let language = await getUserVars(receiver_id, sender, "language");
+  let language = await getUserVars(receiverID, senderID, "language");
   if (language == undefined) language = "ar";
 
   const translation = require(`../locales/${language}`);
@@ -152,7 +152,7 @@ ${translation.To_return_to_the_main}`,
   );
 };
 const subCategoryPhase = async (senderID, subCategory, receiverID) => {
-  let language = await getUserVars(receiver_id, sender, "language");
+  let language = await getUserVars(receiverID, senderID, "language");
   if (language == undefined) language = "ar";
 
   const translation = require(`../locales/${language}`);
@@ -169,7 +169,7 @@ const subCategoryPhase = async (senderID, subCategory, receiverID) => {
 };
 
 const addedDetails = async (senderID, receiverID) => {
-  let language = await getUserVars(receiver_id, sender, "language");
+  let language = await getUserVars(receiverID, senderID, "language");
   if (language == undefined) language = "ar";
 
   const translation = require(`../locales/${language}`);
@@ -177,7 +177,7 @@ const addedDetails = async (senderID, receiverID) => {
 };
 
 const featuresPhase = async (senderID, features, receiverID) => {
-  let language = await getUserVars(receiver_id, sender, "language");
+  let language = await getUserVars(receiverID, senderID, "language");
   if (language == undefined) language = "ar";
 
   const translation = require(`../locales/${language}`);
@@ -194,7 +194,7 @@ const featuresPhase = async (senderID, features, receiverID) => {
 };
 
 const showProduct = async (senderID, product, receiverID) => {
-  let language = await getUserVars(receiver_id, sender, "language");
+  let language = await getUserVars(receiverID, senderID, "language");
   if (language == undefined) language = "ar";
 
   const translation = require(`../locales/${language}`);
@@ -234,7 +234,7 @@ const showProduct = async (senderID, product, receiverID) => {
   );
 };
 const quantityProductPhase = async (senderID, receiverID) => {
-  let language = await getUserVars(receiver_id, sender, "language");
+  let language = await getUserVars(receiverID, senderID, "language");
   if (language == undefined) language = "ar";
 
   const translation = require(`../locales/${language}`);
@@ -250,7 +250,7 @@ const showCart = async (
   fees,
   receiverID
 ) => {
-  let language = await getUserVars(receiver_id, sender, "language");
+  let language = await getUserVars(receiverID, senderID, "language");
   if (language == undefined) language = "ar";
 
   const translation = require(`../locales/${language}`);
@@ -272,7 +272,7 @@ ${purchases}
 ${translation.sum_without_tax} ${price.toFixed(2)} ${translation.the_currency} 
 ${translation.Tax} ${tax} ${translation.the_currency}
 ${translation.Delivery_Charge} ${fees} ${translation.the_currency}
-${total_summation} ${total.toFixed(2)} ${translation.the_currency}
+${translation.total_summation} ${total.toFixed(2)} ${translation.the_currency}
 🤗
 
 ${translation.link_approved_order} 
@@ -283,7 +283,7 @@ ${paymentLink}`;
 };
 
 const errorMsg = async (senderID, receiverID) => {
-  let language = await getUserVars(receiver_id, sender, "language");
+  let language = await getUserVars(receiverID, senderID, "language");
   if (language == undefined) language = "ar";
 
   const translation = require(`../locales/${language}`);
@@ -291,7 +291,7 @@ const errorMsg = async (senderID, receiverID) => {
 };
 
 const customMessage = async (message, senderID, receiverID) => {
-  let language = await getUserVars(receiver_id, sender, "language");
+  let language = await getUserVars(receiverID, senderID, "language");
   if (language == undefined) language = "ar";
 
   const translation = require(`../locales/${language}`);
