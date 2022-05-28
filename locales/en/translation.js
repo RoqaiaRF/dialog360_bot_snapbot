@@ -1,5 +1,4 @@
-module.exports=
-{
+const en = {
   help_text : "need help! send *",
   go_home_text : "go home! send 0",
   total_without_tax : "Total without Tax:",
@@ -37,3 +36,4 @@ module.exports=
   send_the_location : "Send your location so that we can help you find the nearest branch to you",
   Choose_another_branch : "Choose another branch "
 }
+module.exports = en

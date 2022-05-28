@@ -95,7 +95,7 @@ const showFeatures = (featuresObj) => {
 
 // receiver_id: رقم صاحب المتجر / رقم البوت
 // sender_id: رقم المرسل / الزبون
-let cart = {};
+let cart ;
 
 const bot = async (
   sender_id,
@@ -346,8 +346,8 @@ const bot = async (
           await getUserVars(receiver_id, sender, "branch")
         );
 
-        const cityName3 = await location.getCityName(latitude, longitude);
-        const fees3 = await storeController.getFees(storObj.id, cityName3);
+        const cityName3 = await location.getCityName(location3.lat, location3.lng);
+        const fees3 = await storeController.getFees(branch3.id, cityName3);
 
         if (message == "ابدأ الطلب") {
           const categoryObj = JSON.parse(
@@ -366,6 +366,8 @@ const bot = async (
             fees3,
             receiver_id
           );
+          console.log("************** Cart  Order *************",cart);
+
           setUserVars(receiver_id, sender, "phase", "4");
           sendMsg.categoryPhase(
             sender_id,
@@ -407,7 +409,7 @@ const bot = async (
             fees3,
             receiver_id
           );
-
+          console.log("************** Cart reserevation *************",cart);
           setUserVars(receiver_id, sender, "phase", "4");
           sendMsg.categoryPhase(
             sender_id,
@@ -904,9 +906,9 @@ ${purchases9} `,
           );
 
           if (result) {
-            sendMsg.customMessage("تم الحذف بنجاح! ", sender_id, receiver_id);
+            await sendMsg.customMessage("تم الحذف بنجاح! ", sender_id, receiver_id);
 
-            let newCart9_1 = JSON.parse(await getUserVars(receiver_id, sender));
+            let newCart9_1 = JSON.parse(await getUserVars(receiver_id, sender, "cart"));
             const purchases9_1 = await showPurchases(receiver_id, sender);
 
             sendMsg.showCart(

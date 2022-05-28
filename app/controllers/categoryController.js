@@ -1,15 +1,11 @@
 const db = require("../../database/connection");
+const Redis = require("ioredis");
 const Category = require("../models/Category")(db.sequelize, db.Sequelize);
 const redis = require("../../database/redis");
-// define relationships
+require("dotenv").config();
 
-// Category has Many Products
-/* Category.hasMany(Product, {
-  foreignKey: "category_id",
-});
-Product.belongsTo(Category, {
-  foreignKey: "category_id",
-}); */
+const REDIS_URL = process.env.REDIS_URL;
+const client = new Redis(REDIS_URL);
 
 // Category has Many subCategories
 Category.hasMany(Category, {
@@ -27,7 +23,8 @@ Category.belongsTo(Category, {
 // function get categories & subCategories
 
 const getCategories = async (receiver_id, sender, store_id, type) => {
-  const cats = await redis.getUserVars(receiver_id, sender, "cats");
+  let cats = await client.get(`${receiver_id}:${sender}:cats`);
+
   if (cats) {
     console.log("from cache");
     return JSON.parse(cats);
@@ -48,21 +45,11 @@ const getCategories = async (receiver_id, sender, store_id, type) => {
             as: "parent",
           },
         },
-        /*         include: [
-          {
-            model: Category,
-            as: "subCategories",
-           include: {
-              model: Product,
-            }, 
-          },
-          {
-            model: Product,
-          },
-        ], */
+      
       },
       { attributes: ["name_ar", "name_en", "store_id"] }
     );
+    console.log(" categories line 52 ********* ",list)
     await redis.setUserVars(receiver_id, sender, "cats", JSON.stringify(list));
     console.log("from db");
     return list;

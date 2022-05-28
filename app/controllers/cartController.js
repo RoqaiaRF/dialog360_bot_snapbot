@@ -4,6 +4,10 @@ require("dotenv").config();
 
 const { setUserVars, getUserVars } = require("../../database/redis");
 
+const REDIS_URL = process.env.REDIS_URL;
+const client = new Redis(  REDIS_URL);
+
+
 //^ DONE!
 // helper to add new item to items array
 const addItem = async (arr, item, sender, cart) => {
@@ -66,16 +70,16 @@ const newCart = async (
   fees = 0,
   receiver_id
 ) => {
-  const storObj = JSON.parse(await getUserVars(receiver_id, sender, "store"));
+
+  const storObj = JSON.parse( await client.get(`${receiver_id}:${sender}:store`));
   const payment_Policy = payment_PolicyController(storObj);
 
-  console.log("********payment_Policy*********", payment_Policy);
-  const pickup_Policy = JSON.parse(
-    await getUserVars(receiver_id, sender, "pickup_Policy")
-  );
+  const pickup_Policy = JSON.parse( await  client.get(`${receiver_id}:${sender}:pickup_Policy`));
 
-  const cart = JSON.parse(await getUserVars(receiver_id, sender, "cart"));
+
+  let cart =  await client.get(`${receiver_id}:${sender}:cart`)
   if (cart) return false;
+  cart = JSON.parse( cart);
   const obj = {
     id: sender,
     branch_id: branch_id,
@@ -103,8 +107,8 @@ const newCart = async (
  * @returns // cart or flase
  */
 const addToCart = async (receiver_id, sender, item) => {
-  const cart = JSON.parse(await getUserVars(receiver_id, sender, "cart"));
 
+  const cart = JSON.parse( await client.get(`${receiver_id}:${sender}:cart`))
   if (cart) {
     const itemAdded = addItem(cart.items, item, sender, cart);
     /*     cart.total += item.price * item.quantity;

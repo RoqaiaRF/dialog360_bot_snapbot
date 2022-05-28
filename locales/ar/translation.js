@@ -1,4 +1,4 @@
-module.exports =
+const ar =
 {
   help_text: "للحصول على المساعدة ارسل *",
   go_home_text : "دائما للعودة للرئيسية اضغط 0 ",
@@ -39,3 +39,5 @@ module.exports =
   
 
 } 
+
+module.exports = ar
