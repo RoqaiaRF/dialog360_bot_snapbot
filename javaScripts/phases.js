@@ -220,9 +220,9 @@ const showCart = async (
   const isOrder = JSON.parse(await getUserVars(receiverID, sender, "isorder"));
 
   if (isOrder === true) {
-    paymentLink = `http://payment.snapbot.app/orders?sender=${sender}`;
+    paymentLink = `http://payment.snapbot.app/${receiverID}/orders/${sender}`;
   } else if (isOrder === false) {
-    paymentLink = `http://payment.snapbot.app/reservations?sender=${sender}`;
+    paymentLink = `http://payment.snapbot.app/${receiverID}/reservations/${sender}`;
   } else {
     paymentLink = "خطأ في تأكيد الطلبية , اتصل بخدمة العملاء!";
   }
