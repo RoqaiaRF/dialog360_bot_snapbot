@@ -56,6 +56,10 @@ const branches = (branchesObj) => {
 // get and show the purchases
 
 const showPurchases = async (receiver_id, sender) => {
+  let language = await getUserVars(receiver_id, sender, "language");
+  if (language == undefined) language = "ar";
+
+  const translation = require(`../locales/${language}`);
   let msg = "",
     addedFeatures = "",
     quantity = "";
@@ -65,16 +69,18 @@ const showPurchases = async (receiver_id, sender) => {
 
   purchasesObj.forEach((element, index) => {
     if (element.features.length != 0)
-      addedFeatures = `الخدمات الاضافية: ${showFeatures(element.features)} 
+      addedFeatures = `${translation.features}: ${showFeatures(
+        element.features
+      )} 
       `;
     else addedFeatures = "";
 
-    if (isOrder === true) quantity = `عدد:  ${element.qty} `;
+    if (isOrder === true) quantity = `${translation.number}  ${element.qty} `;
     else quantity = "";
 
-    msg += ` *${index + 1}* . ${element.name_ar},  ${quantity} المدة:  ${
-      element.duration
-    } دقيقه
+    msg += ` *${index + 1}* . ${element.name_ar},  ${quantity} ${
+      translation.Duration
+    }  ${element.duration} ${translation.minute}
       ${addedFeatures}
    `;
   });
@@ -83,11 +89,17 @@ const showPurchases = async (receiver_id, sender) => {
 };
 
 //get and show features
-const showFeatures = (featuresObj) => {
+const showFeatures = async (featuresObj) => {
+  let language = await getUserVars(receiver_id, sender, "language");
+  if (language == undefined) language = "ar";
+
+  const translation = require(`../locales/${language}`);
   let msg = "";
 
   featuresObj.forEach((element, index) => {
-    msg += `( *${index + 1}* ) ${element.name_ar},  السعر:  ${element.price}
+    msg += `( *${index + 1}* ) ${element.name_ar},  ${translation.price}  ${
+      element.price
+    }
  `;
   });
   return msg;
@@ -95,7 +107,7 @@ const showFeatures = (featuresObj) => {
 
 // receiver_id: رقم صاحب المتجر / رقم البوت
 // sender_id: رقم المرسل / الزبون
-let cart ;
+let cart;
 
 const bot = async (
   sender_id,
@@ -103,7 +115,7 @@ const bot = async (
   message,
   longitude,
   latitude,
-  username,
+  username
 ) => {
   // EX: Input: "whatsapp:+96512345678" ,Output: "12345678"
 
@@ -127,7 +139,7 @@ const bot = async (
   let language = await getUserVars(receiver_id, sender, "language");
   if (language == undefined) language = "ar";
 
-  const translation = require(`../locales/${language}`)
+  const translation = require(`../locales/${language}`);
 
   if (message == "0" || message == translation.go_home) {
     //احذف هذه الاشياء من الريديس
@@ -165,8 +177,7 @@ const bot = async (
     );
 
     deleteAllKeys();
-  }
-  else {
+  } else {
     switch (phase) {
       case "0":
       case null:
@@ -217,11 +228,11 @@ const bot = async (
         break;
 
       case "1.1":
-        if (message == "توصيل لبيتي") {
+        if (message == translation.home_delivery) {
           sendMsg.locationPhase(sender_id, receiver_id);
           setUserVars(receiver_id, sender, "phase", "2");
           setUserVars(receiver_id, sender, "pickup_Policy", false);
-        } else if (message == "استلام من المتجر") {
+        } else if (message == translation.Receipt_from_the_store) {
           setUserVars(receiver_id, sender, "pickup_Policy", true);
 
           //احضر الفروع كلها من الداتابيز
@@ -264,10 +275,7 @@ const bot = async (
           if (fees == -1) {
             // هذا يعني ان المدينة التي ارسلها اليوزر غير موجوده في قواعد البيانات لدينا
             setUserVars(receiver_id, sender, "phase", "2");
-            sendMsg.customMessage(
-              "عذرا لا نقدم خدمات ضمن موقعك الجغرافي",
-              sender_id
-            );
+            sendMsg.customMessage(translation.out_cover_error_msg, sender_id);
             sendMsg.locationPhase(sender_id, receiver_id);
           } else {
             let branch = JSON.parse(
@@ -285,7 +293,7 @@ const bot = async (
             if (!nearestBranch) {
               setUserVars(receiver_id, sender, "phase", "2");
               sendMsg.customMessage(
-                "عذرا لا نقدم خدمات ضمن موقعك الجغرافي",
+                translation.out_cover_error_msg,
                 sender_id,
                 receiver_id
               );
@@ -317,7 +325,7 @@ const bot = async (
             // هذا يعني ان المدينة التي ارسلها اليوزر غير موجوده في قواعد البيانات لدينا
             setUserVars(receiver_id, sender, "phase", "2");
             sendMsg.customMessage(
-              "عذرا لا نقدم خدمات ضمن موقعك الجغرافي",
+              translation.out_cover_error_msg,
               sender_id,
               receiver_id
             );
@@ -355,10 +363,13 @@ const bot = async (
           await getUserVars(receiver_id, sender, "branch")
         );
 
-        const cityName3 = await location.getCityName(location3.lat, location3.lng);
+        const cityName3 = await location.getCityName(
+          location3.lat,
+          location3.lng
+        );
         const fees3 = await storeController.getFees(branch3.id, cityName3);
 
-        if (message == "ابدأ الطلب") {
+        if (message == translation.Start_ordering) {
           const categoryObj = JSON.parse(
             JSON.stringify(
               await getCategories(receiver_id, sender, storObj.id, 1)
@@ -375,7 +386,7 @@ const bot = async (
             fees3,
             receiver_id
           );
-          console.log("************** Cart  Order *************",cart);
+          console.log("************** Cart  Order *************", cart);
 
           setUserVars(receiver_id, sender, "phase", "4");
           sendMsg.categoryPhase(
@@ -383,7 +394,7 @@ const bot = async (
             "" + categories(categoryObj),
             receiver_id
           );
-        } else if (message === "اختر فرع اخر") {
+        } else if (message === translation.Choose_another_branch) {
           delUserVars(receiver_id, sender, "branch"); // احذف الفرع الموجود
           delUserVars(receiver_id, sender, "cart"); // احذف السله الموجود
 
@@ -399,7 +410,7 @@ const bot = async (
           );
           // اذهب للمرحلة رقم 3.1
           setUserVars(receiver_id, sender, "phase", "3.1");
-        } else if (message == "ابدأ الحجز") {
+        } else if (message == translation.Start_Booking) {
           const categoryObj = JSON.parse(
             JSON.stringify(
               await getCategories(receiver_id, sender, storObj.id, 0)
@@ -418,7 +429,7 @@ const bot = async (
             fees3,
             receiver_id
           );
-          console.log("************** Cart reserevation *************",cart);
+          console.log("************** Cart reserevation *************", cart);
           setUserVars(receiver_id, sender, "phase", "4");
           sendMsg.categoryPhase(
             sender_id,
@@ -593,7 +604,7 @@ const bot = async (
         console.log("productObj: ", productObj);
         if (productObj === {}) {
           sendMsg.customMessage(
-            "لا يوجد بيانات  لعرضها!",
+            translation.no_data_msg,
             sender_id,
             receiver_id
           );
@@ -649,7 +660,7 @@ const bot = async (
         }
         //لا تتم الاضافة للسلة بعد , يجب تحديد الكمية وبعدها يضيف للسلة
         // ااذا كانت السياسه حجز فسيضيف للسله عادي
-        else if (message == "اضافة للسلة") {
+        else if (message == translation.add_to_cart) {
           const isorder7 = JSON.parse(
             await getUserVars(receiver_id, sender, "isorder")
           );
@@ -756,7 +767,7 @@ const bot = async (
         const quantity = productDetails.qty;
         if (parseInt(message) > parseInt(quantity) || parseInt(message) <= 0) {
           sendMsg.customMessage(
-            `الكمية خاطئة! ادخل كمية اقل من ${quantity}`,
+            `${translation.error_qty_msg} ${quantity}`,
             sender_id,
             receiver_id
           );
@@ -800,7 +811,7 @@ const bot = async (
       //TODO: اضافة مرحلة لاضافة المزيد من الخدمات الاضافيه
 
       case "8.1":
-        if (message === "نعم") {
+        if (message === translation.yes) {
           // show features
 
           let productDetails = JSON.parse(
@@ -820,7 +831,7 @@ const bot = async (
             );
           } else {
             await sendMsg.customMessage(
-              "لا يوجد خدمات اضافية",
+              translation.no_features_found,
               sender_id,
               receiver_id
             );
@@ -828,7 +839,7 @@ const bot = async (
 
             setUserVars(receiver_id, sender, "phase", "7");
           }
-        } else if (message === "لا") {
+        } else if (message === translation.no) {
           // show cart details
           let productDetails8_1 = JSON.parse(
             await getUserVars(receiver_id, sender, "productDetails")
@@ -869,17 +880,17 @@ const bot = async (
       case "9": // cart
         const purchases9 = await showPurchases(receiver_id, sender);
 
-        if (message === "الدفع") {
+        if (message === translation.payment) {
           // عرض السلة كاملة مع رابط للدفع
-        } else if (message === "حدد المنتج لحذفه") {
+        } else if (message === translation.select_to_delete) {
           sendMsg.customMessage(
-            `حدد رقم المنتج لحذفه: 
+            `${translation.select_number_product_to_delete} 
 ${purchases9} `,
             sender_id,
             receiver_id
           );
           setUserVars(receiver_id, sender, "phase", "9.1");
-        } else if (message === "اضافة منتجات") {
+        } else if (message === translation.add_products) {
           setUserVars(receiver_id, sender, "phase", "6");
           let productObj7 = JSON.parse(
             await getUserVars(receiver_id, sender, "products")
@@ -915,9 +926,15 @@ ${purchases9} `,
           );
 
           if (result) {
-            await sendMsg.customMessage("تم الحذف بنجاح! ", sender_id, receiver_id);
+            await sendMsg.customMessage(
+              translation.delete_success,
+              sender_id,
+              receiver_id
+            );
 
-            let newCart9_1 = JSON.parse(await getUserVars(receiver_id, sender, "cart"));
+            let newCart9_1 = JSON.parse(
+              await getUserVars(receiver_id, sender, "cart")
+            );
             const purchases9_1 = await showPurchases(receiver_id, sender);
 
             sendMsg.showCart(
@@ -932,7 +949,7 @@ ${purchases9} `,
             setUserVars(receiver_id, sender, "phase", "9");
           } else {
             sendMsg.customMessage(
-              "خطأ في عملية الحذف من السلة",
+              translation.error_delete_from_cart,
               sender_id,
               receiver_id
             );

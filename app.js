@@ -1,10 +1,9 @@
 let express = require("express");
 const bodyParser = require("body-parser");
 
-const i18next = require("i18next");
-const Backend = require("i18next-fs-backend");
-const middleware = require('i18next-express-middleware');
-
+//const i18next = require("i18next");
+//const Backend = require("i18next-fs-backend");
+//const middleware = require('i18next-express-middleware');
 
 const indexRouter = require("./routes/index");
 //const demoRouter = require("./routes/demo");

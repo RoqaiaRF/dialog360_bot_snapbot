@@ -35,8 +35,12 @@ const welcomeLangPhase = async (
 //^Phase #1.1
 // Expected Outputs: "توصيل لبيتي", "استلام من المتجر"
 const pickupPhase = async (senderID, receiverID) => {
+  let language = await getUserVars(receiver_id, sender, "language");
+  if (language == undefined) language = "ar";
+
+  const translation = require(`../locales/${language}`);
   await sendTextMsg(
-    `ما طريقة استلام المنتج التي تفضلها ؟`,
+    `${translation.preferred_receiving_method}`,
     senderID,
     receiverID
   );
@@ -48,14 +52,18 @@ const pickupPhase = async (senderID, receiverID) => {
 //^ Phase #2 request user location
 
 const locationPhase = async (senderID, receiverID) => {
-  sendTextMsg(
-    `  ارسل اللوكيشن لموقعك حتى نساعدك بمعرفة اقرب فرع لك 🇰🇼 😊`,
-    senderID,
-    receiverID
-  );
+  let language = await getUserVars(receiver_id, sender, "language");
+  if (language == undefined) language = "ar";
+
+  const translation = require(`../locales/${language}`);
+  sendTextMsg(`  ${translation.submit_your_location}`, senderID, receiverID);
 };
 
 const nearestLocation = async (senderID, storeName, storObj, receiverID) => {
+  let language = await getUserVars(receiver_id, sender, "language");
+  if (language == undefined) language = "ar";
+
+  const translation = require(`../locales/${language}`);
   const _isReservation_Pay = isReservation_Pay(storObj);
   console.log(
     ` ............_isReservation_Pay.................... ${_isReservation_Pay}`
@@ -63,28 +71,24 @@ const nearestLocation = async (senderID, storeName, storObj, receiverID) => {
 
   if (_isReservation_Pay === "onlyOrders") {
     sendTextMsg(
-      `أقرب فرع لك هو ${storeName} ومتاح لخدمتك الان`,
+      `${storeName} ${translation.nearest_branch}`,
       senderID,
       receiverID
     );
   } else if (_isReservation_Pay === "onlyReservation") {
     sendTextMsg(
-      `أقرب فرع لك هو  ${storeName} وهو متاح لخدمتك الان`,
+      `${storeName} ${translation.nearest_branch}`,
       senderID,
       receiverID
     );
   } else if (_isReservation_Pay === "Orders_Reservation_together") {
     sendTextMsg(
-      ` أقرب فرع لك ${storeName} ومتاح لخدمتك الان`,
+      `${storeName} ${translation.nearest_branch}`,
       senderID,
       receiverID
     );
   } else if (_isReservation_Pay === "error") {
-    sendTextMsg(
-      `نعتذر عن هذا الخطأ , يرجى التحدث مع خددمة العملاء`,
-      senderID,
-      receiverID
-    );
+    sendTextMsg(`${translation.reservation_error_msg}`, senderID, receiverID);
   }
 };
 
@@ -92,12 +96,16 @@ const nearestLocation = async (senderID, storeName, storObj, receiverID) => {
 //^ Phase #2.1 Choose one of these branches
 
 const getAllBranchesPhase = async (senderID, branches, receiverID) => {
-  let message = `اختر احد هذه الفروع التالية: 
+  let language = await getUserVars(receiver_id, sender, "language");
+  if (language == undefined) language = "ar";
+
+  const translation = require(`../locales/${language}`);
+  let message = `${translation.Choose_a_branchs} 
 `;
   sendTextMsg(
     ` ${message} ${branches}
   ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
-  للعودة للرئيسية ارسل 0`,
+  ${translation.To_return_to_the_main}`,
     senderID,
     receiverID
   );
@@ -108,12 +116,16 @@ const getAllBranchesPhase = async (senderID, branches, receiverID) => {
 //^ Phase #3 send main category and request to choose the right category by sending category_index
 
 const categoryPhase = async (senderID, categories, receiverID) => {
-  let message = `اختر احد هذه التصنيفات: 
+  let language = await getUserVars(receiver_id, sender, "language");
+  if (language == undefined) language = "ar";
+
+  const translation = require(`../locales/${language}`);
+  let message = `${translation.Choose_categories} 
 `;
   sendTextMsg(
     ` ${message} ${categories}
   ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
-  للعودة للرئيسية ارسل 0`,
+  ${To_return_to_the_main}`,
     senderID,
     receiverID
   );
@@ -124,53 +136,73 @@ const categoryPhase = async (senderID, categories, receiverID) => {
 //^ Phase #3 send products and request to choose the right product by sending product_index of it's category
 
 const productPhase = async (senderID, products, receiverID) => {
-  let message = `اختر احد هذه المنتجات: 
+  let language = await getUserVars(receiver_id, sender, "language");
+  if (language == undefined) language = "ar";
+
+  const translation = require(`../locales/${language}`);
+  let message = ` ${translation.Choose_products}
 `;
   sendTextMsg(
     ` ${message} ${products}
 ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
-للعودة للمرحلة السابقة ارسل 00
-للعودة للرئيسية ارسل 0`,
+${translation.return_to_the_previous_stage}
+${translation.To_return_to_the_main}`,
     senderID,
     receiverID
   );
 };
 const subCategoryPhase = async (senderID, subCategory, receiverID) => {
-  let message = `اختر احد التصنيفات الفرعيه الاتيه:   
+  let language = await getUserVars(receiver_id, sender, "language");
+  if (language == undefined) language = "ar";
+
+  const translation = require(`../locales/${language}`);
+  let message = `${translation.Choose_features}   
   `;
   sendTextMsg(
     ` ${message} ${subCategory}
   ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
-  للعودة للمرحلة السابقة ارسل 00
-  للعودة للرئيسية ارسل 0`,
+  ${translation.return_to_the_previous_stage}
+  ${translation.To_return_to_the_main}`,
     senderID,
     receiverID
   );
 };
 
 const addedDetails = async (senderID, receiverID) => {
-  sendTextMsg("هل تريد خدمات اضافية ؟", senderID, receiverID);
+  let language = await getUserVars(receiver_id, sender, "language");
+  if (language == undefined) language = "ar";
+
+  const translation = require(`../locales/${language}`);
+  sendTextMsg(translation.features_question, senderID, receiverID);
 };
 
 const featuresPhase = async (senderID, features, receiverID) => {
-  let message = `اختر أحد المميزات/ الخدمات الاضافية لاضافتها للسلة :   
+  let language = await getUserVars(receiver_id, sender, "language");
+  if (language == undefined) language = "ar";
+
+  const translation = require(`../locales/${language}`);
+  let message = `${translation.choose_feature_to_add_to_cart}   
   `;
   sendTextMsg(
     ` ${message} ${features}
   ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
-  للعودة للمرحلة السابقة ارسل 00
-  للعودة للرئيسية ارسل 0`,
+  ${translation.return_to_the_previous_stage}
+  ${translation.To_return_to_the_main}`,
     senderID,
     receiverID
   );
 };
 
 const showProduct = async (senderID, product, receiverID) => {
+  let language = await getUserVars(receiver_id, sender, "language");
+  if (language == undefined) language = "ar";
+
+  const translation = require(`../locales/${language}`);
   let message = `
-  اسم المنتج: ${product.name_ar}
-  الوصف: ${product.description_ar}
-  السعر: ${product.price} دينار
-  المدة: ${product.duration} دقيقة
+  ${translation.product_name} ${product.name_ar}
+  ${translation.the_description} ${product.description_ar}
+  ${translation.price} ${product.price} ${translation.the_currency}
+  ${translation.Duration} ${product.duration} ${translation.minute}
 
   `;
 
@@ -178,8 +210,8 @@ const showProduct = async (senderID, product, receiverID) => {
     sendMedia(
       ` ${message}
   ــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
-  للعودة للمرحلة السابقة ارسل 00
-  للعودة للرئيسية ارسل 0`,
+  ${translation.return_to_the_previous_stage}
+  ${translation.To_return_to_the_main}`,
       senderID,
       "https://stores-logos.fra1.digitaloceanspaces.com/products/" +
         product.image,
@@ -189,20 +221,24 @@ const showProduct = async (senderID, product, receiverID) => {
     sendTextMsg(
       ` ${message}
   ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
-  للعودة للمرحلة السابقة ارسل 00
-  للعودة للرئيسية ارسل 0`,
+  ${translation.return_to_the_previous_stage}
+  ${translation.To_return_to_the_main}`,
       senderID,
       receiverID
     );
   }
-  sendTextMsg(`تفاصيل المنتج ${product.name_ar}`, senderID, receiverID);
-};
-const quantityProductPhase = async (senderID, receiverID) => {
   sendTextMsg(
-    `أدخل الكمية المناسبة بالارقام الانجليزية 1, 2, ...`,
+    `${translation.product_description_title} ${product.name_ar}`,
     senderID,
     receiverID
   );
+};
+const quantityProductPhase = async (senderID, receiverID) => {
+  let language = await getUserVars(receiver_id, sender, "language");
+  if (language == undefined) language = "ar";
+
+  const translation = require(`../locales/${language}`);
+  sendTextMsg(`${translation.choose_qty}`, senderID, receiverID);
 };
 
 const showCart = async (
@@ -214,6 +250,10 @@ const showCart = async (
   fees,
   receiverID
 ) => {
+  let language = await getUserVars(receiver_id, sender, "language");
+  if (language == undefined) language = "ar";
+
+  const translation = require(`../locales/${language}`);
   let paymentLink = "";
 
   const sender = senderID.replace("whatsapp:+", "");
@@ -224,29 +264,37 @@ const showCart = async (
   } else if (isOrder === false) {
     paymentLink = `http://payment.snapbot.app/${receiverID}/reservations/${sender}`;
   } else {
-    paymentLink = "خطأ في تأكيد الطلبية , اتصل بخدمة العملاء!";
+    paymentLink = translation.error_approved_payment;
   }
   const msg = `
 ${purchases}
 
-المجموع دون ضريبة : ${price.toFixed(2)} دينار 
-الضريبة : ${tax} دينار
-رسوم التوصيل ${fees} دينار
-المجموع الكلي: ${total.toFixed(2)} دينار
+${translation.sum_without_tax} ${price.toFixed(2)} ${translation.the_currency} 
+${translation.Tax} ${tax} ${translation.the_currency}
+${translation.Delivery_Charge} ${fees} ${translation.the_currency}
+${total_summation} ${total.toFixed(2)} ${translation.the_currency}
 🤗
 
-الررجاء أستخدام الرابط لتأكيد الطلب. 
+${translation.link_approved_order} 
 ${paymentLink}`;
 
-  await sendTextMsg(`تفاصيل السلة :`, senderID, receiverID);
+  await sendTextMsg(`${translation.Cart_details}`, senderID, receiverID);
   sendTextMsg(`${msg}`, senderID, receiverID);
 };
 
 const errorMsg = async (senderID, receiverID) => {
-  sendTextMsg(`خطأ في الارسال`, senderID, receiverID);
+  let language = await getUserVars(receiver_id, sender, "language");
+  if (language == undefined) language = "ar";
+
+  const translation = require(`../locales/${language}`);
+  sendTextMsg(translation.error_in_sending, senderID, receiverID);
 };
 
 const customMessage = async (message, senderID, receiverID) => {
+  let language = await getUserVars(receiver_id, sender, "language");
+  if (language == undefined) language = "ar";
+
+  const translation = require(`../locales/${language}`);
   sendTextMsg(message, senderID, receiverID);
 };
 
