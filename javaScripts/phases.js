@@ -2,6 +2,7 @@ const sendTextMsg = require("./sendMsgFunctions");
 const sendMedia = require("./sendMedia");
 const isReservation_Pay = require("../app/controllers/isReservation_OrdersController");
 const Redis = require("ioredis");
+const template = require("../locales/templates")
 require("dotenv").config(); // env مكتبة جلب المتغيرات من ال
 
 const { getUserVars } = require("../database/redis");
@@ -30,7 +31,8 @@ const welcomeLangPhase = async (
     store_phone
   );
 
-  sendTextMsg(`اختر اللغة المناسبة للطلب`, senderID, store_phone);
+  sendTextMsg(`اختر اللغة المناسبة للطلب`,
+   senderID, store_phone);
 };
 //^Phase #1.1
 // Expected Outputs: "توصيل لبيتي", "استلام من المتجر"
@@ -38,9 +40,7 @@ const pickupPhase = async (senderID, receiverID) => {
   let language = await getUserVars(receiverID, senderID, "language");
   if (language == undefined) language = "ar";
 
-  const translation = require(`../locales/${language}`);
-  await sendTextMsg(
-    `${translation.preferred_receiving_method}`,
+  await sendTextMsg(template("pickup",language ," "),
     senderID,
     receiverID
   );
@@ -65,25 +65,21 @@ const nearestLocation = async (senderID, storeName, storObj, receiverID) => {
 
   const translation = require(`../locales/${language}`);
   const _isReservation_Pay = isReservation_Pay(storObj);
-  console.log(
-    ` ............_isReservation_Pay.................... ${_isReservation_Pay}`
-  );
 
   if (_isReservation_Pay === "onlyOrders") {
-    sendTextMsg(
-      `${storeName} ${translation.nearest_branch}`,
+    sendTextMsg( template("onley_ordering",language ,storeName),
       senderID,
       receiverID
     );
   } else if (_isReservation_Pay === "onlyReservation") {
     sendTextMsg(
-      `${storeName} ${translation.nearest_branch}`,
+      template("onleyreservation",language ,storeName),
       senderID,
       receiverID
     );
   } else if (_isReservation_Pay === "Orders_Reservation_together") {
     sendTextMsg(
-      `${storeName} ${translation.nearest_branch}`,
+      template("orders_reservation_together",language ,storeName),
       senderID,
       receiverID
     );
@@ -173,7 +169,8 @@ const addedDetails = async (senderID, receiverID) => {
   if (language == undefined) language = "ar";
 
   const translation = require(`../locales/${language}`);
-  sendTextMsg(translation.features_question, senderID, receiverID);
+  sendTextMsg( template("added_details",language )
+  , senderID, receiverID);
 };
 
 const featuresPhase = async (senderID, features, receiverID) => {
@@ -228,7 +225,7 @@ const showProduct = async (senderID, product, receiverID) => {
     );
   }
   sendTextMsg(
-    `${translation.product_description_title} ${product.name_ar}`,
+    template("product_details",language ,product.name_ar),
     senderID,
     receiverID
   );
@@ -278,7 +275,8 @@ ${translation.total_summation} ${total.toFixed(2)} ${translation.the_currency}
 ${translation.link_approved_order} 
 ${paymentLink}`;
 
-  await sendTextMsg(`${translation.Cart_details}`, senderID, receiverID);
+  await sendTextMsg( template("cartdetails",language ,":")// يمكنك اضافة اي string  بدل ":"
+  , senderID, receiverID);
   sendTextMsg(`${msg}`, senderID, receiverID);
 };
 
