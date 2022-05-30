@@ -1,5 +1,5 @@
 const en = {
-  go_home: "Home",
+  go_home: "Go home",
   help_text: "need help! send *",
   go_home_text: "go home! send 0",
   total_without_tax: "Total without Tax:",
@@ -38,22 +38,22 @@ const en = {
   delete_product: "Select the product number to delete: ",
   send_the_location:
     "Send your location so that we can help you find the nearest branch to you",
-  Choose_another_branch: "Choose another branch ",
+  Choose_another_branch: "another branch",
   // هذا ما اضافه عبد الله وهو المستعمل في البوت، ان وجد تكرار فليحذف ما هو في الاعلى
   features: "خدمات إضافية",
   minute: "دقيقة",
 
   out_cover_error_msg: "عذرا لا نقدم خدمات ضمن موقعك الجغرافي",
   no_data_msg: "لا توجد بيانات لعرضها!",
-  add_to_cart: "إضافة للسلة",
+  add_to_cart: "Add to cart",
   error_qty_msg: "الكمية خاطئة! ادخل كمية اقل من",
-  yes: "نعم",
-  no: "لا",
+  yes: "yes",
+  no: "No",
   no_features_found: "لا يوجد خدمات اضافية",
   payment: "الدفع",
-  select_to_delete: "حدد المنتج لحذفه",
+  select_to_delete: "Delete Product",
   select_number_product_to_delete: "حدد رقم المنتج لحذفه:",
-  add_products: "إضافة منتجات",
+  add_products: "Add products",
   delete_success: "تم الحذف بنجاح! ",
   error_delete_from_cart: "خطأ في عملية الحذف من السلة",
 
