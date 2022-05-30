@@ -284,7 +284,7 @@ const bot = async (
           );
           sendMsg.getAllBranchesPhase(
             sender_id,
-            "" + branches(branchObj),
+            "" + branches(branchObj,receiver_id, sender),
             receiver_id
           );
           setUserVars(receiver_id, sender, "phase", "3.1");
@@ -448,7 +448,7 @@ const bot = async (
           // ارسل رسالة تحتوي جميع الفروع الموجوده مع المتجر الرئيسي واعرضها لليوزر
           sendMsg.getAllBranchesPhase(
             sender_id,
-            "" + branches(branchObj),
+            "" + branches(branchObj,receiver_id, sender),
             receiver_id
           );
           // اذهب للمرحلة رقم 3.1
@@ -578,7 +578,7 @@ const bot = async (
             setUserVars(receiver_id, sender, "phase", "5");
             sendMsg.subCategoryPhase(
               sender_id,
-              subCategoriess(category.subCategories),
+              subCategoriess(category.subCategories,receiver_id, sender),
               receiver_id
             );
             setUserVars(
@@ -594,7 +594,7 @@ const bot = async (
               sender,
               category.id
             );
-            sendMsg.productPhase(sender_id, products(productsObj), receiver_id);
+            sendMsg.productPhase(sender_id, products(productsObj,receiver_id,sender), receiver_id);
           }
         }
         break;
@@ -631,7 +631,7 @@ const bot = async (
             sender,
             category.id
           );
-          sendMsg.productPhase(sender_id, products(productsObj), receiver_id);
+          sendMsg.productPhase(sender_id, products(productsObj,receiver_id,sender,), receiver_id);
         }
         break;
 
@@ -699,7 +699,7 @@ const bot = async (
         );
         if (message === "00") {
           setUserVars(receiver_id, sender, "phase", "6");
-          sendMsg.productPhase(sender_id, products(productObj7), receiver_id);
+          sendMsg.productPhase(sender_id, products(productObj7,receiver_id,sender,), receiver_id);
         }
         //لا تتم الاضافة للسلة بعد , يجب تحديد الكمية وبعدها يضيف للسلة
         // ااذا كانت السياسه حجز فسيضيف للسله عادي
@@ -938,7 +938,7 @@ ${purchases9} `,
           let productObj7 = JSON.parse(
             await getUserVars(receiver_id, sender, "products")
           );
-          sendMsg.productPhase(sender_id, products(productObj7), receiver_id);
+          sendMsg.productPhase(sender_id, products(productObj7,receiver_id,sender,), receiver_id);
         } else {
           sendMsg.errorMsg(sender_id, receiver_id);
         }
