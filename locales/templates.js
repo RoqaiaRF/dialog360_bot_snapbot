@@ -1,6 +1,6 @@
 const template = (key, language, value1) => {
   //  Arabic Templates ***
-  if (language === "ar") key+="_en";
+  if (language === "en") key+="_en";
 
   switch (key) {
     case "product_details":
