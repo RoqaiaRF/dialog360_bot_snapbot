@@ -34,9 +34,9 @@ const ar = {
   Use_the_link: "الررجاء أستخدام الرابط لتأكيد الطلب. ",
   delete_product: "حدد رقم المنتج لحذفه: ",
   send_the_location: "ارسل اللوكيشن لموقعك حتى نساعدك بمعرفة اقرب فرع لك",
-  Choose_another_branch: "اختر فرع اخر ",
+  Choose_another_branch: "اختر فرع اخر",
   // هذا ما اضافه عبد الله وهو المستعمل في البوت، ان وجد تكرار فليحذف ما هو في الاعلى
-  features: "خدمات إضافية",
+  features: "خدمات اضافية",
   minute: "دقيقة",
 
   out_cover_error_msg: "عذرا لا نقدم خدمات ضمن موقعك الجغرافي",
@@ -50,7 +50,7 @@ const ar = {
   select_to_delete: "حدد المنتج لحذفه",
   select_number_product_to_delete: "حدد رقم المنتج لحذفه:",
   add_products: "اضافة منتجات",
-  delete_success: "تم الحذف بنجاح! ",
+  delete_success: "تم الحذف بنجاح!",
   error_delete_from_cart: "خطأ في عملية الحذف من السلة",
 
   preferred_receiving_method: "ما طريقة استلام المنتج التي تفضلها ؟",
