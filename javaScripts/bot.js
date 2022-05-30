@@ -17,38 +17,70 @@ const {
 let expiration_time = 7200; // مدة صلاحية انتهاء المفاتيح في ريديس تساوي ساعتان
 //Print Categories
 
-const categories = (categoriesObj) => {
+const categories = (categoriesObj,receiver_id, sender) => {
   let msg = "";
+  let category;
+  let language = await getUserVars(receiver_id, sender, "language");
+  if (language == undefined) language = "ar";
   categoriesObj.forEach((element, index) => {
-    msg += `( *${index + 1}* ) ${element.name_ar}
+    if(language == "en"){
+      category = element.name_en;
+    }else{
+      category = element.name_ar;
+    }
+    msg += `( *${index + 1}* ) ${category}
  `;
   });
   return msg;
 };
 
-const subCategoriess = (subCategoriesObj) => {
+const subCategoriess = (subCategoriesObj,receiver_id, sender) => {
   let msg = "";
+  let sub_category;
+  let language = await getUserVars(receiver_id, sender, "language");
+  if (language == undefined) language = "ar";
   subCategoriesObj.forEach((element, index) => {
-    msg += `( *${index + 1}* ) ${element.name_ar}
+    if(language == "en"){
+      sub_category = element.name_en;
+    }else{
+      sub_category = element.name_ar;
+    }
+    msg += `( *${index + 1}* ) ${sub_category}
  `;
   });
   return msg;
 };
 
-const products = (productsObj) => {
+const products = (productsObj,receiver_id, sender) => {
   let msg = "";
+  let product;
+  let language = await getUserVars(receiver_id, sender, "language");
+  if (language == undefined) language = "ar";
   productsObj.forEach((element, index) => {
-    msg += `( *${index + 1}* ) ${element.name_ar}
+     if(language == "en"){
+      product = element.name_en;
+    }else{
+      product = element.name_ar;
+    }
+    msg += `( *${index + 1}* ) ${product}
  `;
   });
   return msg;
 };
 
 // get all branches to this store
-const branches = (branchesObj) => {
+const branches = (branchesObj,receiver_id, sender) => {
   let msg = "";
+   let branch;
+  let language = await getUserVars(receiver_id, sender, "language");
+  if (language == undefined) language = "ar";
   branchesObj.forEach((element, index) => {
-    msg += `( *${index + 1}* ) ${element.name_ar}
+    if(language == "en"){
+      branch = element.name_en;
+    }else{
+      branch = element.name_ar;
+    }
+    msg += `( *${index + 1}* ) ${branch}
  `;
   });
   return msg;
@@ -56,6 +88,7 @@ const branches = (branchesObj) => {
 // get and show the purchases
 
 const showPurchases = async (receiver_id, sender) => {
+  let purchase;
   let language = await getUserVars(receiver_id, sender, "language");
   if (language == undefined) language = "ar";
 
@@ -77,8 +110,12 @@ const showPurchases = async (receiver_id, sender) => {
 
     if (isOrder === true) quantity = `${translation.number}  ${element.qty} `;
     else quantity = "";
-
-    msg += ` *${index + 1}* . ${element.name_ar},  ${quantity} ${
+    if(language == "en"){
+      purchase = element.name_en;
+    }else{
+      purchase = element.name_ar;
+    }
+    msg += ` *${index + 1}* . ${purchase},  ${quantity} ${
       translation.Duration
     }  ${element.duration} ${translation.minute}
       ${addedFeatures}
@@ -90,6 +127,7 @@ const showPurchases = async (receiver_id, sender) => {
 
 //get and show features
 const showFeatures = async (featuresObj) => {
+  let feature;
   let language = await getUserVars(receiver_id, sender, "language");
   if (language == undefined) language = "ar";
 
@@ -97,7 +135,12 @@ const showFeatures = async (featuresObj) => {
   let msg = "";
 
   featuresObj.forEach((element, index) => {
-    msg += `( *${index + 1}* ) ${element.name_ar},  ${translation.price}  ${
+    if(language == "en"){
+      feature = element.name_en;
+    }else{
+      feature = element.name_ar;
+    }
+    msg += `( *${index + 1}* ) ${feature},  ${translation.price}  ${
       element.price
     }
  `;
@@ -391,7 +434,7 @@ const bot = async (
           setUserVars(receiver_id, sender, "phase", "4");
           sendMsg.categoryPhase(
             sender_id,
-            "" + categories(categoryObj),
+            "" + categories(categoryObj,receiver_id, sender),
             receiver_id
           );
         } else if (message === translation.Choose_another_branch) {
@@ -433,7 +476,7 @@ const bot = async (
           setUserVars(receiver_id, sender, "phase", "4");
           sendMsg.categoryPhase(
             sender_id,
-            "" + categories(categoryObj),
+            "" + categories(categoryObj,receiver_id, sender),
             receiver_id
           );
         } else {
@@ -573,7 +616,7 @@ const bot = async (
           setUserVars(receiver_id, sender, "phase", "4");
           sendMsg.categoryPhase(
             sender_id,
-            "" + categories(categoryObj5),
+            "" + categories(categoryObj5,receiver_id, sender),
             receiver_id
           );
         } else if (message > length5 || message <= 0) {
@@ -622,7 +665,7 @@ const bot = async (
           setUserVars(receiver_id, sender, "phase", "4");
           sendMsg.categoryPhase(
             sender_id,
-            "" + categories(categoryObj2),
+            "" + categories(categoryObj2,receiver_id, sender),
             receiver_id
           );
         } else if (message <= 0 || message > length2) {
