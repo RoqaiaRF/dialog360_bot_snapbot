@@ -9,8 +9,8 @@ const en = {
   English: "English",
   How_to_receive_the_product:
     "What method of receiving the product do you prefer?",
-  Receipt_from_the_store: "Receipt from the store",
-  home_delivery: "home delivery",
+  Receipt_from_the_store: "Pickup Services",
+  home_delivery: "Home Delivery",
   error_in_sending: "error in sending",
   Choose_a_branchs: "Choose one of the following branches: ",
   To_return_to_the_main: " To return to the main send 0",
