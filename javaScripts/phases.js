@@ -235,7 +235,7 @@ const showProduct = async (senderID, product, receiverID) => {
   `;
 
   if (product.image != null || product.image != undefined) {
-    sendMedia(
+  await  sendMedia(
       ` ${message}
   ــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
   ${translation.return_to_the_previous_stage}
