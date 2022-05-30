@@ -23,6 +23,7 @@ const template = (key, language, value1) => {
 
     case "pickup":
       return `ما طريقة استلام ${value1} التي تفضلها ؟`;
+  }
 }
 else{
     switch (key) {
