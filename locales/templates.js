@@ -1,6 +1,6 @@
 const template = (key, language, value1) => {
   //  Arabic Templates ***
-  if (language === "ar") key+="_en";
+  if (language === "ar") {
 
   switch (key) {
     case "product_details":
@@ -23,33 +23,36 @@ const template = (key, language, value1) => {
 
     case "pickup":
       return `ما طريقة استلام ${value1} التي تفضلها ؟`;
+}
+else{
+    switch (key) {
 
     //  English Template ***
 
-    case "product_details_en":
+    case "product_details":
       return `Product details${value1}`;
 
-    case "cartdetails_en":
+    case "cartdetails":
       return `Cart details ${value1}`;
 
-    case "added_details_en":
+    case "added_details":
       return `Do you want additional services?`;
 
-    case "orders_reservation_together_en":
+    case "orders_reservation_together":
       return `Your nearest branch ${value1} is available to serve you now`;
 
-    case "onley_ordering_en":
+    case "onley_ordering":
         return `The nearest branch to you is ${value1} and available to serve you now`
 
-    case "onleyreservation_en":
+    case "onleyreservation":
         return `The nearest branch to you is ${value1} and it is available to serve you now`
         
-    case "pickup_en":
+    case "pickup":
       return `What is your preferred way of receiving ${value1}?`;
 
     default:
       return "خطأ في التمبلت اتصل بخدمة العملاء wrong answer please call customer service ";
-  }
+  }}
 };
 
 module.exports = template;
