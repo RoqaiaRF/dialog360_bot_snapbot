@@ -41,7 +41,7 @@ const ar = {
 
   out_cover_error_msg: "عذرا لا نقدم خدمات ضمن موقعك الجغرافي",
   no_data_msg: "لا توجد بيانات لعرضها!",
-  add_to_cart: "إضافة للسلة",
+  add_to_cart: "اضافة للسلة",
   error_qty_msg: "الكمية خاطئة! ادخل كمية اقل من",
   yes: "نعم",
   no: "لا",
@@ -49,7 +49,7 @@ const ar = {
   payment: "الدفع",
   select_to_delete: "حدد المنتج لحذفه",
   select_number_product_to_delete: "حدد رقم المنتج لحذفه:",
-  add_products: "إضافة منتجات",
+  add_products: "اضافة منتجات",
   delete_success: "تم الحذف بنجاح! ",
   error_delete_from_cart: "خطأ في عملية الحذف من السلة",
 
