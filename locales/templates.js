@@ -4,7 +4,8 @@ const template = (key, language, value1) => {
 
   switch (key) {
     case "product_details":
-      return `تفاصيل المنتج${value1}`;
+      let newValue= " "+ value1 +" "
+      return `تفاصيل المنتج${newValue}`;
 
     case "cartdetails":
       return `تفاصيل السلة ${value1}`;
