@@ -2,7 +2,7 @@ const sendTextMsg = require("./sendMsgFunctions");
 const sendMedia = require("./sendMedia");
 const isReservation_Pay = require("../app/controllers/isReservation_OrdersController");
 const Redis = require("ioredis");
-const template = require("../locales/templates")
+const template = require("../locales/templates");
 require("dotenv").config(); // env مكتبة جلب المتغيرات من ال
 
 const { getUserVars } = require("../database/redis");
@@ -31,23 +31,18 @@ const welcomeLangPhase = async (
     store_phone
   );
 
-  sendTextMsg(`اختر اللغة المناسبة للطلب`,
-   senderID, store_phone);
+  sendTextMsg(`اختر اللغة المناسبة للطلب`, senderID, store_phone);
 };
 //^Phase #1.1
 // Expected Outputs: "توصيل لبيتي", "استلام من المتجر"
 const pickupPhase = async (senderID, receiverID) => {
-  
-  const receiver = receiverID.replace("whatsapp:+", ""); 
+  const receiver = receiverID.replace("whatsapp:+", "");
   const sender = senderID.replace("whatsapp:+", "");
-  
+
   let language = await getUserVars(receiver, sender, "language");
   if (language == undefined) language = "ar";
 
-  await sendTextMsg(template("pickup",language ," "),
-    senderID,
-    receiverID
-  );
+  await sendTextMsg(template("pickup", language, " "), senderID, receiverID);
   sendTextMsg(`🚙 🏪`, senderID, receiverID);
 };
 
@@ -56,9 +51,9 @@ const pickupPhase = async (senderID, receiverID) => {
 //^ Phase #2 request user location
 
 const locationPhase = async (senderID, receiverID) => {
-  const receiver = receiverID.replace("whatsapp:+", ""); 
+  const receiver = receiverID.replace("whatsapp:+", "");
   const sender = senderID.replace("whatsapp:+", "");
-  
+
   let language = await getUserVars(receiver, sender, "language");
   if (language == undefined) language = "ar";
 
@@ -66,30 +61,34 @@ const locationPhase = async (senderID, receiverID) => {
   sendTextMsg(`  ${translation.submit_your_location}`, senderID, receiverID);
 };
 
-const nearestLocation = async (senderID, storeName, storObj, receiverID) => {
-  const receiver = receiverID.replace("whatsapp:+", ""); 
+const nearestLocation = async (senderID, branchObj, storObj, receiverID) => {
+  const receiver = receiverID.replace("whatsapp:+", "");
   const sender = senderID.replace("whatsapp:+", "");
-  
+
   let language = await getUserVars(receiver, sender, "language");
   if (language == undefined) language = "ar";
 
   const translation = require(`../locales/${language}`);
   const _isReservation_Pay = isReservation_Pay(storObj);
-
+  let storeName = branchObj.name_ar;
+  if (language === "en") {
+    storeName = branchObj.name_en;
+  }
   if (_isReservation_Pay === "onlyOrders") {
-    sendTextMsg( template("onley_ordering",language ,storeName),
+    sendTextMsg(
+      template("onley_ordering", language, storeName),
       senderID,
       receiverID
     );
   } else if (_isReservation_Pay === "onlyReservation") {
     sendTextMsg(
-      template("onleyreservation",language ,storeName),
+      template("onleyreservation", language, storeName),
       senderID,
       receiverID
     );
   } else if (_isReservation_Pay === "Orders_Reservation_together") {
     sendTextMsg(
-      template("orders_reservation_together",language ,storeName),
+      template("orders_reservation_together", language, storeName),
       senderID,
       receiverID
     );
@@ -102,9 +101,9 @@ const nearestLocation = async (senderID, storeName, storObj, receiverID) => {
 //^ Phase #2.1 Choose one of these branches
 
 const getAllBranchesPhase = async (senderID, branches, receiverID) => {
-  const receiver = receiverID.replace("whatsapp:+", ""); 
+  const receiver = receiverID.replace("whatsapp:+", "");
   const sender = senderID.replace("whatsapp:+", "");
-  
+
   let language = await getUserVars(receiver, sender, "language");
   if (language == undefined) language = "ar";
 
@@ -125,9 +124,9 @@ const getAllBranchesPhase = async (senderID, branches, receiverID) => {
 //^ Phase #3 send main category and request to choose the right category by sending category_index
 
 const categoryPhase = async (senderID, categories, receiverID) => {
-  const receiver = receiverID.replace("whatsapp:+", ""); 
+  const receiver = receiverID.replace("whatsapp:+", "");
   const sender = senderID.replace("whatsapp:+", "");
-  
+
   let language = await getUserVars(receiver, sender, "language");
   if (language == undefined) language = "ar";
 
@@ -148,9 +147,9 @@ const categoryPhase = async (senderID, categories, receiverID) => {
 //^ Phase #3 send products and request to choose the right product by sending product_index of it's category
 
 const productPhase = async (senderID, products, receiverID) => {
-  const receiver = receiverID.replace("whatsapp:+", ""); 
+  const receiver = receiverID.replace("whatsapp:+", "");
   const sender = senderID.replace("whatsapp:+", "");
-  
+
   let language = await getUserVars(receiver, sender, "language");
   if (language == undefined) language = "ar";
 
@@ -167,9 +166,9 @@ ${translation.To_return_to_the_main}`,
   );
 };
 const subCategoryPhase = async (senderID, subCategory, receiverID) => {
-  const receiver = receiverID.replace("whatsapp:+", ""); 
+  const receiver = receiverID.replace("whatsapp:+", "");
   const sender = senderID.replace("whatsapp:+", "");
-  
+
   let language = await getUserVars(receiver, sender, "language");
   if (language == undefined) language = "ar";
 
@@ -187,21 +186,20 @@ const subCategoryPhase = async (senderID, subCategory, receiverID) => {
 };
 
 const addedDetails = async (senderID, receiverID) => {
-  const receiver = receiverID.replace("whatsapp:+", ""); 
+  const receiver = receiverID.replace("whatsapp:+", "");
   const sender = senderID.replace("whatsapp:+", "");
-  
+
   let language = await getUserVars(receiver, sender, "language");
   if (language == undefined) language = "ar";
 
   const translation = require(`../locales/${language}`);
-  sendTextMsg( template("added_details",language )
-  , senderID, receiverID);
+  sendTextMsg(template("added_details", language), senderID, receiverID);
 };
 
 const featuresPhase = async (senderID, features, receiverID) => {
-  const receiver = receiverID.replace("whatsapp:+", ""); 
+  const receiver = receiverID.replace("whatsapp:+", "");
   const sender = senderID.replace("whatsapp:+", "");
-  
+
   let language = await getUserVars(receiver, sender, "language");
   if (language == undefined) language = "ar";
 
@@ -219,23 +217,29 @@ const featuresPhase = async (senderID, features, receiverID) => {
 };
 
 const showProduct = async (senderID, product, receiverID) => {
-  const receiver = receiverID.replace("whatsapp:+", ""); 
+  const receiver = receiverID.replace("whatsapp:+", "");
   const sender = senderID.replace("whatsapp:+", "");
-  
+
   let language = await getUserVars(receiver, sender, "language");
   if (language == undefined) language = "ar";
 
+  let product_name = product.name_ar;
+  let product_description = product.description_ar;
+  if (language === "en") {
+    product_name = product.name_en;
+    product_description = product.description_en;
+  }
   const translation = require(`../locales/${language}`);
   let message = `
-  ${translation.product_name} ${product.name_ar}
-  ${translation.the_description} ${product.description_ar}
+  ${translation.product_name} ${product_name}
+  ${translation.the_description} ${product_description}
   ${translation.price} ${product.price} ${translation.the_currency}
   ${translation.Duration} ${product.duration} ${translation.minute}
 
   `;
 
   if (product.image != null || product.image != undefined) {
-  await  sendMedia(
+    await sendMedia(
       ` ${message}
   ــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
   ${translation.return_to_the_previous_stage}
@@ -256,15 +260,15 @@ const showProduct = async (senderID, product, receiverID) => {
     );
   }
   sendTextMsg(
-    template("product_details",language ,product.name_ar),
+    template("product_details", language, product_name),
     senderID,
     receiverID
   );
 };
 const quantityProductPhase = async (senderID, receiverID) => {
-  const receiver = receiverID.replace("whatsapp:+", ""); 
+  const receiver = receiverID.replace("whatsapp:+", "");
   const sender = senderID.replace("whatsapp:+", "");
-  
+
   let language = await getUserVars(receiver, sender, "language");
   if (language == undefined) language = "ar";
 
@@ -281,9 +285,9 @@ const showCart = async (
   fees,
   receiverID
 ) => {
-  const receiver = receiverID.replace("whatsapp:+", ""); 
+  const receiver = receiverID.replace("whatsapp:+", "");
   const sender = senderID.replace("whatsapp:+", "");
-  
+
   let language = await getUserVars(receiver, sender, "language");
   if (language == undefined) language = "ar";
 
@@ -311,15 +315,18 @@ ${translation.total_summation} ${total.toFixed(2)} ${translation.the_currency}
 ${translation.link_approved_order} 
 ${paymentLink}`;
 
-  await sendTextMsg( template("cartdetails",language ,":")// يمكنك اضافة اي string  بدل ":"
-  , senderID, receiverID);
+  await sendTextMsg(
+    template("cartdetails", language, ":"), // يمكنك اضافة اي string  بدل ":"
+    senderID,
+    receiverID
+  );
   sendTextMsg(`${msg}`, senderID, receiverID);
 };
 
 const errorMsg = async (senderID, receiverID) => {
-  const receiver = receiverID.replace("whatsapp:+", ""); 
+  const receiver = receiverID.replace("whatsapp:+", "");
   const sender = senderID.replace("whatsapp:+", "");
-  
+
   let language = await getUserVars(receiver, sender, "language");
   if (language == undefined) language = "ar";
 
@@ -328,9 +335,9 @@ const errorMsg = async (senderID, receiverID) => {
 };
 
 const customMessage = async (message, senderID, receiverID) => {
-  const receiver = receiverID.replace("whatsapp:+", ""); 
+  const receiver = receiverID.replace("whatsapp:+", "");
   const sender = senderID.replace("whatsapp:+", "");
-  
+
   let language = await getUserVars(receiver, sender, "language");
   if (language == undefined) language = "ar";
 

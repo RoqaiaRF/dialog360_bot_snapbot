@@ -19,7 +19,7 @@ let expiration_time = 7200; // مدة صلاحية انتهاء المفاتيح
 
 const categories = async (categoriesObj, receiver_id, sender) => {
   let msg = "";
-  let category;
+  let category = "";
   let language = await getUserVars(receiver_id, sender, "language");
   console.log("**********language*******", language);
   console.log("**********receiver_id*******", receiver_id);
@@ -31,9 +31,11 @@ const categories = async (categoriesObj, receiver_id, sender) => {
     } else {
       category = element.name_ar;
     }
+    console.log("************category*************", category);
     msg += `( *${index + 1}* ) ${category}
  `;
   });
+
   return msg;
 };
 
@@ -287,7 +289,7 @@ const bot = async (
           );
           sendMsg.getAllBranchesPhase(
             sender_id,
-            "" + branches(branchObj, receiver_id, sender),
+            "" + (await branches(branchObj, receiver_id, sender)),
             receiver_id
           );
           setUserVars(receiver_id, sender, "phase", "3.1");
@@ -347,7 +349,7 @@ const bot = async (
             } else {
               sendMsg.nearestLocation(
                 sender_id,
-                nearestBranch.name_ar,
+                nearestBranch,
                 storObj,
                 receiver_id
               );
@@ -437,7 +439,7 @@ const bot = async (
           setUserVars(receiver_id, sender, "phase", "4");
           sendMsg.categoryPhase(
             sender_id,
-            "" + categories(categoryObj, receiver_id, sender),
+            "" + (await categories(categoryObj, receiver_id, sender)),
             receiver_id
           );
         } else if (message === translation.Choose_another_branch) {
@@ -451,7 +453,7 @@ const bot = async (
           // ارسل رسالة تحتوي جميع الفروع الموجوده مع المتجر الرئيسي واعرضها لليوزر
           sendMsg.getAllBranchesPhase(
             sender_id,
-            "" + branches(branchObj, receiver_id, sender),
+            "" + (await branches(branchObj, receiver_id, sender)),
             receiver_id
           );
           // اذهب للمرحلة رقم 3.1
@@ -479,7 +481,7 @@ const bot = async (
           setUserVars(receiver_id, sender, "phase", "4");
           sendMsg.categoryPhase(
             sender_id,
-            "" + categories(categoryObj, receiver_id, sender),
+            "" + (await categories(categoryObj, receiver_id, sender)),
             receiver_id
           );
         } else {
@@ -581,7 +583,7 @@ const bot = async (
             setUserVars(receiver_id, sender, "phase", "5");
             sendMsg.subCategoryPhase(
               sender_id,
-              subCategoriess(category.subCategories, receiver_id, sender),
+              await subCategoriess(category.subCategories, receiver_id, sender),
               receiver_id
             );
             setUserVars(
@@ -599,7 +601,7 @@ const bot = async (
             );
             sendMsg.productPhase(
               sender_id,
-              products(productsObj, receiver_id, sender),
+              await products(productsObj, receiver_id, sender),
               receiver_id
             );
           }
@@ -623,7 +625,7 @@ const bot = async (
           setUserVars(receiver_id, sender, "phase", "4");
           sendMsg.categoryPhase(
             sender_id,
-            "" + categories(categoryObj5, receiver_id, sender),
+            "" + (await categories(categoryObj5, receiver_id, sender)),
             receiver_id
           );
         } else if (message > length5 || message <= 0) {
@@ -640,7 +642,7 @@ const bot = async (
           );
           sendMsg.productPhase(
             sender_id,
-            products(productsObj, receiver_id, sender),
+            await products(productsObj, receiver_id, sender),
             receiver_id
           );
         }
@@ -676,7 +678,7 @@ const bot = async (
           setUserVars(receiver_id, sender, "phase", "4");
           sendMsg.categoryPhase(
             sender_id,
-            "" + categories(categoryObj2, receiver_id, sender),
+            "" + (await categories(categoryObj2, receiver_id, sender)),
             receiver_id
           );
         } else if (message <= 0 || message > length2) {
@@ -712,7 +714,7 @@ const bot = async (
           setUserVars(receiver_id, sender, "phase", "6");
           sendMsg.productPhase(
             sender_id,
-            products(productObj7, receiver_id, sender),
+            await products(productObj7, receiver_id, sender),
             receiver_id
           );
         }
@@ -955,7 +957,7 @@ ${purchases9} `,
           );
           sendMsg.productPhase(
             sender_id,
-            products(productObj7, receiver_id, sender),
+            await products(productObj7, receiver_id, sender),
             receiver_id
           );
         } else {
