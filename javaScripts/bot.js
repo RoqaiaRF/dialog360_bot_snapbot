@@ -17,15 +17,18 @@ const {
 let expiration_time = 7200; // مدة صلاحية انتهاء المفاتيح في ريديس تساوي ساعتان
 //Print Categories
 
-const categories = (categoriesObj,receiver_id, sender) => {
+const categories = async (categoriesObj, receiver_id, sender) => {
   let msg = "";
   let category;
   let language = await getUserVars(receiver_id, sender, "language");
+  console.log("**********language*******", language);
+  console.log("**********receiver_id*******", receiver_id);
+  console.log("**********sender*******", sender);
   if (language == undefined) language = "ar";
   categoriesObj.forEach((element, index) => {
-    if(language == "en"){
+    if (language == "en") {
       category = element.name_en;
-    }else{
+    } else {
       category = element.name_ar;
     }
     msg += `( *${index + 1}* ) ${category}
@@ -34,15 +37,15 @@ const categories = (categoriesObj,receiver_id, sender) => {
   return msg;
 };
 
-const subCategoriess = (subCategoriesObj,receiver_id, sender) => {
+const subCategoriess = async (subCategoriesObj, receiver_id, sender) => {
   let msg = "";
   let sub_category;
   let language = await getUserVars(receiver_id, sender, "language");
   if (language == undefined) language = "ar";
   subCategoriesObj.forEach((element, index) => {
-    if(language == "en"){
+    if (language == "en") {
       sub_category = element.name_en;
-    }else{
+    } else {
       sub_category = element.name_ar;
     }
     msg += `( *${index + 1}* ) ${sub_category}
@@ -51,15 +54,15 @@ const subCategoriess = (subCategoriesObj,receiver_id, sender) => {
   return msg;
 };
 
-const products = (productsObj,receiver_id, sender) => {
+const products = async (productsObj, receiver_id, sender) => {
   let msg = "";
   let product;
   let language = await getUserVars(receiver_id, sender, "language");
   if (language == undefined) language = "ar";
   productsObj.forEach((element, index) => {
-     if(language == "en"){
+    if (language == "en") {
       product = element.name_en;
-    }else{
+    } else {
       product = element.name_ar;
     }
     msg += `( *${index + 1}* ) ${product}
@@ -69,15 +72,15 @@ const products = (productsObj,receiver_id, sender) => {
 };
 
 // get all branches to this store
-const branches = (branchesObj,receiver_id, sender) => {
+const branches = async (branchesObj, receiver_id, sender) => {
   let msg = "";
-   let branch;
+  let branch;
   let language = await getUserVars(receiver_id, sender, "language");
   if (language == undefined) language = "ar";
   branchesObj.forEach((element, index) => {
-    if(language == "en"){
+    if (language == "en") {
       branch = element.name_en;
-    }else{
+    } else {
       branch = element.name_ar;
     }
     msg += `( *${index + 1}* ) ${branch}
@@ -110,9 +113,9 @@ const showPurchases = async (receiver_id, sender) => {
 
     if (isOrder === true) quantity = `${translation.number}  ${element.qty} `;
     else quantity = "";
-    if(language == "en"){
+    if (language == "en") {
       purchase = element.name_en;
-    }else{
+    } else {
       purchase = element.name_ar;
     }
     msg += ` *${index + 1}* . ${purchase},  ${quantity} ${
@@ -135,9 +138,9 @@ const showFeatures = async (featuresObj) => {
   let msg = "";
 
   featuresObj.forEach((element, index) => {
-    if(language == "en"){
+    if (language == "en") {
       feature = element.name_en;
-    }else{
+    } else {
       feature = element.name_ar;
     }
     msg += `( *${index + 1}* ) ${feature},  ${translation.price}  ${
@@ -284,7 +287,7 @@ const bot = async (
           );
           sendMsg.getAllBranchesPhase(
             sender_id,
-            "" + branches(branchObj,receiver_id, sender),
+            "" + branches(branchObj, receiver_id, sender),
             receiver_id
           );
           setUserVars(receiver_id, sender, "phase", "3.1");
@@ -434,7 +437,7 @@ const bot = async (
           setUserVars(receiver_id, sender, "phase", "4");
           sendMsg.categoryPhase(
             sender_id,
-            "" + categories(categoryObj,receiver_id, sender),
+            "" + categories(categoryObj, receiver_id, sender),
             receiver_id
           );
         } else if (message === translation.Choose_another_branch) {
@@ -448,7 +451,7 @@ const bot = async (
           // ارسل رسالة تحتوي جميع الفروع الموجوده مع المتجر الرئيسي واعرضها لليوزر
           sendMsg.getAllBranchesPhase(
             sender_id,
-            "" + branches(branchObj,receiver_id, sender),
+            "" + branches(branchObj, receiver_id, sender),
             receiver_id
           );
           // اذهب للمرحلة رقم 3.1
@@ -476,7 +479,7 @@ const bot = async (
           setUserVars(receiver_id, sender, "phase", "4");
           sendMsg.categoryPhase(
             sender_id,
-            "" + categories(categoryObj,receiver_id, sender),
+            "" + categories(categoryObj, receiver_id, sender),
             receiver_id
           );
         } else {
@@ -578,7 +581,7 @@ const bot = async (
             setUserVars(receiver_id, sender, "phase", "5");
             sendMsg.subCategoryPhase(
               sender_id,
-              subCategoriess(category.subCategories,receiver_id, sender),
+              subCategoriess(category.subCategories, receiver_id, sender),
               receiver_id
             );
             setUserVars(
@@ -594,7 +597,11 @@ const bot = async (
               sender,
               category.id
             );
-            sendMsg.productPhase(sender_id, products(productsObj,receiver_id,sender), receiver_id);
+            sendMsg.productPhase(
+              sender_id,
+              products(productsObj, receiver_id, sender),
+              receiver_id
+            );
           }
         }
         break;
@@ -616,7 +623,7 @@ const bot = async (
           setUserVars(receiver_id, sender, "phase", "4");
           sendMsg.categoryPhase(
             sender_id,
-            "" + categories(categoryObj5,receiver_id, sender),
+            "" + categories(categoryObj5, receiver_id, sender),
             receiver_id
           );
         } else if (message > length5 || message <= 0) {
@@ -631,7 +638,11 @@ const bot = async (
             sender,
             category.id
           );
-          sendMsg.productPhase(sender_id, products(productsObj,receiver_id,sender,), receiver_id);
+          sendMsg.productPhase(
+            sender_id,
+            products(productsObj, receiver_id, sender),
+            receiver_id
+          );
         }
         break;
 
@@ -665,7 +676,7 @@ const bot = async (
           setUserVars(receiver_id, sender, "phase", "4");
           sendMsg.categoryPhase(
             sender_id,
-            "" + categories(categoryObj2,receiver_id, sender),
+            "" + categories(categoryObj2, receiver_id, sender),
             receiver_id
           );
         } else if (message <= 0 || message > length2) {
@@ -699,7 +710,11 @@ const bot = async (
         );
         if (message === "00") {
           setUserVars(receiver_id, sender, "phase", "6");
-          sendMsg.productPhase(sender_id, products(productObj7,receiver_id,sender,), receiver_id);
+          sendMsg.productPhase(
+            sender_id,
+            products(productObj7, receiver_id, sender),
+            receiver_id
+          );
         }
         //لا تتم الاضافة للسلة بعد , يجب تحديد الكمية وبعدها يضيف للسلة
         // ااذا كانت السياسه حجز فسيضيف للسله عادي
@@ -938,7 +953,11 @@ ${purchases9} `,
           let productObj7 = JSON.parse(
             await getUserVars(receiver_id, sender, "products")
           );
-          sendMsg.productPhase(sender_id, products(productObj7,receiver_id,sender,), receiver_id);
+          sendMsg.productPhase(
+            sender_id,
+            products(productObj7, receiver_id, sender),
+            receiver_id
+          );
         } else {
           sendMsg.errorMsg(sender_id, receiver_id);
         }
