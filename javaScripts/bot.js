@@ -391,7 +391,7 @@ const bot = async (
             setUserVars(receiver_id, sender, "phase", "3");
             sendMsg.nearestLocation(
               sender_id,
-              selectedBranch.name_ar,
+              selectedBranch,
               storObj,
               receiver_id
             );
@@ -508,7 +508,7 @@ const bot = async (
         } else {
           sendMsg.nearestLocation(
             sender_id,
-            selectedBranch.name_ar,
+            selectedBranch,
             storObj,
             receiver_id
           );
