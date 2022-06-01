@@ -54,7 +54,7 @@ const en = {
   payment: " payment",
   select_to_delete: "Delete Product",
   select_number_product_to_delete: "Select the product number to delete:",
-  add_products: "Add products",
+  add_products: "add products",
   delete_success: "Deleted successfully! ",
   error_delete_from_cart: "Error removing from cart",
 
