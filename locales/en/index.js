@@ -52,7 +52,7 @@ const en = {
   no: "No",
   no_features_found: "There are no additional services",
   payment: " payment",
-  select_to_delete: "Delete Product",
+  select_to_delete: "product to delete",
   select_number_product_to_delete: "Select the product number to delete:",
   add_products: "add products",
   delete_success: "Deleted successfully! ",
