@@ -21,8 +21,7 @@ const template = (key, language, value1) => {
 `
 
     case "onleyreservation":
-      return `	
-اهلا وسهلا بك في ${value1} و هو الان متاح لخدمتك `;
+      return `اهلا وسهلا بك في ${value1} و هو الان متاح لخدمتك `;
 
     case "pickup":
       return `ما طريقة استلام ${value1} التي تفضلها ؟`;
