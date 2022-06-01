@@ -43,9 +43,10 @@ const en = {
   features: "additional services",
   minute: " minute",
 
-  out_cover_error_msg: "Sorry, we do not offer services within your geographical location",
+  out_cover_error_msg:
+    "Sorry, we do not offer services within your geographical location",
   no_data_msg: "There is no data to display!",
-  add_to_cart: "Add to cart",
+  add_to_cart: "add to cart",
   error_qty_msg: "Wrong quantity! Enter an amount less than",
   yes: "yes",
   no: "No",
@@ -57,17 +58,21 @@ const en = {
   delete_success: "Deleted successfully! ",
   error_delete_from_cart: "Error removing from cart",
 
-  preferred_receiving_method: "What method of receiving the product do you prefer?",
+  preferred_receiving_method:
+    "What method of receiving the product do you prefer?",
 
   submit_your_location: "please submit your location 🇰🇼 😊",
   nearest_branch: "nearst is ",
 
-  reservation_error_msg: "We apologize for this error, please speak with customer service",
+  reservation_error_msg:
+    "We apologize for this error, please speak with customer service",
   Choose_features: "Choose one of the following subcategories:",
   features_question: "Do you want additional services?",
-  choose_feature_to_add_to_cart:  "Choose one of the additional features/services to add to the basket:",
+  choose_feature_to_add_to_cart:
+    "Choose one of the additional features/services to add to the basket:",
   choose_qty: "Enter the appropriate quantity in English numbers 1, 2, ...",
-  error_approved_payment: "Error in order confirmation, contact customer service!",
+  error_approved_payment:
+    "Error in order confirmation, contact customer service!",
   sum_without_tax: "Total without tax:",
   link_approved_order: "Please use the link to confirm the order.",
 };
