@@ -41,13 +41,13 @@ else{
       return `Do you want additional services?`;
 
     case "orders_reservation_together":
-      return `Your nearest branch ${value1} is available to serve you now`;
+      return `Welcome to ${value1} and it is available to serve you now`;
 
     case "onley_ordering":
-        return `The nearest branch to you is ${value1} and available to serve you now`
+        return `Welcome to ${value1} and available to serve you now`
 
     case "onleyreservation":
-        return `The nearest branch to you is ${value1} and it is available to serve you now`
+        return `Welcome to ${value1} and it is now available to serve you`
         
     case "pickup":
       return `What is your preferred way of receiving ${value1}?`;
