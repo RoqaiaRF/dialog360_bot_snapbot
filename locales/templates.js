@@ -17,10 +17,12 @@ const template = (key, language, value1) => {
       return ` أقرب فرع لك ${value1} ومتاح لخدمتك الان`;
 
     case "onley_ordering":
-        return `أقرب فرع لك هو ${value1} ومتاح لخدمتك الان`
+        return `اهلا وسهلا بك في ${value1} و متاح لخدمتك الان
+`
 
     case "onleyreservation":
-      return `أقرب فرع لك هو  ${value1} وهو متاح لخدمتك الان`;
+      return `	
+اهلا وسهلا بك في ${value1} و هو الان متاح لخدمتك `;
 
     case "pickup":
       return `ما طريقة استلام ${value1} التي تفضلها ؟`;
