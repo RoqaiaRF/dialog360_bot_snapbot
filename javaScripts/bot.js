@@ -526,6 +526,8 @@ const bot = async (
           let pickup_Policy = await getUserVars(receiver_id, sender, "pickup_Policy");
           if(pickup_Policy == undefined ){
             pickup_Policy = false;
+          }else{
+            pickup_Policy = JSON.parse(pickup_Policy);
           }
           let lat, lng;
           let branch3_1 = JSON.parse(
