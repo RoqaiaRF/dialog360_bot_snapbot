@@ -522,7 +522,11 @@ const bot = async (
           );
 
           const fees = 0; // ستكون خدمة الباكاب وبالتالي لا يودجد توصيل
-          const pickup_Policy = await getUserVars(receiver_id, sender, "pickup_Policy");
+          
+          let pickup_Policy = await getUserVars(receiver_id, sender, "pickup_Policy");
+          if(pickup_Policy == undefined ){
+            pickup_Policy = false;
+          }
           let lat, lng;
           let branch3_1 = JSON.parse(
             await getUserVars(receiver_id, sender, "branch")
