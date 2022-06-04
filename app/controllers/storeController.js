@@ -62,7 +62,7 @@ const storeDetails = async (sender, phone) => {
 const getAllBranchs = async (phone) => {
   const branches = await redis.getUserVars(phone, sender, "allbranches");
   if (branches) {
-    console.log("from cache");
+
     return JSON.parse(branches);
   } else {
     let list = await Store.findAll(
@@ -90,7 +90,7 @@ const getAllBranchs = async (phone) => {
       }
     );
     await redis.setUserVars(phone, sender, "allbranches", JSON.stringify(list));
-    console.log("from db");
+
     return list;
   }
 };
@@ -127,7 +127,7 @@ const getNearestBranch = async (sender, phone, lat, lng) => {
     if (count > 0) {
       const nearest = await getNearestLocation({ lat, lng }, branchs);
       await redis.setUserVars(phone, sender, "branch", JSON.stringify(nearest));
-      console.log("nearest branch ---------------------", nearest);
+
       return nearest;
     } else {
       return false;

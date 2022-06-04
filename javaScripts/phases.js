@@ -250,17 +250,17 @@ const showProduct = async (senderID, product, receiverID) => {
       receiverID
     );
   } else {
-    sendTextMsg(
+   await sendTextMsg(
       ` ${message}
   ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
   ${translation.return_to_the_previous_stage}
   ${translation.To_return_to_the_main}`,
       senderID,
       receiverID
-    );
+    )
   }
   sendTextMsg(
-    template("product_details", language, product_name),
+    template("product_details", language, "👇"),
     senderID,
     receiverID
   );
@@ -303,11 +303,18 @@ const showCart = async (
   } else {
     paymentLink = translation.error_approved_payment;
   }
-  const msg = `
-${purchases}
+  let sum_without_tax = "", _tax= "";
+  if (tax != 0) {
+    sum_without_tax =` 
+    ${translation.sum_without_tax} ${price.toFixed(2)} ${translation.the_currency}
+    `
+    _tax = `${translation.Tax} ${tax} ${translation.the_currency}
+    `;
+  }
 
-${translation.sum_without_tax} ${price.toFixed(2)} ${translation.the_currency} 
-${translation.Tax} ${tax} ${translation.the_currency}
+const msg = `
+${purchases}
+${sum_without_tax} ${_tax}
 ${translation.Delivery_Charge} ${fees} ${translation.the_currency}
 ${translation.total_summation} ${total.toFixed(2)} ${translation.the_currency}
 🤗
@@ -315,12 +322,13 @@ ${translation.total_summation} ${total.toFixed(2)} ${translation.the_currency}
 ${translation.link_approved_order} 
 ${paymentLink}`;
 
-  await sendTextMsg(
-    template("cartdetails", language, ":"), // يمكنك اضافة اي string  بدل ":"
+
+  await sendTextMsg(`${msg}`, senderID, receiverID);
+  sendTextMsg(
+    template("cartdetails", language, "☝️"), // يمكنك اضافة اي string  بدل ":"
     senderID,
     receiverID
   );
-  sendTextMsg(`${msg}`, senderID, receiverID);
 };
 
 const errorMsg = async (senderID, receiverID) => {

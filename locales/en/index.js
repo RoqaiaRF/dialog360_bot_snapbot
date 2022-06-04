@@ -7,6 +7,8 @@ const en = {
   Select_Language: "Choose the appropriate language for the order",
   Arabic: "Arabic",
   English: "English",
+  cancel : "cancel",
+  toral_price: "Price",
   How_to_receive_the_product:
     "What method of receiving the product do you prefer?",
   Receipt_from_the_store: "Pickup Services",
