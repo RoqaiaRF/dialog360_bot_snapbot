@@ -297,9 +297,9 @@ const showCart = async (
   const isOrder = JSON.parse(await getUserVars(receiverID, sender, "isorder"));
 
   if (isOrder === true) {
-    paymentLink = `http://payment.snapbot.app/${receiverID}/orders/${sender}`;
+    paymentLink = `http://pay.snapbot.app/${receiverID}/orders/${sender}`;
   } else if (isOrder === false) {
-    paymentLink = `http://payment.snapbot.app/${receiverID}/reservations/${sender}`;
+    paymentLink = `http://pay.snapbot.app/${receiverID}/reservations/${sender}`;
   } else {
     paymentLink = translation.error_approved_payment;
   }
