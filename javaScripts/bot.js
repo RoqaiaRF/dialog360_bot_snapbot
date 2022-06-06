@@ -22,7 +22,6 @@ const categories = async (categoriesObj, receiver_id, sender) => {
   let category = "";
   let language = await getUserVars(receiver_id, sender, "language");
  
-  
   if (language == undefined) language = "ar";
   categoriesObj.forEach((element, index) => {
     if (language == "en") {
@@ -104,10 +103,10 @@ const showPurchases = async (receiver_id, sender) => {
   let purchasesObj = _showCart.items;
   const isOrder = JSON.parse(await getUserVars(receiver_id, sender, "isorder"));
 
-  purchasesObj.forEach((element, index) => {
+  purchasesObj.forEach( (element, index) => {
     if (element.features.length != 0)
-      addedFeatures = `${translation.features}: ${showFeatures(
-        element.features
+      addedFeatures = `${translation.features}: ${  showFeatures(
+        element.features,receiver_id, sender,  language
       )} 
       `;
     else addedFeatures = "";
@@ -125,15 +124,15 @@ const showPurchases = async (receiver_id, sender) => {
       ${addedFeatures}
    `;
   });
+console.log(msg, "----");
 
   return msg;
 };
 
 //get and show features
-const showFeatures = async (featuresObj) => {
+const showFeatures =  (featuresObj, receiver_id, sender, language) => {
   let feature;
-  let language = await getUserVars(receiver_id, sender, "language");
-  if (language == undefined) language = "ar";
+ 
 
   const translation = require(`../locales/${language}`);
   let msg = "";
@@ -144,9 +143,10 @@ const showFeatures = async (featuresObj) => {
     } else {
       feature = element.name_ar;
     }
+
     msg += `( *${index + 1}* ) ${feature},  ${translation.price}  ${
-      element.price
-    }
+      element.price 
+    } ${translation.the_currency}
  `;
   });
   return msg;
@@ -286,12 +286,32 @@ const bot = async (
           const branchObj = JSON.parse(
             JSON.stringify(await storeController.getAllBranchs(receiver_id))
           );
-          sendMsg.getAllBranchesPhase(
-            sender_id,
-            "" + (await branches(branchObj, receiver_id, sender)),
-            receiver_id
-          );
-          setUserVars(receiver_id, sender, "phase", "3.1");
+
+//------ عمل شرط  اذا لم يكن هناك فروع غير المتجر الرئيسي فخذه الى مرحلة -----
+
+          if (branchObj.length <= 1) {
+            // ارسال رسالة اهلا بك في متجر .. وابدأ الطلب
+            sendMsg.nearestLocation(
+              sender_id,
+              branchObj[0],
+              branchObj[0],
+              receiver_id
+            );
+            setUserVars(receiver_id, sender, "phase", "3");
+            setUserVars(receiver_id, sender, "branch", JSON.stringify(branchObj[0]) );
+
+          }
+          else {
+     
+            sendMsg.getAllBranchesPhase(
+              sender_id,
+              "" + (await branches(branchObj, receiver_id, sender)),
+              receiver_id
+            );
+  
+            setUserVars(receiver_id, sender, "phase", "3.1");
+          }
+     
         } else {
           sendMsg.errorMsg(sender_id, receiver_id);
         }
@@ -402,9 +422,18 @@ const bot = async (
         تظهر ازرار بدءالطلب او الحجز او كلاهما حسب سياسة المتجر في الحجز والطلب
         */
       case "3":
-        const location3 = JSON.parse(
+        let location3 = 
           await getUserVars(receiver_id, sender, "location")
-        );
+
+        if (location3 === undefined){
+          location3 = { lat: storObj.lat , lng: storObj.lng }
+        }
+        else {
+          location3 = JSON.parse( location3 );
+
+        }
+         
+      
         let branch3 = JSON.parse(
           await getUserVars(receiver_id, sender, "branch")
         );
@@ -575,13 +604,16 @@ const bot = async (
         let category = categoryObj[indexCategory];
         let length = categoryObj.length;
 
+
+
         if (message > length || message <= 0) {
           // send error msg
           sendMsg.errorMsg(sender_id, receiver_id);
         } else {
           let subCategoriesCount = category.subCategories.length;
-
+// اذا كان هناك منتجات فرعيه 
           if (subCategoriesCount > 0) {
+            
             setUserVars(receiver_id, sender, "phase", "5");
             sendMsg.subCategoryPhase(
               sender_id,
@@ -594,7 +626,10 @@ const bot = async (
               "subcategories",
               JSON.stringify(category.subCategories)
             );
-          } else {
+          }
+
+          
+          else {
             setUserVars(receiver_id, sender, "phase", "6"); // اختيار المنتجات
             const productsObj = await getProducts(
               receiver_id,
@@ -611,12 +646,18 @@ const bot = async (
         break;
 
       case "5": // التصنيفات الفرعية
+
+   
+
         let subCategories = JSON.parse(
           await getUserVars(receiver_id, sender, "subcategories")
         );
+        // احضر التصنيفات الرئيسية
         let categoryObj5 = JSON.parse(
           await getUserVars(receiver_id, sender, "cats")
         );
+
+
         let length5 = subCategories.length;
 
         if (isNaN(message) == true) {
@@ -896,14 +937,18 @@ const bot = async (
       //TODO: اضافة مرحلة لاضافة المزيد من الخدمات الاضافيه
 
       case "8.1":
-        if (message === translation.yes) {
+        if (message == translation.yes) {
           // show features
+
+          let language = await getUserVars(receiver_id, sender, "language");
+          if (language == undefined) language = "ar";
 
           let productDetails = JSON.parse(
             await getUserVars(receiver_id, sender, "productDetails")
           );
-          const features = showFeatures(productDetails.features);
+          const features = await showFeatures(productDetails.features, receiver_id, sender, language);
           const featuresCount7 = productDetails.features.length;
+         
 
           if (featuresCount7 > 0) {
             sendMsg.featuresPhase(sender_id, features, receiver_id);
@@ -924,7 +969,8 @@ const bot = async (
 
             setUserVars(receiver_id, sender, "phase", "7");
           }
-        } else if (message === translation.no) {
+        } else if (message == translation.no) {
+          console.log("nooooooooooooooooooooooo ")
           // show cart details
           let productDetails8_1 = JSON.parse(
             await getUserVars(receiver_id, sender, "productDetails")

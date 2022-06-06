@@ -308,7 +308,7 @@ const showCart = async (
     sum_without_tax =` 
     ${translation.sum_without_tax} ${price.toFixed(2)} ${translation.the_currency}
     `
-    _tax = `${translation.Tax} ${tax} ${translation.the_currency}
+    _tax = `${translation.Tax} ${tax.toFixed(2)} ${translation.the_currency}
     `;
   }
 

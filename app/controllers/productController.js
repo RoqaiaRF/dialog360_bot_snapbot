@@ -24,7 +24,7 @@ const getProducts = async (receiver_id, sender, category_id) => {
     "products"
   );
   if (products_list) {
-    console.log("from cache");
+
     return JSON.parse(products_list);
   } else {
     try {
@@ -51,11 +51,11 @@ const getProducts = async (receiver_id, sender, category_id) => {
         "products",
         JSON.stringify(list)
       );
-      console.log("from db");
 
+      
       return list;
     } catch (error) {
-      console.log("ERROR: ", error);
+
       return {};
     }
   }
@@ -76,7 +76,7 @@ const getQuantity = async (store_id, product_id) => {
     );
     return res.quantity;
   } catch (error) {
-    console.log("ERROR: ", error);
+
     return null;
   }
 };
