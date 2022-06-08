@@ -132,7 +132,6 @@ console.log(msg, "----");
 //get and show features
 const showFeatures =  (featuresObj, receiver_id, sender, language) => {
   let feature;
- 
 
   const translation = require(`../locales/${language}`);
   let msg = "";
@@ -188,7 +187,7 @@ const bot = async (
 
   const translation = require(`../locales/${language}`);
 
-  if (message == "0" || message == translation.cancel || message == "إلغاء") {
+  if (message == "0" || message == translation.cancel ) {
     //احذف هذه الاشياء من الريديس
     delUserVars(receiver_id, sender, "branch");
     delUserVars(receiver_id, sender, "cats");
@@ -213,8 +212,6 @@ const bot = async (
       receiver_id
     );
     setUserVars(receiver_id, sender, "phase", "1");
-  } else if (message == "*") {
-    //TODO: المستخدم بحاجة للمساعدة قم بارسال اشعار للداشبورد
   } else if (message == "JGHFds547fdglkj78") {
     //حذف كل شيء بالريديس
     sendMsg.customMessage(
@@ -224,7 +221,14 @@ const bot = async (
     );
 
     deleteAllKeys();
-  } else {
+  } else if (message == "*"){
+    sendMsg.customMessage(
+      "سيتم اتاحة نظام المساعدة قريبا Help system will be available soon 🤗 ☎️ ",
+      sender_id,
+      receiver_id
+    );
+  } 
+  else {
     switch (phase) {
       case "0":
       case null:

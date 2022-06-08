@@ -1,4 +1,23 @@
-const template = (key, language, value1) => {
+
+const Redis = require("ioredis");
+
+const REDIS_URL = process.env.REDIS_URL;
+const client = new Redis( REDIS_URL);
+
+// Check if there is another branches in the store or not
+const checkBranches = async (senderID, receiverID) =>{
+  const allbranches =  await client.get(`${receiverID}:${senderID}:allbranches`);
+
+    if(allbranches == undefined ){
+      allbranches = []; // اعتبر انه لا يوجد فروع اخرى ولا تظهر زر " اختر فرع اخر"
+    }else{
+      allbranches = JSON.parse(allbranches);
+    }
+
+}
+
+const template = async (key, language, value1, senderID, receiverID) => {
+
   //  Arabic Templates ***
   if (language === "en") key+="_en";
 
@@ -13,6 +32,7 @@ const template = (key, language, value1) => {
       return `هل تريد خدمات اضافية ؟`;
 
     case "orders_reservation_together":
+   //  TODO: let check_branches = await checkBranches(senderID, receiverID)
       return `اهلا وسهلا بك في ${value1} و هو متاح لخدمتك الان`;
 
     case "onley_ordering":

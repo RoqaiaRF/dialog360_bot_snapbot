@@ -1,7 +1,7 @@
 const sendTextMsg = require("./sendMsgFunctions");
 const sendMedia = require("./sendMedia");
 const isReservation_Pay = require("../app/controllers/isReservation_OrdersController");
-const Redis = require("ioredis");
+
 const template = require("../locales/templates");
 require("dotenv").config(); // env مكتبة جلب المتغيرات من ال
 
@@ -42,7 +42,7 @@ const pickupPhase = async (senderID, receiverID) => {
   let language = await getUserVars(receiver, sender, "language");
   if (language == undefined) language = "ar";
 
-  await sendTextMsg(template("pickup", language, " "), senderID, receiverID);
+  await sendTextMsg(template("pickup", language, " ", senderID, receiverID), senderID, receiverID);
   sendTextMsg(`🚙 🏪`, senderID, receiverID);
 };
 
@@ -76,19 +76,19 @@ const nearestLocation = async (senderID, branchObj, storObj, receiverID) => {
   }
   if (_isReservation_Pay === "onlyOrders") {
     sendTextMsg(
-      template("onley_ordering", language, storeName),
+      template("onley_ordering", language, storeName, senderID, receiverID),
       senderID,
       receiverID
     );
   } else if (_isReservation_Pay === "onlyReservation") {
     sendTextMsg(
-      template("onleyreservation", language, storeName),
+      template("onleyreservation", language, storeName, senderID, receiverID),
       senderID,
       receiverID
     );
   } else if (_isReservation_Pay === "Orders_Reservation_together") {
     sendTextMsg(
-      template("orders_reservation_together", language, storeName),
+      template("orders_reservation_together", language, storeName, senderID, receiverID),
       senderID,
       receiverID
     );
@@ -193,7 +193,7 @@ const addedDetails = async (senderID, receiverID) => {
   if (language == undefined) language = "ar";
 
   const translation = require(`../locales/${language}`);
-  sendTextMsg(template("added_details", language), senderID, receiverID);
+  sendTextMsg(template("added_details", language, senderID, receiverID ), senderID, receiverID);
 };
 
 const featuresPhase = async (senderID, features, receiverID) => {
@@ -260,7 +260,7 @@ const showProduct = async (senderID, product, receiverID) => {
     )
   }
   sendTextMsg(
-    template("product_details", language, "👇"),
+    template("product_details", language, "👇", senderID, receiverID),
     senderID,
     receiverID
   );
@@ -325,7 +325,7 @@ ${paymentLink}`;
 
   await sendTextMsg(`${msg}`, senderID, receiverID);
   sendTextMsg(
-    template("cartdetails", language, "☝️"), // يمكنك اضافة اي string  بدل ":"
+    template("cartdetails", language, "☝️", senderID, receiverID), // يمكنك اضافة اي string  بدل ":"
     senderID,
     receiverID
   );
