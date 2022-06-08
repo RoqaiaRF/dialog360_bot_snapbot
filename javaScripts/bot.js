@@ -345,7 +345,7 @@ const bot = async (
           if (fees == -1) {
             // هذا يعني ان المدينة التي ارسلها اليوزر غير موجوده في قواعد البيانات لدينا
             setUserVars(receiver_id, sender, "phase", "2");
-            sendMsg.customMessage(translation.out_cover_error_msg, sender_id);
+            sendMsg.customMessage(translation.out_cover_error_msg, sender_id, receiver_id);
             sendMsg.locationPhase(sender_id, receiver_id);
           } else {
             let branch = JSON.parse(
