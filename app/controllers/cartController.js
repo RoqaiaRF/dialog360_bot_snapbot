@@ -72,6 +72,7 @@ const newCart = async (
   const storObj = JSON.parse(
     await client.get(`${receiver_id}:${sender}:store`)
   );
+
   const payment_Policy = payment_PolicyController(storObj);
 
   const pickup_Policy = JSON.parse(
@@ -151,7 +152,6 @@ const addFeatureToCart = async (receiver_id, sender, item, feature) => {
   item.qty = quantity;
 
   await addToCart(receiver_id, sender, item);
-
 };
 // Remove item from Cart
 /**
