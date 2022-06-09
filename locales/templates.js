@@ -8,7 +8,7 @@ const client = new Redis( REDIS_URL);
 
 // Check if there is another branches in the store or not
 const checkBranches = async (senderID, receiverID) =>{
-  const allbranches =  await client.get(`${receiverID}:${senderID}:allbranches`);
+  let allbranches =  await client.get(`${receiverID}:${senderID}:allbranches`);
 
     if(allbranches == undefined ){
       allbranches = []; // اعتبر انه لا يوجد فروع اخرى ولا تظهر زر " اختر فرع اخر"
