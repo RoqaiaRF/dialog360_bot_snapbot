@@ -21,7 +21,7 @@ const categories = async (categoriesObj, receiver_id, sender) => {
   let msg = "";
   let category = "";
   let language = await getUserVars(receiver_id, sender, "language");
- 
+
   if (language == undefined) language = "ar";
   categoriesObj.forEach((element, index) => {
     if (language == "en") {
@@ -103,10 +103,13 @@ const showPurchases = async (receiver_id, sender) => {
   let purchasesObj = _showCart.items;
   const isOrder = JSON.parse(await getUserVars(receiver_id, sender, "isorder"));
 
-  purchasesObj.forEach( (element, index) => {
+  purchasesObj.forEach((element, index) => {
     if (element.features.length != 0)
-      addedFeatures = `${translation.features}: ${  showFeatures(
-        element.features,receiver_id, sender,  language
+      addedFeatures = `${translation.features}: ${showFeatures(
+        element.features,
+        receiver_id,
+        sender,
+        language
       )} 
       `;
     else addedFeatures = "";
@@ -125,12 +128,11 @@ const showPurchases = async (receiver_id, sender) => {
    `;
   });
 
-  
   return msg;
 };
 
 //get and show features
-const showFeatures =  (featuresObj, receiver_id, sender, language) => {
+const showFeatures = (featuresObj, receiver_id, sender, language) => {
   let feature;
 
   const translation = require(`../locales/${language}`);
@@ -144,7 +146,7 @@ const showFeatures =  (featuresObj, receiver_id, sender, language) => {
     }
 
     msg += `( *${index + 1}* ) ${feature},  ${translation.price}  ${
-      element.price 
+      element.price
     } ${translation.the_currency}
  `;
   });
@@ -179,14 +181,13 @@ const bot = async (
   const storeEN_Name = storObj.name_en; // اسم المتجر بالانجليزي
   const storeAR_Name = storObj.name_ar; // اسم المتجر في العربي
 
-
   let phase = await getUserVars(receiver_id, sender, "phase");
   let language = await getUserVars(receiver_id, sender, "language");
   if (language == undefined) language = "ar";
 
   const translation = require(`../locales/${language}`);
 
-  if (message == "0" || message == translation.cancel ) {
+  if (message == "0" || message == translation.cancel) {
     //احذف هذه الاشياء من الريديس
     delUserVars(receiver_id, sender, "branch");
     delUserVars(receiver_id, sender, "cats");
@@ -220,14 +221,13 @@ const bot = async (
     );
 
     deleteAllKeys();
-  } else if (message == "*"){
+  } else if (message == "*") {
     sendMsg.customMessage(
       "سيتم اتاحة نظام المساعدة قريبا Help system will be available soon 🤗 ☎️ ",
       sender_id,
       receiver_id
     );
-  } 
-  else {
+  } else {
     switch (phase) {
       case "0":
       case null:
@@ -249,7 +249,6 @@ const bot = async (
         if (message === translation.Arabic) {
           setUserVars(receiver_id, sender, "language", "ar");
           const pickup_Policy = storObj.pickup_Policy;
-
 
           //  بنحكيله بدك نوصل لك لبيتك او بدك تيجي للمحل حسب اذا كان فيه باكاب او لا
           if (pickup_Policy) {
@@ -290,7 +289,7 @@ const bot = async (
             JSON.stringify(await storeController.getAllBranchs(receiver_id))
           );
 
-//------ عمل شرط  اذا لم يكن هناك فروع غير المتجر الرئيسي فخذه الى مرحلة -----
+          //------ عمل شرط  اذا لم يكن هناك فروع غير المتجر الرئيسي فخذه الى مرحلة -----
 
           if (branchObj.length <= 1) {
             // ارسال رسالة اهلا بك في متجر .. وابدأ الطلب
@@ -301,20 +300,21 @@ const bot = async (
               receiver_id
             );
             setUserVars(receiver_id, sender, "phase", "3");
-            setUserVars(receiver_id, sender, "branch", JSON.stringify(branchObj[0]) );
-
-          }
-          else {
-     
+            setUserVars(
+              receiver_id,
+              sender,
+              "branch",
+              JSON.stringify(branchObj[0])
+            );
+          } else {
             sendMsg.getAllBranchesPhase(
               sender_id,
               "" + (await branches(branchObj, receiver_id, sender)),
               receiver_id
             );
-  
+
             setUserVars(receiver_id, sender, "phase", "3.1");
           }
-     
         } else {
           sendMsg.errorMsg(sender_id, receiver_id);
         }
@@ -325,8 +325,6 @@ const bot = async (
         if (longitude == undefined || latitude == undefined) {
           sendMsg.errorMsg(sender_id, receiver_id);
         } else {
-        
-          
           const location2 = `{"lat":${latitude},"lng":${longitude} }`;
           // store location in redis
           setUserVars(receiver_id, sender, "location", `${location2}`);
@@ -344,7 +342,11 @@ const bot = async (
           if (fees == -1) {
             // هذا يعني ان المدينة التي ارسلها اليوزر غير موجوده في قواعد البيانات لدينا
             setUserVars(receiver_id, sender, "phase", "2");
-            sendMsg.customMessage(translation.out_cover_error_msg, sender_id, receiver_id);
+            sendMsg.customMessage(
+              translation.out_cover_error_msg,
+              sender_id,
+              receiver_id
+            );
             sendMsg.locationPhase(sender_id, receiver_id);
           } else {
             let branch = JSON.parse(
@@ -425,18 +427,14 @@ const bot = async (
         تظهر ازرار بدءالطلب او الحجز او كلاهما حسب سياسة المتجر في الحجز والطلب
         */
       case "3":
-        let location3 = 
-          await getUserVars(receiver_id, sender, "location")
+        let location3 = await getUserVars(receiver_id, sender, "location");
 
-        if (location3 === undefined){
-          location3 = { lat: storObj.lat , lng: storObj.lng }
+        if (location3 === undefined) {
+          location3 = { lat: storObj.lat, lng: storObj.lng };
+        } else {
+          location3 = JSON.parse(location3);
         }
-        else {
-          location3 = JSON.parse( location3 );
 
-        }
-         
-      
         let branch3 = JSON.parse(
           await getUserVars(receiver_id, sender, "branch")
         );
@@ -465,7 +463,6 @@ const bot = async (
             receiver_id
           );
 
-          
           setUserVars(receiver_id, sender, "phase", "4");
           sendMsg.categoryPhase(
             sender_id,
@@ -552,11 +549,15 @@ const bot = async (
           );
 
           const fees = 0; // ستكون خدمة الباكاب وبالتالي لا يودجد توصيل
-          
-          let pickup_Policy = await getUserVars(receiver_id, sender, "pickup_Policy");
-          if(pickup_Policy == undefined ){
+
+          let pickup_Policy = await getUserVars(
+            receiver_id,
+            sender,
+            "pickup_Policy"
+          );
+          if (pickup_Policy == undefined) {
             pickup_Policy = false;
-          }else{
+          } else {
             pickup_Policy = JSON.parse(pickup_Policy);
           }
           let lat, lng;
@@ -578,7 +579,6 @@ const bot = async (
           const location3_1 = `{"lat":${lat},"lng":${lng} }`;
           // store location in redis
           setUserVars(receiver_id, sender, "location", `${location3_1}`);
-
 
           // املأ االسلة بالمعلومات الاساسية
           cart = cartController.newCart(
@@ -607,16 +607,13 @@ const bot = async (
         let category = categoryObj[indexCategory];
         let length = categoryObj.length;
 
-
-
         if (message > length || message <= 0) {
           // send error msg
           sendMsg.errorMsg(sender_id, receiver_id);
         } else {
           let subCategoriesCount = category.subCategories.length;
-// اذا كان هناك منتجات فرعيه 
+          // اذا كان هناك منتجات فرعيه
           if (subCategoriesCount > 0) {
-            
             setUserVars(receiver_id, sender, "phase", "5");
             sendMsg.subCategoryPhase(
               sender_id,
@@ -629,10 +626,7 @@ const bot = async (
               "subcategories",
               JSON.stringify(category.subCategories)
             );
-          }
-
-          
-          else {
+          } else {
             setUserVars(receiver_id, sender, "phase", "6"); // اختيار المنتجات
             const productsObj = await getProducts(
               receiver_id,
@@ -649,9 +643,6 @@ const bot = async (
         break;
 
       case "5": // التصنيفات الفرعية
-
-   
-
         let subCategories = JSON.parse(
           await getUserVars(receiver_id, sender, "subcategories")
         );
@@ -659,7 +650,6 @@ const bot = async (
         let categoryObj5 = JSON.parse(
           await getUserVars(receiver_id, sender, "cats")
         );
-
 
         let length5 = subCategories.length;
 
@@ -766,11 +756,7 @@ const bot = async (
             await products(productObj7, receiver_id, sender),
             receiver_id
           );
-          
-        }
-       
-
-        else if ( message == translation.go_home) {
+        } else if (message == translation.go_home) {
           delUserVars(receiver_id, sender, "products");
           delUserVars(receiver_id, sender, "subcategories");
           setUserVars(receiver_id, sender, "phase", "4");
@@ -780,8 +766,6 @@ const bot = async (
             receiver_id
           );
         }
-
-
 
         //لا تتم الاضافة للسلة بعد , يجب تحديد الكمية وبعدها يضيف للسلة
         // ااذا كانت السياسه حجز فسيضيف للسله عادي
@@ -837,11 +821,7 @@ const bot = async (
         if (isNaN(message) === true) {
           sendMsg.errorMsg(sender_id, receiver_id);
           return;
-        } 
-             
-        
-        
-        else if (message === "00" ) {
+        } else if (message === "00") {
           sendMsg.showProduct(sender_id, productDetails_7_1, receiver_id);
           setUserVars(receiver_id, sender, "phase", "7");
         } else if (message < 0 || message > featuresCount) {
@@ -949,9 +929,13 @@ const bot = async (
           let productDetails = JSON.parse(
             await getUserVars(receiver_id, sender, "productDetails")
           );
-          const features = await showFeatures(productDetails.features, receiver_id, sender, language);
+          const features = await showFeatures(
+            productDetails.features,
+            receiver_id,
+            sender,
+            language
+          );
           const featuresCount7 = productDetails.features.length;
-         
 
           if (featuresCount7 > 0) {
             sendMsg.featuresPhase(sender_id, features, receiver_id);
@@ -1036,10 +1020,9 @@ ${purchases9} `,
             receiver_id
           );
         }
-        
-        // اذا ضغط عودة للرئيسية سيعود للتصنيفات الرئيسية
 
-        else if ( message == translation.go_home) {
+        // اذا ضغط عودة للرئيسية سيعود للتصنيفات الرئيسية
+        else if (message == translation.go_home) {
           delUserVars(receiver_id, sender, "products");
           delUserVars(receiver_id, sender, "subcategories");
           setUserVars(receiver_id, sender, "phase", "4");
@@ -1048,12 +1031,7 @@ ${purchases9} `,
             "" + (await categories(categoryObj9, receiver_id, sender)),
             receiver_id
           );
-        }
-
-        
-        
-        
-        else {
+        } else {
           sendMsg.errorMsg(sender_id, receiver_id);
         }
 
