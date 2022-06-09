@@ -14,7 +14,7 @@ const {
   deleteAllKeys,
 } = require("../database/redis");
 
-let expiration_time = 7200; // مدة صلاحية انتهاء المفاتيح في ريديس تساوي ساعتان
+
 //Print Categories
 
 const categories = async (categoriesObj, receiver_id, sender) => {
