@@ -48,7 +48,7 @@ const en = {
   out_cover_error_msg:
     "Sorry, we do not offer services within your geographical location",
   no_data_msg: "There is no data to display!",
-  add_to_cart: "add to cart",
+  add_to_cart: "Add to cart",
   error_qty_msg: "Wrong quantity! Enter an amount less than",
   yes: "yes",
   no: "No",
