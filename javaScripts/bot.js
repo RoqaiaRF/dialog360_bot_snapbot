@@ -193,6 +193,7 @@ const bot = async (
     delUserVars(receiver_id, sender, "cats");
     delUserVars(receiver_id, sender, "cart");
     delUserVars(receiver_id, sender, "subcategories");
+    delUserVars(receiver_id, sender, "subcats");
     delUserVars(receiver_id, sender, "products");
     delUserVars(receiver_id, sender, "language");
     delUserVars(receiver_id, sender, "allbranches");
@@ -202,6 +203,8 @@ const bot = async (
     delUserVars(receiver_id, sender, "pickup_Policy");
     delUserVars(receiver_id, sender, "location");
     delUserVars(receiver_id, sender, "isorder");
+    delUserVars(receiver_id, sender, "store");
+
 
     sendMsg.welcomeLangPhase(
       sender_id,
