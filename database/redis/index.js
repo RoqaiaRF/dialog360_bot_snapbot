@@ -24,8 +24,6 @@ const getUserVars = async (store_phone, receiver_id, variable) => {
     `${store_phone}:${receiver_id}:${variable}`
   );
   if (myKeyValue) {
-    console.log("Success!: get data from redis!");
-    console.log(myKeyValue);
     return myKeyValue;
   } else {
     new Promise((resolve, reject) => {

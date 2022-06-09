@@ -7,10 +7,8 @@ const isExists = (key) => {
   let isExistsed = false;
   client.exists(key, function (err, reply) {
     if (reply === 1) {
-      console.log("Exists!");
       isExistsed = true;
     } else {
-      console.log("Doesn't exist!");
       isExistsed = false;
     }
   });
@@ -21,7 +19,6 @@ const isExists = (key) => {
 
 const deleteKeys = (key) => {
   return client.del(key, function (err, reply) {
-    console.log(reply); // 1
     return reply;
   });
 };
@@ -36,13 +33,11 @@ const giveExpirationTime = (key, time) => {
 
 const incrementbyValue = (key, value) => {
   client.incrby(key, value, function (err, reply) {
-    console.log(reply);
   });
 };
 
 const decrementbyValue = (key, value) => {
   client.decrby(key, value, function (err, reply) {
-    console.log(reply);
   });
 };
 

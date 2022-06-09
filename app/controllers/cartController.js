@@ -5,8 +5,7 @@ require("dotenv").config();
 const { setUserVars, getUserVars } = require("../../database/redis");
 
 const REDIS_URL = process.env.REDIS_URL;
-const client = new Redis(  REDIS_URL);
-
+const client = new Redis(REDIS_URL);
 
 //^ DONE!
 // helper to add new item to items array
@@ -70,16 +69,18 @@ const newCart = async (
   fees = 0,
   receiver_id
 ) => {
-
-  const storObj = JSON.parse( await client.get(`${receiver_id}:${sender}:store`));
+  const storObj = JSON.parse(
+    await client.get(`${receiver_id}:${sender}:store`)
+  );
   const payment_Policy = payment_PolicyController(storObj);
 
-  const pickup_Policy = JSON.parse( await  client.get(`${receiver_id}:${sender}:pickup_Policy`));
+  const pickup_Policy = JSON.parse(
+    await client.get(`${receiver_id}:${sender}:pickup_Policy`)
+  );
 
-
-  let cart =  await client.get(`${receiver_id}:${sender}:cart`)
+  let cart = await client.get(`${receiver_id}:${sender}:cart`);
   if (cart) return false;
-  cart = JSON.parse( cart);
+  cart = JSON.parse(cart);
   const obj = {
     id: sender,
     branch_id: branch_id,
@@ -94,7 +95,6 @@ const newCart = async (
     payment_Policy: payment_Policy,
     items: [],
   };
-  console.log("cart: ", obj);
   await setUserVars(receiver_id, sender, "cart", JSON.stringify(obj));
   return cart;
 };
@@ -107,15 +107,20 @@ const newCart = async (
  * @returns // cart or flase
  */
 const addToCart = async (receiver_id, sender, item) => {
+  const isOrder = JSON.parse(await getUserVars(receiver_id, sender, "isorder"));
+  const cart = JSON.parse(await client.get(`${receiver_id}:${sender}:cart`));
 
-  const cart = JSON.parse( await client.get(`${receiver_id}:${sender}:cart`))
   if (cart) {
     const itemAdded = addItem(cart.items, item, sender, cart);
     /*     cart.total += item.price * item.quantity;
     cart.price = cart.total - cart.tax; */
     const itemIDinCart = cart.items[cart.items.length - 1];
-
-    cart.price += parseFloat(itemIDinCart.price) * parseInt(itemIDinCart.qty);
+    let qty = parseInt(itemIDinCart.qty);
+    // اذا كان حجز فاجعل الكمية 1 لانه لازم دايما الكمية للحجز تكون 1
+    if (isOrder == false) {
+      qty = 1;
+    }
+    cart.price += parseFloat(itemIDinCart.price) * qty;
 
     cart.tax = calcTax(cart.tax_parecent, cart.price);
     cart.total = cart.price + cart.tax + cart.fees;
@@ -135,10 +140,18 @@ const addFeatureToCart = async (receiver_id, sender, item, feature) => {
   item.features = [feature];
   item.price = (parseFloat(item.price) + feature.price).toFixed(2);
   const quantity = parseInt(await getUserVars(receiver_id, sender, "quantity"));
+
+  const isOrder = JSON.parse(await getUserVars(receiver_id, sender, "isorder"));
+
+  // اذا كان حجز فاجعل الكمية 1 لانه لازم دايما الكمية للحجز تكون 1
+  if (isOrder == false) {
+    quantity = 1;
+  }
+
   item.qty = quantity;
 
   await addToCart(receiver_id, sender, item);
-  console.log("  ------------------------ item ---------------", item);
+
 };
 // Remove item from Cart
 /**
@@ -149,8 +162,11 @@ const addFeatureToCart = async (receiver_id, sender, item, feature) => {
  */
 const removeFromCart = async (receiver_id, sender, item, productCartIndex) => {
   const cart = JSON.parse(await getUserVars(receiver_id, sender, "cart"));
+  const isOrder = JSON.parse(await getUserVars(receiver_id, sender, "isorder"));
+
   if (cart) {
     const deletedItem = cart.items[productCartIndex];
+    let qty = deletedItem.qty;
     const newItems = await removeItem(cart.items, productCartIndex);
     cart.items = newItems;
     if (cart.items.length == 0) {
@@ -159,7 +175,12 @@ const removeFromCart = async (receiver_id, sender, item, productCartIndex) => {
       cart.price = 0;
       cart.tax = 0;
     } else {
-      cart.price -= deletedItem.price * deletedItem.qty;
+      // اذا كان حجز فاجعل الكمية 1 لانه لازم دايما الكمية للحجز تكون 1
+      if (isOrder == false) {
+        qty = 1;
+      }
+
+      cart.price -= deletedItem.price * qty;
       cart.tax = calcTax(cart.tax_parecent, cart.price);
       cart.total = cart.price + cart.tax + cart.fees;
     }

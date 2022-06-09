@@ -124,8 +124,8 @@ const showPurchases = async (receiver_id, sender) => {
       ${addedFeatures}
    `;
   });
-console.log(msg, "----");
 
+  
   return msg;
 };
 
@@ -181,7 +181,6 @@ const bot = async (
 
 
   let phase = await getUserVars(receiver_id, sender, "phase");
-  console.log(`phase: ${phase}`);
   let language = await getUserVars(receiver_id, sender, "language");
   if (language == undefined) language = "ar";
 
@@ -974,7 +973,6 @@ const bot = async (
             setUserVars(receiver_id, sender, "phase", "7");
           }
         } else if (message == translation.no) {
-          console.log("nooooooooooooooooooooooo ")
           // show cart details
           let productDetails8_1 = JSON.parse(
             await getUserVars(receiver_id, sender, "productDetails")

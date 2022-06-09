@@ -23,10 +23,8 @@ const getString = (key) => {
   return new Promise((resolve, reject) => {
     client.get(key, (err, data) => {
       if (err) {
-        console.log(reject(err));
         return reject(err);
       } else if (data != null) {
-        console.log(resolve(data));
         return resolve(data);
       }
     });
@@ -77,7 +75,6 @@ const getObject = (key) => {
 */
 const setList = (array) => {
   client.rpush(array, function (err, reply) {
-    console.log(reply); // 2
   });
   // array= [key, value1, value2, ...]
 };

@@ -16,7 +16,6 @@ const sendTextMsg = async (message, senderID, receiver_ID) => {
     receiverID = "whatsapp:+" + receiver_ID;
   }
 
-  console.log("receiverID", receiverID);
   await client.messages
     .create({
       from: receiverID,
