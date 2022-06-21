@@ -14,7 +14,7 @@ const setUserVars = async (store_phone, receiver_id, variable, value) => {
     `${store_phone}:${receiver_id}:${variable}`,
     value,
     "EX",
-    90000000000
+    900
   );
 };
 
