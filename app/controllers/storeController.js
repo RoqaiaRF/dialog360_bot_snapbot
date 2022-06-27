@@ -59,7 +59,8 @@ const storeDetails = async (sender, phone) => {
   }
 };
 // جلب جميع الفروع عن طريق رقم الهاتف
-const getAllBranchs = async (phone) => {
+const getAllBranchs = async (phone, sender) => {
+
   const branches = await redis.getUserVars(phone, sender, "allbranches");
   if (branches) {
 
@@ -152,3 +153,4 @@ const getFees = async (store_id, city_name) => {
   else return region.fees;
 };
 module.exports = { storeDetails, getNearestBranch, getAllBranchs, getFees };
+

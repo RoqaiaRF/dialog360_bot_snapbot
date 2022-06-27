@@ -289,7 +289,7 @@ const bot = async (
 
           //احضر الفروع كلها من الداتابيز
           const branchObj = JSON.parse(
-            JSON.stringify(await storeController.getAllBranchs(receiver_id))
+            JSON.stringify(await storeController.getAllBranchs(receiver_id,sender))
           );
 
           //------ عمل شرط  اذا لم يكن هناك فروع غير المتجر الرئيسي فخذه الى مرحلة -----
@@ -478,7 +478,7 @@ const bot = async (
 
           //احضر الفروع كلها من الداتابيز
           const branchObj = JSON.parse(
-            JSON.stringify(await storeController.getAllBranchs(receiver_id))
+            JSON.stringify(await storeController.getAllBranchs(receiver_id, sender))
           );
           // ارسل رسالة تحتوي جميع الفروع الموجوده مع المتجر الرئيسي واعرضها لليوزر
           sendMsg.getAllBranchesPhase(
