@@ -6,7 +6,7 @@ const checkBranches = async (senderID, receiverID) => {
   //احضر الفروع كلها من الداتابيز
 
   let allbranches = []
-   JSON.stringify(await storeController.getAllBranchs(receiverID, senderID))
+ //  JSON.stringify(await storeController.getAllBranchs(receiverID, senderID))
   
 
   if (allbranches == undefined) {
