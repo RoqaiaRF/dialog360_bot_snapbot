@@ -11,9 +11,9 @@ const checkBranches = async (senderID, receiverID) => {
 
   if (allbranches == undefined) {
     allbranches = []; // اعتبر انه لا يوجد فروع اخرى ولا تظهر زر " اختر فرع اخر"
-  } else {
+  } /* else {
     allbranches = JSON.parse(allbranches);
-  }
+  }*/
   console.log(allbranches.length , " allbranches.length +++++++++++")
 
   // لا يوجد هناك فروع اخرى
