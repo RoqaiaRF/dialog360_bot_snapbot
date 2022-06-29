@@ -18,6 +18,10 @@ const setUserVars = async (store_phone, receiver_id, variable, value) => {
   );
 };
 
+const appendToArray = async (store_phone, receiver_id, variable, value) => {
+  await client.rpush(`${store_phone}:${receiver_id}:${variable}`, value);
+};
+
 //get the stored data from the redis session
 const getUserVars = async (store_phone, receiver_id, variable) => {
   const myKeyValue = await client.get(
@@ -44,9 +48,40 @@ const getUserVars = async (store_phone, receiver_id, variable) => {
 const delUserVars = async (store_phone, receiver_id, variable) => {
   await client.del(`${store_phone}:${receiver_id}:${variable}`);
 };
+
+const delAllUserVars = async (receiver_id, sender) => {
+  delUserVars(receiver_id, sender, "branch");
+  delUserVars(receiver_id, sender, "cats");
+  delUserVars(receiver_id, sender, "cart");
+  delUserVars(receiver_id, sender, "subcategories");
+  delUserVars(receiver_id, sender, "subcats");
+  delUserVars(receiver_id, sender, "products");
+  delUserVars(receiver_id, sender, "language");
+  delUserVars(receiver_id, sender, "allbranches");
+  delUserVars(receiver_id, sender, "productDetails");
+  delUserVars(receiver_id, sender, "quantity");
+  delUserVars(receiver_id, sender, "features");
+  delUserVars(receiver_id, sender, "pickup_Policy");
+  delUserVars(receiver_id, sender, "location");
+  delUserVars(receiver_id, sender, "isorder");
+  delUserVars(receiver_id, sender, "store");
+};
 // delete all data from all databases in redis
 const deleteAllKeys = async () => {
   await client.flushall();
 };
 
-module.exports = { setUserVars, getUserVars, delUserVars, deleteAllKeys };
+const getAllListElements = async(store_phone, receiver_id, variable)=>{
+  const list = await client.lrange(`${store_phone}:${receiver_id}:${variable}`,0,-1)
+  return list;
+}
+
+module.exports = {
+  setUserVars,
+  delAllUserVars,
+  getUserVars,
+  delUserVars,
+  deleteAllKeys,
+  appendToArray,
+  getAllListElements
+};
