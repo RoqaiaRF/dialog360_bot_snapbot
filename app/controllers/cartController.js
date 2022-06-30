@@ -13,7 +13,7 @@ const addItem = async (arr, item, sender, cart) => {
   // item doesn't exist in cart so add it
   const foundedIndex = arr.findIndex((ele) => ele.id == item.id);
   if (foundedIndex == -1) {
-    arr.push(item);
+    arr.push(item);// ضيفها بكل 
     return true;
   } else {
     // Checking array equality
@@ -35,11 +35,11 @@ const addItem = async (arr, item, sender, cart) => {
       if (arr[foundedIndex].qty === item.qty) {
         return false;
       } else {
-        // احذف الموجود واستبدله بالجديد
-        // const foundedIndex1 = arr.findIndex((ele) => ele.id == item.id && ele.qty === item.qty);
-        // todo : اضافة خاصية الحذف من السله حسب شرط تساوي الكمية
-        // await removeFromCart(sender, cart.items[foundedIndex1])
-        // await addToCart(sender,item);
+      //  احذف الموجود واستبدله بالجديد
+        const foundedIndex1 = arr.findIndex((ele) => ele.id == item.id && ele.qty === item.qty);
+       //  todo : اضافة خاصية الحذف من السله حسب شرط تساوي الكمية
+        await removeFromCart(sender, cart.items[foundedIndex1])
+        await addToCart(sender,item);
 
         return false;
       }
