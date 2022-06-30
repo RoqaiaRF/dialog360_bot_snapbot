@@ -70,6 +70,15 @@ const ar = {
   error_approved_payment: "خطأ في تأكيد الطلبية , اتصل بخدمة العملاء!",
   sum_without_tax: "المجموع دون ضريبة :",
   link_approved_order: "الرجاء أستخدام الرابط لتأكيد الطلب.",
+  help_mode:'لإضافة رسالة أخرى على الرسالة السابقة ',
+  welcome_help_mode:'مرحبًا بك في نظام المساعدة, يرجى كتابة رسالتك ليتم إرسالها إلى الدعم الفني',
+  continue_typing:'يمكنك إستعمال الكتابة ',
+  send:'ارسال',
+  'review message':'مراجعة الرسالة',
+  'delete message':'حذف الرسالة',
+  write_another_message:'يُرجى كتابة رسالة جديدة',
+  message_sent:'لقد تم إرسال الرسالة بنجاح وجاري الخروج من نظام المساعدة ... ',
+  help_logout:'جاري الخروج من نظام المساعدة'
 };
 
 module.exports = ar;

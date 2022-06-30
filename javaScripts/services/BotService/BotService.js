@@ -21,6 +21,7 @@ const template = require("../../../locales/templates");
 const { StoreService } = require("../StoreService/StoreService");
 const { ModeEnum } = require("../../ENUMS/EMode");
 const { HelpPhasesEnum } = require("../../ENUMS/EHelpPhase");
+const { HelpModeService, attributes } = require("./HelpMode");
 
 const {
   showFeatures,
@@ -30,6 +31,10 @@ const {
   subCategoriess,
   categories,
 } = StoreService;
+const setLanguage = (language,translation)=>{
+  attributes.language = language
+  attributes.translation = translation
+}
 const processMessage = async ({
   receiver_id,
   sender,
@@ -38,6 +43,8 @@ const processMessage = async ({
   phase,
   args,
 }) => {
+  console.log('message is being processed')
+  setLanguage(args.language, args.translation)
   /* const mode = await getUserVars(receiver_id, sender, "mode");
   mode ? processHelpMode() : processBotMode(); */
   let mode = await getUserVars(receiver_id, sender, "mode");
@@ -71,37 +78,23 @@ const processHelpMode = async ({
 }) => {
   console.log("user has sent to help system");
   console.log(message);
-  if (phase == HelpPhasesEnum.APPENDING) {
-    console.log("appending state");
-    const isMessagePhaseChange = await handleHelpPhaseChange({
-      sender,
-      sender_id,
+  const isMessagePhaseChange = await handleHelpPhaseChange({
+    sender,
+    sender_id,
+    receiver_id,
+    message,
+    args
+  });
+  if (isMessagePhaseChange) return;
+  if (phase == HelpPhasesEnum.APPENDING)
+    HelpModeService.appendMessage({ receiver_id, sender, sender_id, message });
+  else if (phase == HelpPhasesEnum.OVER_WRITE) {
+    HelpModeService.overWriteMessage({
       receiver_id,
+      sender_id,
+      sender,
       message,
     });
-    console.log(isMessagePhaseChange);
-    if (isMessagePhaseChange) return;
-    console.log("phase passed");
-    const receiver = receiver_id.replace("whatsapp:+", "");
-    sendMsg.customMessage(
-          template("help_mode", "ar", "👇", sender, receiver),
-      sender_id,
-      receiver_id
-    );
-    console.log(message);
-    appendToArray(receiver_id, sender, "msg", message);
-  } else if (phase == HelpPhasesEnum.OVER_WRITE) {
-    const isMessagePhaseChange = await handleHelpPhaseChange({
-      sender,
-      sender_id,
-      receiver_id,
-      message,
-    });
-    console.log(isMessagePhaseChange);
-    if (isMessagePhaseChange) return;
-
-    await delUserVars(receiver_id, sender, "msg");
-    appendToArray(receiver_id, sender, "msg", message);
   }
 };
 
@@ -110,7 +103,9 @@ const handleHelpPhaseChange = async ({
   sender_id,
   receiver_id,
   message,
+  args,
 }) => {
+  const { storeAR_Name, storeEN_Name, username, storObj, translation } = args;
   console.log("handle help phase");
   console.log("message is" + message);
   switch (message) {
@@ -118,40 +113,46 @@ const handleHelpPhaseChange = async ({
       console.log("case 0");
       await setUserVars(receiver_id, sender, "mode", ModeEnum.bot);
       sendMsg.customMessage(
-        "جاري الخروج من نظام المساعدة",
+        translation.help_logout,
         sender_id,
         receiver_id
       );
-      return true;
-    case "ارسال":
-      console.log("pushing into redis channel");
-      setUserVars(receiver_id, sender, "mode", ModeEnum.bot);
-      await delAllUserVars(receiver_id, sender);
-      sendMsg.customMessage(
-        `لقد تم إرسال الرسالة بنجاح وجاري الخروج من نظام المساعدة ... `,
+      resetSession({
+        sender,
         sender_id,
-        receiver_id
-      );
+        receiver_id,
+        storeAR_Name,
+        storeEN_Name,
+        username,
+        storObj,
+      });
       return true;
-    case "2":
-      console.log("case 2");
-      await setUserVars(
+    case translation.send:
+      HelpModeService.sendMessage({ receiver_id, sender, sender_id });
+      resetSession({
+        sender,
+        sender_id,
+        receiver_id,
+        storeAR_Name,
+        storeEN_Name,
+        username,
+        storObj,
+      });
+      return true;
+    case translation['delete message']:
+      await HelpModeService.changeToOverWritePhase({
         receiver_id,
         sender,
-        "phase",
-        HelpPhasesEnum.OVER_WRITE
-      );
-      sendMsg.customMessage(
-        "يُرجى كتابة الرسالة الجديدة",
         sender_id,
-        receiver_id
-      );
+      });
       return true;
-    case "3":
-      console.log("case3");
-      const session_messages = await getAllListElements(receiver_id,sender, "msg");
-      const message = session_messages.reduce((pre,cur)=>pre+'\n'+cur,'')
-      sendMsg.customMessage(message, sender_id, receiver_id);
+    case translation['review message']:
+      HelpModeService.displayUserMessage({
+        receiver_id,
+        sender,
+        message,
+        sender_id,
+      });
       return true;
     default:
       console.log("default case");
@@ -162,6 +163,29 @@ const handleHelpPhaseChange = async ({
 const changeBotMode = (receiver_id, sender_id, mode) => {
   setUserVars(sender_id, receiver_id, "mode", mode);
   setUserVars();
+};
+
+const resetSession =async ({
+  sender_id,
+  storeEN_Name,
+  storeAR_Name,
+  username,
+  storObj,
+  receiver_id,
+  sender,
+}) => {
+   delAllUserVars(receiver_id, sender);
+   setUserVars(receiver_id, sender, "phase", "1");
+
+  console.log('resetting ')
+  sendMsg.welcomeLangPhase(
+    sender_id,
+    storeEN_Name,
+    storeAR_Name,
+    username,
+    storObj,
+    receiver_id
+  );
 };
 
 const processBotMode = async ({
@@ -177,18 +201,18 @@ const processBotMode = async ({
   const storeEN_Name = storObj.name_en; // اسم المتجر بالانجليزي
   const storeAR_Name = storObj.name_ar; // اسم المتجر في العربي
   if (message == "0" || message == translation.cancel) {
+    console.log('cancel')
     //احذف هذه الاشياء من الريديس
-    /*  */
-    delAllUserVars(receiver_id, sender);
-    sendMsg.welcomeLangPhase(
+     resetSession({
+      sender,
       sender_id,
-      storeEN_Name,
+      receiver_id,
       storeAR_Name,
+      storeEN_Name,
       username,
       storObj,
-      receiver_id
-    );
-    setUserVars(receiver_id, sender, "phase", "1");
+    });
+    /*  */
   } else if (message == "JGHFds547fdglkj78") {
     //حذف كل شيء بالريديس
     sendMsg.customMessage(
@@ -200,7 +224,7 @@ const processBotMode = async ({
     deleteAllKeys();
   } else if (message == "*") {
     sendMsg.customMessage(
-      "مرحبًا بك في نظام المساعدة, يرجى كتابة رسالتك ليتم إرسالها إلى الدعم الفني",
+      translation.welcome_help_mode,
       sender_id,
       receiver_id
     );
@@ -212,6 +236,8 @@ const processBotMode = async ({
       case null:
       case undefined:
         // رسالة الترحيب تحتوي على اسم المتجر بالعربي والانجليزي واختيار اللغة
+        console.log('phase 0 or null or undefineed')
+        await setUserVars(receiver_id, sender, "phase", "1");
         sendMsg.welcomeLangPhase(
           sender_id,
           storeEN_Name,
@@ -221,11 +247,11 @@ const processBotMode = async ({
           receiver_id
         );
         //Store phase # 1 EX: (key, value) => ( whatsapp:+96563336437 , 1 )
-        setUserVars(receiver_id, sender, "phase", "1");
         break;
 
       case "1":
         if (message === translation.Arabic) {
+          console.log('case 1')
           setUserVars(receiver_id, sender, "language", "ar");
           const pickup_Policy = storObj.pickup_Policy;
 
@@ -256,6 +282,7 @@ const processBotMode = async ({
         break;
 
       case "1.1":
+        console.log('message1.1')
         if (message == translation.home_delivery) {
           sendMsg.locationPhase(sender_id, receiver_id);
           setUserVars(receiver_id, sender, "phase", "2");
@@ -303,6 +330,7 @@ const processBotMode = async ({
         break;
 
       case "2":
+        console.log('phase2')
         if (longitude == undefined || latitude == undefined) {
           sendMsg.errorMsg(sender_id, receiver_id);
         } else {
