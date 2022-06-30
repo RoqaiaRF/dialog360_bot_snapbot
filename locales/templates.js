@@ -63,6 +63,10 @@ const template = (key, language, value1, sender, receiverID) => {
         return `اهلا وسهلا بك في ${value1} و هو الان متاح لخدمتك `;
       }
 
+    case "help_mode":
+      return `  لإضافة رسالة أخرى على الرسالة السابقة اااااا`;
+
+
     case "pickup":
       return `ما طريقة استلام المنتج التي تفضلها ؟`;
 
@@ -101,6 +105,9 @@ const template = (key, language, value1, sender, receiverID) => {
     case "pickup_en":
       return `What is your preferred way of receiving ${value1}?`;
 
+    case "help_mode":
+      // todo: 
+        
     default:
       return "خطأ في التمبلت اتصل بخدمة العملاء wrong answer please call customer service ";
   }

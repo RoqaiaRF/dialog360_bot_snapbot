@@ -16,6 +16,7 @@ const {
   getProducts,
   getQuantity,
 } = require("../../../app/controllers/productController");
+const template = require("../../../locales/templates");
 
 const { StoreService } = require("../StoreService/StoreService");
 const { ModeEnum } = require("../../ENUMS/EMode");
@@ -81,14 +82,9 @@ const processHelpMode = async ({
     console.log(isMessagePhaseChange);
     if (isMessagePhaseChange) return;
     console.log("phase passed");
+    const receiver = receiver_id.replace("whatsapp:+", "");
     sendMsg.customMessage(
-      `
-        لتأكيد الرسالة إضغط 1 \n
-        لإلغاء الرسالة وكتابة واحدة أخرى إضغط 2
-        لمراجعة الرسالة إضغط 3
-        للخروج من نظام المساعدة إضغط 0
-        لإضافة رسالة أخرى على الرسالة السابقة يمكنك تجاهل تلك الرسالة والبدأ في كتابة رسالتك
-        `,
+          template("help_mode", "ar", "👇", sender, receiver),
       sender_id,
       receiver_id
     );
@@ -127,7 +123,7 @@ const handleHelpPhaseChange = async ({
         receiver_id
       );
       return true;
-    case "1":
+    case "ارسال":
       console.log("pushing into redis channel");
       setUserVars(receiver_id, sender, "mode", ModeEnum.bot);
       await delAllUserVars(receiver_id, sender);
