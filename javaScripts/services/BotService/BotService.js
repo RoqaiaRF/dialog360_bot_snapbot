@@ -16,7 +16,7 @@ const {
   getProducts,
   getQuantity,
 } = require("../../../app/controllers/productController");
-const template = require("../../../locales/templates");
+
 
 const { StoreService } = require("../StoreService/StoreService");
 const { ModeEnum } = require("../../ENUMS/EMode");

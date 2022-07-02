@@ -62,7 +62,7 @@ const template = (key, language, value1, sender, receiverID) => {
       }
 
     case "help_mode":
-      return `  لإضافة رسالة أخرى على الرسالة السابقة اااااا`;
+      return `  لإضافة رسالة أخرى على الرسالة السابقة ${value1}`;
 
     case "pickup":
       return `ما طريقة استلام المنتج التي تفضلها ؟`;
@@ -103,7 +103,7 @@ const template = (key, language, value1, sender, receiverID) => {
       return `What is your preferred way of receiving ${value1}?`;
 
     case "help_mode_en":
-    // todo:
+      return `to append another message continue typing ${value1}`;
 
     default:
       return "خطأ في التمبلت اتصل بخدمة العملاء wrong answer please call customer service ";

@@ -325,7 +325,7 @@ ${paymentLink}`;
 
   await sendTextMsg(`${msg}`, senderID, receiverID);
   sendTextMsg(
-    template("cartdetails", language, "☝️", senderID, receiverID), // يمكنك اضافة اي string  بدل ":"
+    template("cartdetails", language, " ", senderID, receiverID), // يمكنك اضافة اي string  بدل ":"
     senderID,
     receiverID
   );
