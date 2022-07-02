@@ -200,8 +200,10 @@ const processBotMode = async ({
     args;
   const storeEN_Name = storObj.name_en; // اسم المتجر بالانجليزي
   const storeAR_Name = storObj.name_ar; // اسم المتجر في العربي
+  let cityName, cart;
+
   if (message == "0" || message == translation.cancel) {
-    console.log('cancel')
+
     //احذف هذه الاشياء من الريديس
      resetSession({
       sender,
@@ -957,7 +959,7 @@ const processBotMode = async ({
           let productDetails = JSON.parse(
             await getUserVars(receiver_id, sender, "productDetails")
           );
-          const features = await showFeatures(
+          const features =  showFeatures(
             productDetails.features,
             translation,
             language
@@ -1033,6 +1035,7 @@ const processBotMode = async ({
         let categoryObj9 = JSON.parse(
           await getUserVars(receiver_id, sender, "cats")
         );
+
         if (message === translation.payment) {
           // عرض السلة كاملة مع رابط للدفع
         } else if (message === translation.select_to_delete) {
@@ -1050,7 +1053,7 @@ ${purchases9} `,
           );
           sendMsg.productPhase(
             sender_id,
-            await products(productObj7, receiver_id, sender, language),
+            await products(productObj7, language),
             receiver_id
           );
         }

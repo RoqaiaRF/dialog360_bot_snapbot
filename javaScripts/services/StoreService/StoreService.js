@@ -42,6 +42,7 @@ const categories = async (categoriesObj, language) => {
   };
   
   const products = async (productsObj, language) => {
+    console.log("language storeService 45: ",language)
     let msg = "";
     let product;
     if (language == undefined) language = "ar";
@@ -90,8 +91,7 @@ const categories = async (categoriesObj, language) => {
       if (element.features.length != 0)
         addedFeatures = `${translation.features}: ${showFeatures(
           element.features,
-          receiver_id,
-          sender,
+          translation,
           language
         )} 
         `;

@@ -26,10 +26,11 @@ const template = (key, language, value1, sender, receiverID) => {
   const senderID = sender.replace("whatsapp:+", "");
 
   const isExistenceBranches = checkBranches(senderID, receiverID);
-  //  Arabic Templates ***
   if (language === "en") key += "_en";
 
   switch (key) {
+    //  Arabic Templates ***
+
     case "product_details":
       return `تفاصيل المنتج${" " + value1}`;
 
@@ -59,6 +60,9 @@ const template = (key, language, value1, sender, receiverID) => {
       } else {
         return `اهلا وسهلا بك في ${value1} و هو الان متاح لخدمتك `;
       }
+
+    case "help_mode":
+      return `  لإضافة رسالة أخرى على الرسالة السابقة اااااا`;
 
     case "pickup":
       return `ما طريقة استلام المنتج التي تفضلها ؟`;
@@ -98,11 +102,8 @@ const template = (key, language, value1, sender, receiverID) => {
     case "pickup_en":
       return `What is your preferred way of receiving ${value1}?`;
 
-    case "help_mode":
-      return `  لإضافة رسالة أخرى على الرسالة السابقة ${value1}`;
-
     case "help_mode_en":
-      return `to append another message continue typing ${value1}`;
+    // todo:
 
     default:
       return "خطأ في التمبلت اتصل بخدمة العملاء wrong answer please call customer service ";

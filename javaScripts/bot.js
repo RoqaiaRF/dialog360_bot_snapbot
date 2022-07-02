@@ -17,13 +17,8 @@ const {
 const { ModeEnum } = require("./ENUMS/EMode");
 const { BotService } = require("./services/BotService/BotService");
 
-//Print Categories
-
-
-
 // receiver_id: رقم صاحب المتجر / رقم البوت
 // sender_id: رقم المرسل / الزبون
-let cart;
 
 const bot = async (
   sender_id,
@@ -33,6 +28,7 @@ const bot = async (
   latitude,
   username
 ) => {
+  
   // EX: Input: "whatsapp:+96512345678" ,Output: "12345678"
 
   receiver_id = receiver_id.replace("whatsapp:+", "");
@@ -44,11 +40,11 @@ const bot = async (
     JSON.stringify(await storeController.storeDetails(sender, receiver_id))
   );
 
-  let cityName;
 
   let phase = await getUserVars(receiver_id, sender, "phase");
   let language = await getUserVars(receiver_id, sender, "language");
   if (language == undefined) language = "ar";
+  console.log("language bot 47: " + language)
 
   const translation = require(`../locales/${language}`);
   BotService.processMessage({

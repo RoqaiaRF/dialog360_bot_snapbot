@@ -54,9 +54,9 @@ const en = {
   no: "No",
   no_features_found: "There are no additional services",
   payment: " payment",
-  select_to_delete: "product to delete",
+  select_to_delete: "Delete Product",
   select_number_product_to_delete: "Select the product number to delete:",
-  add_products: "add products",
+  add_products: "Add products",
   delete_success: "Deleted successfully! ",
   error_delete_from_cart: "Error removing from cart",
 
