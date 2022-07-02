@@ -30,10 +30,13 @@
     "i18next-fs-backend": "^1.1.4",
     "ioredis": "^5.0.4",
     "mysql2": "^2.3.3",
+    "nodemon": "^2.0.18",
     "npm": "^8.5.5",
     "query-string": "^7.1.1",
     "redis": "^3.1.2",
     "sequelize": "^6.17.0",
-    "twilio": "^3.76.0"
+    "to": "^0.2.9",
+    "twilio": "^3.76.0",
+    "update": "^0.7.4"
   }
 }
