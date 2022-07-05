@@ -1,63 +1,72 @@
 const db = require("../../database/connection");
 
 const Messages = require("../models/Messages")(db.sequelize, db.Sequelize);
-const Conversations = require("../models/Conversations")(db.sequelize, db.Sequelize);
-
-const options_datetime = { 
-  month: '2-digit', 
-  day: '2-digit',
-  year: 'numeric', 
-};
+const Conversations = require("../models/Conversations")(
+  db.sequelize,
+  db.Sequelize
+);
+// get the date right now
+const today = new Date();
+let date =
+  today.getFullYear() +
+  "-" +
+  (today.getMonth() + 1) +
+  "-" +
+  today.getDate() +
+  " " +
+  today.getHours() +
+  ":" +
+  today.getMinutes() +
+  ":" +
+  today.getSeconds();
 // define relationships
 
 // Conversations hasMany messages
 Conversations.hasMany(Messages, {
-    as: "messages",
-    foreignKey: "conversation_id",
-    targetKey: "id",
+  as: "messages",
+  foreignKey: "conversation_id",
+  targetKey: "id",
+});
+
+Messages.belongsTo(Conversations, {
+  as: "conversations",
+  foreignKey: "conversation_id",
+  targetKey: "id",
+});
+
+const createNewConversation = (receiver, sender, contentMessage, userName) => {
+  isExistConversation(sender, receiver).then((isExist) => {
+    if (isExist) {
+      // store new message in existing conversation
+      console.log("Exist Conversation");
+    } else {
+      // Create a new Conversation
+      Conversations.create({
+        name: userName,
+        status: 1,
+        number_store: sender,
+        number_client: receiver,
+        created_at: date,
+      });
+
+      console.log("Not Exist Conversation");
+    }
   });
-  
-  Messages.belongsTo(Conversations, {
-    as: "conversations",
-    foreignKey: "conversation_id",
-    targetKey: "id",
+};
+
+const isExistConversation = (number_store, number_client) => {
+  return Conversations.count({
+    where: { number_store: number_store, number_client: number_client },
+  }).then((count) => {
+    if (count > 0) {
+      return true;
+    }
+    return false;
   });
+};
 
-
-   const createNewConversation = (receiver, sender,  contentMessage, userName)=>{
-
-    isExistConversation(sender, receiver).then(isExist => {
-      if (isExist) {
-        // store new message in existing conversation
-         console.log( "Exist Conversation")
-      }
-      else{
-        // Create a new Conversation
-        Conversations.create({name: userName, status:1, number_store: sender, number_client: receiver, created_at:  new Date().toLocaleDateString('en-US', options_datetime)})
-
-        console.log( "Not Exist Conversation")
-      }
-  });
-  }
-
-  const isExistConversation =( number_store, number_client) =>{
-
-    return Conversations.count({ where: { number_store: number_store,  number_client: number_client} })
-    .then(count => {
-      if (count > 0) {
-        return true;
-      }
-      return false;
-  });
-
-  }
-
-
-  const main = ()=>{
-
-  }
+const main = () => {};
 module.exports = createNewConversation;
-
 
 /*
   عندما يتم وصول رسالة لصاحب المتجر
