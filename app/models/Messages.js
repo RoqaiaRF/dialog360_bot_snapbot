@@ -14,9 +14,19 @@ module.exports = (sequelize, Sequelize) => {
         read_at: {
           type: Sequelize.DATE,
         },
+        createdAt: {
+          field: 'created_at',
+          type: Sequelize.DATE,
+        },
+        updatedAt: {
+          field: 'updated_at',
+          type: Sequelize.DATE,
+        },
+
       },
       {
-        timestamps: false,
+        timestamps: true,
+  
       }
     );
     return Messages;

@@ -5,23 +5,10 @@ const Conversations = require("../models/Conversations")(
   db.sequelize,
   db.Sequelize
 );
-// get the date right now
-const today = new Date();
-let date =
-  today.getFullYear() +
-  "-" +
-  (today.getMonth() + 1) +
-  "-" +
-  today.getDate() +
-  " " +
-  today.getHours() +
-  ":" +
-  today.getMinutes() +
-  ":" +
-  today.getSeconds();
-// define relationships
 
-// Conversations hasMany messages
+
+// --- define relationships ---
+
 Conversations.hasMany(Messages, {
   as: "messages",
   foreignKey: "conversation_id",
@@ -34,26 +21,7 @@ Messages.belongsTo(Conversations, {
   targetKey: "id",
 });
 
-const createNewConversation = (receiver, sender, contentMessage, userName) => {
-  isExistConversation(sender, receiver).then((isExist) => {
-    if (isExist) {
-      // store new message in existing conversation
-      console.log("Exist Conversation");
-    } else {
-      // Create a new Conversation
-      Conversations.create({
-        name: userName,
-        status: 1,
-        number_store: sender,
-        number_client: receiver,
-        created_at: date,
-      });
-
-      console.log("Not Exist Conversation");
-    }
-  });
-};
-
+// Search Conversation if it exists
 const isExistConversation = (number_store, number_client) => {
   return Conversations.count({
     where: { number_store: number_store, number_client: number_client },
@@ -65,8 +33,27 @@ const isExistConversation = (number_store, number_client) => {
   });
 };
 
+const storeConversation = (receiver, sender, contentMessage, userName) => {
+  isExistConversation(sender, receiver).then((isExist) => {
+    if (isExist) {
+      // store new message in existing conversation
+      //console.log("Exist Conversation");
+    } else {
+      // Create a new Conversation
+      Conversations.create({
+        name: userName,
+        status: 1,
+        number_store: sender,
+        number_client: receiver,
+      });
+
+      //console.log("Not Exist Conversation");
+    }
+  });
+};
+
 const main = () => {};
-module.exports = createNewConversation;
+module.exports = storeConversation;
 
 /*
   عندما يتم وصول رسالة لصاحب المتجر

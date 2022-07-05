@@ -11,15 +11,23 @@ module.exports = (sequelize, Sequelize) => {
         number_store: {
           type: Sequelize.STRING,
         },
-        number_client: {
+        number_client: { 
           type: Sequelize.STRING,
         },
         created_at: {
           type: Sequelize.DATE,
         },
+        createdAt: {
+          field: 'created_at',
+          type: Sequelize.DATE,
+        },
+        updatedAt: {
+          field: 'updated_at',
+          type: Sequelize.DATE,
+        },
       },
       {
-        timestamps: false,
+        timestamps: true,
       }
     );
     return Conversations;
