@@ -6,7 +6,6 @@ require("dotenv").config();
 //get the REDIS URL frim env file and connect to the server
 const REDIS_URL = process.env.REDIS_URL;
 const client = new Redis(REDIS_URL);
-//REDIS_URL
 
 const setUserVars = async (store_phone, receiver_id, variable, value) => {
   //TODO: تغيير مدة موت الريديس الى 7200 يعني ساعتين
@@ -64,18 +63,53 @@ const delAllUserVars = async (receiver_id, sender) => {
   delUserVars(receiver_id, sender, "pickup_Policy");
   delUserVars(receiver_id, sender, "location");
   delUserVars(receiver_id, sender, "isorder");
-  delUserVars(receiver_id, sender, 'mode')
+  delUserVars(receiver_id, sender, "mode");
   delUserVars(receiver_id, sender, "store");
+  delUserVars(receiver_id, sender, "msg");
 };
 // delete all data from all databases in redis
 const deleteAllKeys = async () => {
   await client.flushall();
 };
 
-const getAllListElements = async(store_phone, receiver_id, variable)=>{
-  const list = await client.lrange(`${store_phone}:${receiver_id}:${variable}`,0,-1)
+const getAllListElements = async (store_phone, receiver_id, variable) => {
+  const list = await client.lrange(
+    `${store_phone}:${receiver_id}:${variable}`,
+    0,
+    -1
+  );
   return list;
-}
+};
+
+const publishToChannel = (
+  storePhoneNumber,
+  channel,
+  type,
+  content,
+  userPhoneNumber,
+  userName
+) => {
+  // Publish to myChannel.
+
+  const message = {
+  
+      storePhoneNumber: storePhoneNumber,
+      type: type,
+      content: content,
+      userPhoneNumber: userPhoneNumber,
+      userName: userName
+  };
+  console.log("userName++++++++++++", userName)
+
+  // Message can be either a string or a buffer
+  client.publish(channel, JSON.stringify(message), (error, count) => {
+    if (error) {
+        throw new Error(error);
+    }
+    console.log(`Subscribed to ${count} channel. Listening for updates on the ${channel} channel.`);
+});
+
+};
 
 module.exports = {
   setUserVars,
@@ -84,5 +118,6 @@ module.exports = {
   delUserVars,
   deleteAllKeys,
   appendToArray,
-  getAllListElements
+  getAllListElements,
+  publishToChannel
 };

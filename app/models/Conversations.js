@@ -14,6 +14,9 @@ module.exports = (sequelize, Sequelize) => {
         number_client: {
           type: Sequelize.STRING,
         },
+        created_at: {
+          type: Sequelize.DATE,
+        },
       },
       {
         timestamps: false,

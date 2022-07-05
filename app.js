@@ -1,7 +1,5 @@
 let express = require("express");
 const bodyParser = require("body-parser");
-
-
 const indexRouter = require("./routes");
 //const demoRouter = require("./routes/demo");
 const app = express();

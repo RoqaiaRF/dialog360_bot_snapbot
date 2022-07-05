@@ -107,7 +107,7 @@ const handleHelpPhaseChange = async ({
 }) => {
   const { storeAR_Name, storeEN_Name, username, storObj, translation } = args;
   console.log("handle help phase");
-  console.log("message is" + message);
+  console.log("args ------------",args.username);
   switch (message) {
     case "0":
       console.log("case 0");
@@ -128,7 +128,7 @@ const handleHelpPhaseChange = async ({
       });
       return true;
     case translation.send:
-      HelpModeService.sendMessage({ receiver_id, sender, sender_id });
+      HelpModeService.sendMessage( receiver_id, sender, sender_id, args.username );
       resetSession({
         sender,
         sender_id,
