@@ -4,11 +4,14 @@ const {
   delAllUserVars,
   setUserVars,
   getAllListElements,
+  publishToChannel,
 } = require("../../../database/redis");
 const template = require("../../../locales/templates");
 const { HelpPhasesEnum } = require("../../ENUMS/EHelpPhase");
 const { ModeEnum } = require("../../ENUMS/EMode");
 const sendMsg = require("../../phases");
+const helpMessagesController = require("../../../app/controllers/helpMessagesController")
+
 const attributes = {
   language: "ar",
   translation: {},
@@ -29,7 +32,12 @@ const appendMessage = ({ receiver_id, sender, sender_id, message }) => {
   appendToArray(receiver_id, sender, "msg", message);
 };
 
-const overWriteMessage = async ({ receiver_id, sender, message, sender_id }) => {
+const overWriteMessage = async ({
+  receiver_id,
+  sender,
+  message,
+  sender_id,
+}) => {
   const receiver = receiver_id.replace("whatsapp:+", "");
   delUserVars(receiver_id, sender, "msg");
   sendMsg.customMessage(
@@ -56,8 +64,21 @@ const changeToOverWritePhase = async ({ receiver_id, sender, sender_id }) => {
   );
 };
 
-const sendMessage = async ({ receiver_id, sender, sender_id }) => {
-  console.log("pushing into redis channel");
+const sendMessage = async (receiver_id, sender, sender_id , userName ) => {
+  const receiver = receiver_id.replace("whatsapp:+", "");
+
+  // pushing  message into redis channel
+
+  const session_message = await getAllListElements(receiver_id, sender, "msg");
+  const contentMessage = session_message.reduce(
+    (pre, cur) => pre + "\n" + cur,
+    ""
+  );
+  publishToChannel(receiver, "stores", "message", contentMessage, sender, userName);
+
+  // pushing to database if success
+  helpMessagesController(sender, receiver, contentMessage, userName)
+
   setUserVars(receiver_id, sender, "mode", ModeEnum.bot);
   delAllUserVars(receiver_id, sender);
   sendMsg.customMessage(
@@ -68,7 +89,6 @@ const sendMessage = async ({ receiver_id, sender, sender_id }) => {
 };
 
 const displayUserMessage = async ({ receiver_id, sender, sender_id }) => {
-  console.log("case3");
   const session_messages = await getAllListElements(receiver_id, sender, "msg");
   const message = session_messages.reduce((pre, cur) => pre + "\n" + cur, "");
   const receiver = receiver_id.replace("whatsapp:+", "");

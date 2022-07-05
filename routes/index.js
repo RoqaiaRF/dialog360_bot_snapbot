@@ -18,23 +18,8 @@ router.post("/", function (req, res, next) {
   let username = req.body.ProfileName;
 
   console.log(req.body);
-
   bot(sender_ID, receiver_id, message, longitude, latitude, username);
+
 });
 
-/*
-router.get("/", function (req, res, next) {
-   
-  // Publish to myChannel.
-    const channel = "stores"
-    const message = {
-      data: { store_id: "25", type: "messages", content: "hello" },
-      }; 
-  
-    // Message can be either a string or a buffer
-    redis.publish(channel, message);
-    console.log("Published %s to %s", message, channel);
-  
-})
-*/
 module.exports = router;
