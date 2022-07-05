@@ -16,4 +16,9 @@
 
 + 🟠 nodemon
 
+
++ 🟠 install ngrok and run it using : ngrok http 8080 
++ 🟠 add the webhokk to twilio
+
+then ENJOY :)
 ```
