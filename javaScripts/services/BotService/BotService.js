@@ -2,9 +2,9 @@ const {
   setUserVars,
   getUserVars,
   delUserVars,
-  deleteAllKeys,
+  deleteAllKeys, 
   delAllUserVars,
-  appendToArray,
+  appendToArray, 
   getAllListElements,
 } = require("../../../database/redis");
 const sendMsg = require("../../phases");
@@ -225,6 +225,9 @@ const processBotMode = async ({
 
     deleteAllKeys();
   } else if (message == "*") {
+    // اذا كان هناك راسلة قديمة في الريديس احذفها حتى يرسل جديدة 
+    delUserVars(receiver_id, sender, "msg");
+
     sendMsg.customMessage(
       translation.welcome_help_mode,
       sender_id,

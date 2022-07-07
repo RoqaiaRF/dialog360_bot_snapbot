@@ -13,7 +13,7 @@ const addItem = async (arr, item, sender, cart) => {
   // item doesn't exist in cart so add it
   const foundedIndex = arr.findIndex((ele) => ele.id == item.id);
   if (foundedIndex == -1) {
-    arr.push(item);// ضيفها بكل 
+    arr.push(item); // ضيفها بكل
     return true;
   } else {
     // Checking array equality
@@ -35,11 +35,13 @@ const addItem = async (arr, item, sender, cart) => {
       if (arr[foundedIndex].qty === item.qty) {
         return false;
       } else {
-      //  احذف الموجود واستبدله بالجديد
-        const foundedIndex1 = arr.findIndex((ele) => ele.id == item.id && ele.qty === item.qty);
-       //  todo : اضافة خاصية الحذف من السله حسب شرط تساوي الكمية
-        await removeFromCart(sender, cart.items[foundedIndex1])
-        await addToCart(sender,item);
+        //  احذف الموجود واستبدله بالجديد
+        const foundedIndex1 = arr.findIndex(
+          (ele) => ele.id == item.id && ele.qty === item.qty
+        );
+        //  todo : اضافة خاصية الحذف من السله حسب شرط تساوي الكمية
+        await removeFromCart(sender, cart.items[foundedIndex1]);
+        await addToCart(sender, item);
 
         return false;
       }
@@ -78,6 +80,7 @@ const newCart = async (
   const pickup_Policy = JSON.parse(
     await client.get(`${receiver_id}:${sender}:pickup_Policy`)
   );
+  if (pickup_Policy){fees = 0}
 
   let cart = await client.get(`${receiver_id}:${sender}:cart`);
   if (cart) return false;
@@ -112,11 +115,18 @@ const addToCart = async (receiver_id, sender, item) => {
   const cart = JSON.parse(await client.get(`${receiver_id}:${sender}:cart`));
 
   if (cart) {
+    const pickup_Policy1 = JSON.parse(
+      await client.get(`${receiver_id}:${sender}:pickup_Policy`)
+    );
     const itemAdded = addItem(cart.items, item, sender, cart);
     /*     cart.total += item.price * item.quantity;
     cart.price = cart.total - cart.tax; */
     const itemIDinCart = cart.items[cart.items.length - 1];
     let qty = parseInt(itemIDinCart.qty);
+    let fee = cart.fees;
+    if (pickup_Policy1) {
+      fee = 0;
+    }
     // اذا كان حجز فاجعل الكمية 1 لانه لازم دايما الكمية للحجز تكون 1
     if (isOrder == false) {
       qty = 1;
@@ -124,7 +134,8 @@ const addToCart = async (receiver_id, sender, item) => {
     cart.price += parseFloat(itemIDinCart.price) * qty;
 
     cart.tax = calcTax(cart.tax_parecent, cart.price);
-    cart.total = cart.price + cart.tax + cart.fees;
+
+    cart.total = cart.price + cart.tax + fee;
     if (itemAdded) {
       await setUserVars(receiver_id, sender, "cart", JSON.stringify(cart));
       return cart;
