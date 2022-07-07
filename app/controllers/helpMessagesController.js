@@ -6,7 +6,6 @@ const Conversations = require("../models/Conversations")(
   db.Sequelize
 );
 
-
 // --- define relationships ---
 
 Conversations.hasMany(Messages, {
@@ -22,22 +21,37 @@ Messages.belongsTo(Conversations, {
 });
 
 // Search Conversation if it exists
-const isExistConversation = (number_store, number_client) => {
-  return Conversations.count({
-    where: { number_store: number_store, number_client: number_client },
-  }).then((count) => {
-    if (count > 0) {
-      return true;
-    }
+const isExistConversation = async (number_store, number_client) => {
+  try {
+    const res = await Conversations.findOne(
+      {
+        where: {
+          number_store: number_store,
+          number_client: number_client,
+        },
+      },
+      {
+        attributes: ["id"],
+      }
+    );
+    return res.id;
+  } catch (error) {
     return false;
-  });
+  }
 };
 
-const storeConversation = (receiver, sender, contentMessage, userName) => {
-  isExistConversation(sender, receiver).then((isExist) => {
+const storeConversation = async (
+  receiver,
+  sender,
+  contentMessage,
+  userName
+) => {
+  await isExistConversation(sender, receiver).then((isExist) => {
     if (isExist) {
       // store new message in existing conversation
-      //console.log("Exist Conversation");
+      console.log(isExist, "Exist Conversation");
+      return isExist; // conversation_id of existing conversation
+
     } else {
       // Create a new Conversation
       Conversations.create({
@@ -45,15 +59,32 @@ const storeConversation = (receiver, sender, contentMessage, userName) => {
         status: 1,
         number_store: sender,
         number_client: receiver,
+      }).then(function (x) {
+        return x.dataValues.id; // conversation_id of created conversation
       });
-
-      //console.log("Not Exist Conversation");
     }
   });
 };
 
-const main = () => {};
-module.exports = storeConversation;
+const storeNewMessage = async (receiver, sender, contentMessage, userName) => {
+  // خزن المحادثة او اجلبها
+  const conversation_id = await storeConversation(
+    sender,
+    receiver,
+    contentMessage,
+    userName
+  );
+  console.log(conversation_id, "conversation_id");
+  //todo تخزين الرسالة
+
+  // Store a new Message
+  Messages.create({
+    message: contentMessage,
+    conversation_id: conversation_id,
+    sender_number: receiver,
+  });
+};
+module.exports = storeNewMessage;
 
 /*
   عندما يتم وصول رسالة لصاحب المتجر

@@ -65,7 +65,6 @@ const delAllUserVars = async (receiver_id, sender) => {
   delUserVars(receiver_id, sender, "isorder");
   delUserVars(receiver_id, sender, "mode");
   delUserVars(receiver_id, sender, "store");
-  delUserVars(receiver_id, sender, "msg");
 };
 // delete all data from all databases in redis
 const deleteAllKeys = async () => {
@@ -99,8 +98,8 @@ const publishToChannel = (
       userPhoneNumber: userPhoneNumber,
       userName: userName
   };
-  console.log("userName++++++++++++", userName)
 
+  
   // Message can be either a string or a buffer
   client.publish(channel, JSON.stringify(message), (error, count) => {
     if (error) {

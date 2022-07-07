@@ -10,7 +10,7 @@ const template = require("../../../locales/templates");
 const { HelpPhasesEnum } = require("../../ENUMS/EHelpPhase");
 const { ModeEnum } = require("../../ENUMS/EMode");
 const sendMsg = require("../../phases");
-const helpMessagesController = require("../../../app/controllers/helpMessagesController")
+const storeNewMessage = require("../../../app/controllers/helpMessagesController")
 
 const attributes = {
   language: "ar",
@@ -77,7 +77,7 @@ const sendMessage = async (receiver_id, sender, sender_id , userName ) => {
   publishToChannel(receiver, "stores", "message", contentMessage, sender, userName);
 
   // pushing to database if success
-  helpMessagesController(sender, receiver, contentMessage, userName)
+  storeNewMessage(receiver, sender, contentMessage, userName)
 
   setUserVars(receiver_id, sender, "mode", ModeEnum.bot);
   delAllUserVars(receiver_id, sender);
