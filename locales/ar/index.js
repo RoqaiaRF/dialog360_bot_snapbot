@@ -11,7 +11,7 @@ const ar = {
   How_to_receive_the_product: "ما طريقة استلام المنتج التي تفضلها ؟",
   Receipt_from_the_store: "استلام",
   home_delivery: "توصيل",
-  error_in_sending: "خطأ في الارسال",
+  error_in_sending: " يرجى اختيار الخيار الصحيح, او ارسال 0 للعودة للمرحلة الرئيسية او ارسال * لطلب المساعده",
   Choose_a_branchs: "اختر احد هذه الفروع التالية: ",
   To_return_to_the_main: " للعودة للرئيسية ارسل 0",
   Start_Booking: "ابدأ الحجز",

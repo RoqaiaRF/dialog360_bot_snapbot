@@ -13,7 +13,7 @@ const en = {
     "What method of receiving the product do you prefer?",
   Receipt_from_the_store: "Pickup Services",
   home_delivery: "Home Delivery",
-  error_in_sending: "error in sending",
+  error_in_sending: "Please choose the correct option, or send 0 to return to the main phase or send * to request help",
   Choose_a_branchs: "Choose one of the following branches: ",
   To_return_to_the_main: " To return to the main send 0",
   Near_Narcos_Burger_branch:
