@@ -10,7 +10,7 @@ const template = require("../../../locales/templates");
 const { HelpPhasesEnum } = require("../../ENUMS/EHelpPhase");
 const { ModeEnum } = require("../../ENUMS/EMode");
 const sendMsg = require("../../phases");
-const storeNewMessage = require("../../../app/controllers/helpMessagesController")
+const storeNewMessage = require("../../../app/controllers/helpSystemController")
 
 const attributes = {
   language: "ar",
