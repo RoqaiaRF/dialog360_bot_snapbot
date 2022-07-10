@@ -45,18 +45,21 @@ const storeConversation = async (
   await isExistConversation(sender, receiver)
     .then((isExist) => {
       if (isExist) {
-        // store new message in existing conversation
-
         result = isExist; // conversation_id of existing conversation
       } else {
         // Create a new Conversation
-        Conversations.create({
+        Conversations.upsert({
           name: userName,
           status: 1,
           number_store: sender,
           number_client: receiver,
         }).then(function (x) {
           result = x.dataValues.id; // conversation_id of created conversation
+          console.log( "****************************" ,x)
+
+        })
+        .catch(function (error) {
+          console.log("failed store conversation : ", error);
         });
       }
     })
