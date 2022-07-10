@@ -55,7 +55,7 @@ const overWriteMessage = async ({
 };
 
 const changeToOverWritePhase = async ({ receiver_id, sender, sender_id }) => {
-  console.log("case 2");
+
   setUserVars(receiver_id, sender, "phase", HelpPhasesEnum.OVER_WRITE);
   sendMsg.customMessage(
     attributes.translation.write_another_message,

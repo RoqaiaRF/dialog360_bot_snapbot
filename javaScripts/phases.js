@@ -58,8 +58,16 @@ const locationPhase = async (senderID, receiverID) => {
   if (language == undefined) language = "ar";
 
   const translation = require(`../locales/${language}`);
-  sendTextMsg(`  ${translation.submit_your_location}`, senderID, receiverID);
+   sendMedia(
+    `  ${translation.submit_your_location}`, senderID, 
+    "https://www.mybasis.com/wp-content/uploads/2020/05/location-sharing.jpg",
+    receiverID
+  );
+
 };
+
+
+
 
 const nearestLocation = async (senderID, branchObj, storObj, receiverID) => {
   const receiver = receiverID.replace("whatsapp:+", "");
