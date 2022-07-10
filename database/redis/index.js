@@ -32,10 +32,10 @@ const getUserVars = async (store_phone, receiver_id, variable) => {
     new Promise((resolve, reject) => {
       client.get(`${store_phone}:${receiver_id}:${variable}`, (err, data) => {
         if (data != null || data != undefined) {
-          console.log("Redis Success! but can't get data");
+         // console.log("Redis Success! but can't get data");
           return resolve(data);
         } else if (err) {
-          console.log("Redis Failed!", reject(err));
+
           return reject(err);
         }
       });

@@ -16,8 +16,8 @@ router.post("/", (req, res) => {
   let Latitude = req.body.Latitude;
   let Longitude = req.body.Longitude;
   demo(message, Sender_ID, Latitude, Longitude);
-  console.log(req.body);
-  console.log(Sender_ID);
+ 
+  
 
   return res.status(200).json({
     status: "success",

@@ -46,12 +46,12 @@ const storeConversation = async (
   contentMessage,
   userName
 ) => {
+  let result;
   await isExistConversation(sender, receiver).then((isExist) => {
     if (isExist) {
       // store new message in existing conversation
       console.log(isExist, "Exist Conversation");
-      return isExist; // conversation_id of existing conversation
-
+      result =  isExist; // conversation_id of existing conversation
     } else {
       // Create a new Conversation
       Conversations.create({
@@ -60,10 +60,12 @@ const storeConversation = async (
         number_store: sender,
         number_client: receiver,
       }).then(function (x) {
-        return x.dataValues.id; // conversation_id of created conversation
+        result =  x.dataValues.id; // conversation_id of created conversation
       });
     }
   });
+
+  return result;
 };
 
 const storeNewMessage = async (receiver, sender, contentMessage, userName) => {
@@ -74,8 +76,7 @@ const storeNewMessage = async (receiver, sender, contentMessage, userName) => {
     contentMessage,
     userName
   );
-  console.log(conversation_id, "conversation_id");
-  //todo تخزين الرسالة
+  console.log(conversation_id ,"conversation_id");
 
   // Store a new Message
   Messages.create({

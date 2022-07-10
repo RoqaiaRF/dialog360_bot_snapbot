@@ -44,8 +44,8 @@ const bot = async (
   let phase = await getUserVars(receiver_id, sender, "phase");
   let language = await getUserVars(receiver_id, sender, "language");
   if (language == undefined) language = "ar";
-  console.log("language bot 47: " + language)
 
+  
   const translation = require(`../locales/${language}`);
   BotService.processMessage({
     receiver_id,

@@ -2,7 +2,7 @@ const storeController = require("../app/controllers/storeController");
 
 // Check if there is another branches in the store or not
 const checkBranches = async (senderID, receiverID) => {
-  console.log(senderID, receiverID, "senderID, receiverID +++++++++++++++");
+
   //احضر الفروع كلها من الداتابيز
 
   let allbranches = [];
@@ -13,8 +13,8 @@ const checkBranches = async (senderID, receiverID) => {
   } /* else {
     allbranches = JSON.parse(allbranches);
   }*/
-  console.log(allbranches.length, " allbranches.length +++++++++++");
 
+  
   // لا يوجد هناك فروع اخرى
   if (allbranches.length <= 1) {
     return false;

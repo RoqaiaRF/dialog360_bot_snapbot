@@ -43,7 +43,7 @@ const processMessage = async ({
   phase,
   args,
 }) => {
-  console.log('message is being processed')
+
   setLanguage(args.language, args.translation)
   /* const mode = await getUserVars(receiver_id, sender, "mode");
   mode ? processHelpMode() : processBotMode(); */
@@ -76,8 +76,8 @@ const processHelpMode = async ({
   phase,
   args,
 }) => {
-  console.log("user has sent to help system");
-  console.log(message);
+
+  
   const isMessagePhaseChange = await handleHelpPhaseChange({
     sender,
     sender_id,
@@ -106,12 +106,11 @@ const handleHelpPhaseChange = async ({
   args,
 }) => {
   const { storeAR_Name, storeEN_Name, username, storObj, translation } = args;
-  console.log("handle help phase");
-  console.log("args ------------",args.username);
+
   switch (message) {
     case "0":
-      console.log("case 0");
-      await setUserVars(receiver_id, sender, "mode", ModeEnum.bot);
+
+    await setUserVars(receiver_id, sender, "mode", ModeEnum.bot);
       sendMsg.customMessage(
         translation.help_logout,
         sender_id,
@@ -155,7 +154,6 @@ const handleHelpPhaseChange = async ({
       });
       return true;
     default:
-      console.log("default case");
       return false;
   }
 };
@@ -177,8 +175,7 @@ const resetSession =async ({
    delAllUserVars(receiver_id, sender);
    setUserVars(receiver_id, sender, "phase", "1");
 
-  console.log('resetting ')
-  sendMsg.welcomeLangPhase(
+   sendMsg.welcomeLangPhase(
     sender_id,
     storeEN_Name,
     storeAR_Name,
@@ -241,7 +238,7 @@ const processBotMode = async ({
       case null:
       case undefined:
         // رسالة الترحيب تحتوي على اسم المتجر بالعربي والانجليزي واختيار اللغة
-        console.log('phase 0 or null or undefineed')
+
         await setUserVars(receiver_id, sender, "phase", "1");
         sendMsg.welcomeLangPhase(
           sender_id,
@@ -256,7 +253,7 @@ const processBotMode = async ({
 
       case "1":
         if (message === translation.Arabic) {
-          console.log('case 1')
+
           setUserVars(receiver_id, sender, "language", "ar");
           const pickup_Policy = storObj.pickup_Policy;
 
@@ -287,8 +284,8 @@ const processBotMode = async ({
         break;
 
       case "1.1":
-        console.log('message1.1')
-        if (message == translation.home_delivery) {
+
+      if (message == translation.home_delivery) {
           sendMsg.locationPhase(sender_id, receiver_id);
           setUserVars(receiver_id, sender, "phase", "2");
           setUserVars(receiver_id, sender, "pickup_Policy", false);
@@ -335,8 +332,8 @@ const processBotMode = async ({
         break;
 
       case "2":
-        console.log('phase2')
-        if (longitude == undefined || latitude == undefined) {
+
+      if (longitude == undefined || latitude == undefined) {
           sendMsg.errorMsg(sender_id, receiver_id);
         } else {
           const location2 = `{"lat":${latitude},"lng":${longitude} }`;
