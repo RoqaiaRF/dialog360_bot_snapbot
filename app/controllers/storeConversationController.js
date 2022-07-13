@@ -55,8 +55,6 @@ const storeConversation = async (
           number_client: receiver,
         }).then(function (x) {
           result = x.dataValues.id; // conversation_id of created conversation
-          console.log( "****************************" ,x)
-
         })
         .catch(function (error) {
           console.log("failed store conversation : ", error);
