@@ -1,9 +1,11 @@
 //  conversation_id جلب جميع الرسائل التابعة لمحادثة معينه , على حسب ال  
 
-const db = require("../../database/connection");
+const db = require("../../../database/connection");
 
-const Messages = require("../models/Messages")(db.sequelize, db.Sequelize);
-const Conversations = require("../models/Conversations")(
+const Messages = require("../../models/Messages")
+(db.sequelize, db.Sequelize);
+
+const Conversations = require("../../models/Conversations")(
   db.sequelize,
   db.Sequelize
 );

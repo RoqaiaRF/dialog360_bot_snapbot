@@ -1,3 +1,5 @@
+
+
 module.exports = (sequelize, Sequelize) => {
     const Messages = sequelize.define(
       "messages",
@@ -29,5 +31,7 @@ module.exports = (sequelize, Sequelize) => {
   
       }
     );
+    
+    
     return Messages;
   };

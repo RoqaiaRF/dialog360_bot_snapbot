@@ -1,7 +1,7 @@
-const db = require("../../database/connection");
+const db = require("../../../database/connection");
 
-const Messages = require("../models/Messages")(db.sequelize, db.Sequelize);
-const Conversations = require("../models/Conversations")(
+const Messages = require("../../models/Messages")(db.sequelize, db.Sequelize);
+const Conversations = require("../../models/Conversations")(
   db.sequelize,
   db.Sequelize
 );
@@ -20,13 +20,13 @@ const renameConversations = async (newName, conversation_id) => {
   const [updatedRows] = await Conversations.update(
     { name: newName },
     { where: { id: conversation_id } }
-  );
-
-  if (updatedRows) {
-    return ` Conversation  successfully updated, rows: ${updatedRows}`;
-  } else {
-    return "Conversation not found";
-  }
+  )
+    .then((updatedRows) => {
+      return ` Conversation  successfully updated, rows: ${updatedRows}`;
+    })
+    .catch((error) => {
+      return undefined;
+    });
 };
 
 module.exports = renameConversations;

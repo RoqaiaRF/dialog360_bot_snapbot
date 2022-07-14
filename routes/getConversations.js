@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const getConversations = require("../app/controllers/getConversationsController")
+const getConversations = require("../app/controllers/helpSystem/getConversationsController")
 
 router.post("/", async function  (req, res, next) {
     if (!req.body.store_number ) {

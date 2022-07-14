@@ -1,19 +1,21 @@
 
-const db = require("../../database/connection");
+const db = require("../../../database/connection");
 
-const Messages = require("../models/Messages")(db.sequelize, db.Sequelize);
-const Conversations = require("../models/Conversations")(
+const Messages = require("../../models/Messages")
+(db.sequelize, db.Sequelize);
+
+const Conversations = require("../../models/Conversations")(
   db.sequelize,
   db.Sequelize
 );
 
-// --- define relationships ---
+  // --- define relationships ---
 
-Conversations.hasMany(Messages, {
-  as: "messages",
-  foreignKey: "conversation_id",
-  targetKey: "id",
-});
+  Conversations.hasMany(Messages, {
+    as: "messages",
+    foreignKey: "conversation_id",
+    targetKey: "id",
+  });
 
 // احضار جميع المحادثات حسب رقم هاتف للمتجر 
 
