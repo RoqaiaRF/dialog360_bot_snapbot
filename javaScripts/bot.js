@@ -31,15 +31,16 @@ const bot = async (
   
   // EX: Input: "whatsapp:+96512345678" ,Output: "12345678"
 
-  //receiver_id = receiver_id.replace("whatsapp:+", "");
+  let receiver = receiver_id.replace("whatsapp:+", "");
   let sender = sender_id.replace("whatsapp:+", "");
   //TODO : Replace "JSON.parse(JSON.stringify(object))" with "StructuredClone(object)" when available
 
   // get store details
   const storObj = JSON.parse(
-    JSON.stringify(await storeController.storeDetails(sender, receiver_id))
+    JSON.stringify(await storeController.storeDetails(sender, receiver))
   );
-
+    console.log(sender);
+    console.log(receiver);
 
   let phase = await getUserVars(receiver_id, sender, "phase");
   let language = await getUserVars(receiver_id, sender, "language");
