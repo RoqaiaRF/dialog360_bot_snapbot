@@ -32,14 +32,14 @@ app.use("/", indexRouter);
 // // adding morgan to log HTTP requests
 // app.use(morgan("combined"));
 
-//Get all conversations based on the store's phone number
-app.use("/getConversations", getConversations);
+// //Get all conversations based on the store's phone number
+// app.use("/getConversations", getConversations);
 
-//Get all messages of a conversation based on the conversation id
-app.use("/getMessages", getMessages);
+// //Get all messages of a conversation based on the conversation id
+// app.use("/getMessages", getMessages);
 
-// Rename a conversation
-app.use("/renameConversation", renameConversation);
+// // Rename a conversation
+// app.use("/renameConversation", renameConversation);
 // starting the server
 app.listen(8080, () => {
   console.log(`Example app listening at http://localhost:8080`);
