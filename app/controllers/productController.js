@@ -2,6 +2,7 @@ const db = require("../../database/connection");
 const Products = require("../models/Products")(db.sequelize, db.Sequelize);
 const Quantity = require("../models/Quantity")(db.sequelize, db.Sequelize);
 const redis = require("../../database/redis");
+
 // Products has Many features
 Products.hasMany(Products, {
   as: "features",
@@ -24,7 +25,6 @@ const getProducts = async (receiver_id, sender, category_id) => {
     "products"
   );
   if (products_list) {
-
     return JSON.parse(products_list);
   } else {
     try {
@@ -52,10 +52,8 @@ const getProducts = async (receiver_id, sender, category_id) => {
         JSON.stringify(list)
       );
 
-      
       return list;
     } catch (error) {
-
       return {};
     }
   }
@@ -76,7 +74,6 @@ const getQuantity = async (store_id, product_id) => {
     );
     return res.quantity;
   } catch (error) {
-
     return null;
   }
 };

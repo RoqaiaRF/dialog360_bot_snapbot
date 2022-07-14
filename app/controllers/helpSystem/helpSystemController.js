@@ -1,5 +1,5 @@
-const storeConversation = require("./storeConversationController");
-const storeNewMessage = require("./storeNewMessageController");
+const storeConversation = require("../helpSystem/storeConversationController");
+const storeNewMessage = require("../helpSystem/storeNewMessageController");
 
 const helpSystemController = async (
   receiver,

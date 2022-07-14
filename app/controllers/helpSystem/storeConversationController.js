@@ -1,18 +1,9 @@
-const db = require("../../database/connection");
-
-const Messages = require("../models/Messages")(db.sequelize, db.Sequelize);
-const Conversations = require("../models/Conversations")(
+const db = require("../../../database/connection");
+const Conversations = require("../../models/Conversations")(
   db.sequelize,
   db.Sequelize
 );
 
-// --- define relationships ---
-
-Conversations.hasMany(Messages, {
-  as: "messages",
-  foreignKey: "conversation_id",
-  targetKey: "id",
-});
 
 // Search Conversation if it exists
 const isExistConversation = async (number_store, number_client) => {
