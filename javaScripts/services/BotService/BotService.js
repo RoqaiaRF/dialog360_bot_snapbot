@@ -788,12 +788,15 @@ const processBotMode = async ({
             let productDetails_7 = JSON.parse(
               await getUserVars(receiver_id, sender, "productDetails")
             );
-            await cartController.addToCart(receiver_id, sender, productDetails_7),
-
-            let [newCart7Res, purchases7Res] = await Promise.all([
-              getUserVars(receiver_id, sender, "cart"),
-              showPurchases(receiver_id, sender, translation, language),
-            ]);
+            await cartController.addToCart(
+              receiver_id,
+              sender,
+              productDetails_7
+            ),
+              (let[(newCart7Res, purchases7Res)] = await Promise.all([
+                getUserVars(receiver_id, sender, "cart"),
+                showPurchases(receiver_id, sender, translation, language),
+              ]));
             let newCart7 = JSON.parse(newCart7Res);
             const purchases7 = purchases7Res + "";
 
@@ -816,12 +819,11 @@ const processBotMode = async ({
       case "7.1": //اختيار المميزات / الخدمات الاضافيه
         const [productDetails_7_1Res, newCart7_1Res] = await Promise.all([
           getUserVars(receiver_id, sender, "productDetails"),
-          getUserVars(receiver_id, sender, "cart")
-        ])
+          getUserVars(receiver_id, sender, "cart"),
+        ]);
         let productDetails_7_1 = JSON.parse(productDetails_7_1Res);
         const featuresCount = productDetails_7_1.features.length;
 
-        
         if (isNaN(message) === true) {
           sendMsg.errorMsg(sender_id, receiver_id);
           return;
@@ -839,26 +841,20 @@ const processBotMode = async ({
           const featureIndex = message - 1;
           const selectedFeature = features[featureIndex];
           // add selected feature to the cart list
-          
+
           await cartController.addFeatureToCart(
             receiver_id,
             sender,
             productDetails_7_1,
             selectedFeature
           );
-
-           const newCart7_1 = await JSON.parse(
-            await getUserVars(receiver_id, sender, "cart")
-          ); 
+          const [newCart7_1Res, purchases7_1] = await Promise.all([
+            getUserVars(receiver_id, sender, "cart"),
+            showPurchases(receiver_id, sender, translation, language),
+          ]);
+          const newCart7_1 = await JSON.parse(newCart7_1Res);
 
           //عرض السلة بعد اضافة الخدمات الاضافية
-          const purchases7_1 = await showPurchases(
-            receiver_id,
-            sender,
-            translation,
-            language
-          );
-
           sendMsg.showCart(
             sender_id,
             purchases7_1,
@@ -908,17 +904,12 @@ const processBotMode = async ({
           } else {
             productDetails.qty = parseInt(message);
             await cartController.addToCart(receiver_id, sender, productDetails);
-
-            let newCart8 = JSON.parse(
-              await getUserVars(receiver_id, sender, "cart")
-            );
-            const purchases8 =
-              (await showPurchases(
-                receiver_id,
-                sender,
-                translation,
-                language
-              )) + "";
+            const [newCart8Res, purchases8Res] = await Promise.all([
+              getUserVars(receiver_id, sender, "cart"),
+              showPurchases(receiver_id, sender, translation, language),
+            ]);
+            let newCart8 = JSON.parse(newCart8Res);
+            const purchases8 = purchases8Res + "";
 
             setUserVars(receiver_id, sender, "phase", "9");
             sendMsg.showCart(
@@ -938,13 +929,13 @@ const processBotMode = async ({
       case "8.1":
         if (message == translation.yes) {
           // show features
-
-          let language = await getUserVars(receiver_id, sender, "language");
+          let [language, productDetailsRes] = await Promise.all([
+            getUserVars(receiver_id, sender, "language"),
+            getUserVars(receiver_id, sender, "productDetails"),
+          ]);
           if (language == undefined) language = "ar";
 
-          let productDetails = JSON.parse(
-            await getUserVars(receiver_id, sender, "productDetails")
-          );
+          let productDetails = JSON.parse(productDetailsRes);
           const features = showFeatures(
             productDetails.features,
             translation,
@@ -973,12 +964,13 @@ const processBotMode = async ({
           }
         } else if (message == translation.no) {
           // show cart details
-          let productDetails8_1 = JSON.parse(
-            await getUserVars(receiver_id, sender, "productDetails")
-          );
-          const quantity8_1 = parseInt(
-            await getUserVars(receiver_id, sender, "quantity")
-          );
+          let [productDetails8_1Res, quantity8_1Res] = await Promise.all([
+            getUserVars(receiver_id, sender, "productDetails"),
+            getUserVars(receiver_id, sender, "quantity"),
+          ]);
+
+          let productDetails8_1 = JSON.parse(productDetails8_1Res);
+          const quantity8_1 = parseInt(quantity8_1Res);
 
           productDetails8_1.features = [];
           productDetails8_1.qty = quantity8_1;
@@ -988,14 +980,13 @@ const processBotMode = async ({
             sender,
             productDetails8_1
           );
+          let [newCart8_1Res, purchases8_1Res] = await Promise.all([
+            getUserVars(receiver_id, sender, "cart"),
+            showPurchases(receiver_id, sender, translation, language),
+          ]);
+          let newCart8_1 = JSON.parse(newCart8_1Res);
 
-          let newCart8_1 = JSON.parse(
-            await getUserVars(receiver_id, sender, "cart")
-          );
-
-          const purchases8_1 =
-            (await showPurchases(receiver_id, sender, translation, language)) +
-            "";
+          const purchases8_1 = purchases8_1Res + "";
 
           setUserVars(receiver_id, sender, "phase", "9");
           sendMsg.showCart(
@@ -1012,15 +1003,12 @@ const processBotMode = async ({
         }
         break;
       case "9": // cart
-        const purchases9 = await showPurchases(
-          receiver_id,
-          sender,
-          translation,
-          language
-        );
-        let categoryObj9 = JSON.parse(
-          await getUserVars(receiver_id, sender, "cats")
-        );
+        const [purchases9, categoryObj9Res] = await Promise.all([
+          showPurchases(receiver_id, sender, translation, language),
+          getUserVars(receiver_id, sender, "cats"),
+        ]);
+
+        let categoryObj9 = JSON.parse(categoryObj9Res);
 
         if (message === translation.payment) {
           // عرض السلة كاملة مع رابط للدفع
@@ -1084,22 +1072,17 @@ ${purchases9} `,
           );
 
           if (result) {
-            await sendMsg.customMessage(
-              translation.delete_success,
-              sender_id,
-              receiver_id
-            );
+            const [newCart9_1Res, purchases9_1] = await Promise.all([
+              getUserVars(receiver_id, sender, "cart"),
+              showPurchases(receiver_id, sender, translation, language),
+              sendMsg.customMessage(
+                translation.delete_success,
+                sender_id,
+                receiver_id
+              ),
+            ]);
 
-            let newCart9_1 = JSON.parse(
-              await getUserVars(receiver_id, sender, "cart")
-            );
-            const purchases9_1 = await showPurchases(
-              receiver_id,
-              sender,
-              translation,
-              language
-            );
-
+            let newCart9_1 = JSON.parse(newCart9_1Res);
             sendMsg.showCart(
               sender_id,
               purchases9_1,
