@@ -35,9 +35,6 @@ const bot = async (
   let sender = sender_id.replace("whatsapp:+", "");
   //TODO : Replace "JSON.parse(JSON.stringify(object))" with "StructuredClone(object)" when available
 
-  // get store details
-  console.log(sender);
-  console.log(receiver);
 
   let [phase, language, store] = await Promise.all([
     getUserVars(receiver_id, sender, "phase"),
