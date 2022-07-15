@@ -39,7 +39,7 @@ const bot = async (
   let [phase, language, store] = await Promise.all([
     getUserVars(receiver_id, sender, "phase"),
     getUserVars(receiver_id, sender, "language"),
-    storeController.storeDetails(sender, receiver),
+    storeController.storeDetails(sender, receiver_id),
   ]);
   const storObj = JSON.parse(JSON.stringify(store));
   if (language == undefined) language = "ar";
