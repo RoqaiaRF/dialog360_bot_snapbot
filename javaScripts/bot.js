@@ -30,16 +30,16 @@ const bot = async (
 ) => {
   // EX: Input: "whatsapp:+96512345678" ,Output: "12345678"
 
-   receiver_id = receiver_id.replace("whatsapp:+", "");
+  let receiver = receiver_id.replace("whatsapp:+", "");
 
   let sender = sender_id.replace("whatsapp:+", "");
   //TODO : Replace "JSON.parse(JSON.stringify(object))" with "StructuredClone(object)" when available
 
 
   let [phase, language, store] = await Promise.all([
-    getUserVars(receiver_id, sender, "phase"),
-    getUserVars(receiver_id, sender, "language"),
-    storeController.storeDetails(sender, receiver_id),
+    getUserVars(receiver, sender, "phase"),
+    getUserVars(receiver, sender, "language"),
+    storeController.storeDetails(sender, receiver),
   ]);
   const storObj = JSON.parse(JSON.stringify(store));
   if (language == undefined) language = "ar";
