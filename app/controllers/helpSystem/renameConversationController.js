@@ -20,13 +20,12 @@ const renameConversations = async (newName, conversation_id) => {
   const [updatedRows] = await Conversations.update(
     { name: newName },
     { where: { id: conversation_id } }
-  )
-    .then((updatedRows) => {
-      return ` Conversation  successfully updated, rows: ${updatedRows}`;
-    })
-    .catch((error) => {
-      return undefined;
-    });
+  );
+  if (updatedRows) {
+    return 200;
+  } else {
+    return 400;
+  }
 };
 
 module.exports = renameConversations;

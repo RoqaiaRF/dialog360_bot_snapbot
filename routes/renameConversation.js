@@ -14,7 +14,7 @@ router.post("/", async function  (req, res, next) {
     else {
       const rename = await renameConversations(req.body.newName, req.body.conversation_id)
       if(rename){
-        res.send( rename );
+        res.sendStatus(rename)
       } 
       else {
         return res.status(400).json({
@@ -22,6 +22,7 @@ router.post("/", async function  (req, res, next) {
           message: "Conversation not found",
         });
       }
+      console.log( rename, "------------------------------------------")
       }
 
 });
