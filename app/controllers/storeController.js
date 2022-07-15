@@ -152,6 +152,6 @@ const getFees = async (store_id, city_name) => {
 
   if (region == null || region == undefined) return -1;
   else return region.fees;
-};
+}; 
 module.exports = { storeDetails, getNearestBranch, getAllBranchs, getFees };
 
