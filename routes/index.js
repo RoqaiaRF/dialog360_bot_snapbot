@@ -18,7 +18,7 @@ router.post("/", function (req, res, next) {
   let username = req.body.ProfileName;
 
   bot(sender_ID, receiver_id, message, longitude, latitude, username);
-  console.log(req.body)
+
 
 });
 
