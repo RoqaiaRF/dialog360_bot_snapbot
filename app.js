@@ -9,6 +9,7 @@ const indexRouter = require("./routes");
 const getConversations = require("./routes/getConversations");
 const getMessages = require("./routes/getMessages");
 const renameConversation = require("./routes/renameConversation");
+const demo = require("./routes/demo")
 
 // Define the express app
 const app = express();
@@ -21,6 +22,9 @@ app.use(bodyParser.json());
 
 // defining an endpoint to use it as webhook in whatsapp bot
 app.use("/", indexRouter);
+
+app.use("/demo", demo);
+
 
 // adding Helmet to enhance your Rest API's security
 app.use(helmet());

@@ -9,7 +9,7 @@ router.post("/", function (req, res, next) {
       message: "req body cannot be empty!",
     });
   }
-console.log(req.body);
+
   let message = req.body.Body; // text message sent
   let sender_ID = req.body.From; // End-User Phone number
   let receiver_id = req.body.To; // store owner Phone number
@@ -19,8 +19,7 @@ console.log(req.body);
 
   console.log("Receiver INDEX_ROUTER :  " + receiver_id);
   console.log("sender INDEX_ROUTER :  " + sender_ID);
-  return bot(sender_ID, receiver_id, message, longitude, latitude, username);
-
+  bot(sender_ID, receiver_id, message, longitude, latitude, username);
 
 });
 
