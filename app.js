@@ -23,26 +23,25 @@ app.use(bodyParser.json());
 // defining an endpoint to use it as webhook in whatsapp bot
 app.use("/", indexRouter);
 
-app.use("/demo", demo);
 
 
-// adding Helmet to enhance your Rest API's security
-app.use(helmet());
+// // adding Helmet to enhance your Rest API's security
+// app.use(helmet());
 
-// enabling CORS for all requests
-app.use(cors());
+// // enabling CORS for all requests
+// app.use(cors());
 
-// adding morgan to log HTTP requests
-app.use(morgan("combined"));
+// // adding morgan to log HTTP requests
+// app.use(morgan("combined"));
 
-//Get all conversations based on the store's phone number
-app.use("/getConversations", getConversations);
+// //Get all conversations based on the store's phone number
+// app.use("/getConversations", getConversations);
 
-//Get all messages of a conversation based on the conversation id
-app.use("/getMessages", getMessages);
+// //Get all messages of a conversation based on the conversation id
+// app.use("/getMessages", getMessages);
 
-// Rename a conversation
-app.use("/renameConversation", renameConversation);
+// // Rename a conversation
+// app.use("/renameConversation", renameConversation);
 
 // starting the server
 app.listen(8080, () => {
