@@ -74,7 +74,8 @@ const newCart = async (
   const storObj = JSON.parse(
     await client.get(`${receiver_id}:${sender}:store`)
   );
-
+console.log(receiver_id);
+console.log(sender);
   const payment_Policy = payment_PolicyController(storObj);
 
   const pickup_Policy = JSON.parse(

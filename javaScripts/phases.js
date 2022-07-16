@@ -78,6 +78,7 @@ const nearestLocation = async (senderID, branchObj, storObj, receiverID) => {
 
   const translation = require(`../locales/${language}`);
   const _isReservation_Pay = isReservation_Pay(storObj);
+  console.log(branchObj);
   let storeName = branchObj.name_ar;
   if (language === "en") {
     storeName = branchObj.name_en;
