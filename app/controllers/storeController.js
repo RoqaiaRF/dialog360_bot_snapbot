@@ -27,10 +27,13 @@ Store.hasMany(Region, {
 const storeDetails = async (sender, phone) => {
 
   const store = await redis.getUserVars(phone, sender, "store");
-
-  if (store) {
+  console.log(sender);
+  console.log(phone);
+  if (store && store!='null') {
+    console.log('store is not null')
     return JSON.parse(store);
   } else {
+    console.log('store is null')
     const store = await Store.findOne(
       {
         where: {

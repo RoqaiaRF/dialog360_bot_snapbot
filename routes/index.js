@@ -19,7 +19,8 @@ console.log(req.body);
 
   console.log("Receiver INDEX_ROUTER :  " + receiver_id);
   console.log("sender INDEX_ROUTER :  " + sender_ID);
-  return bot(sender_ID, receiver_id, message, longitude, latitude, username);
+ // return res.status(200).send('test');
+   bot(sender_ID, receiver_id, message, longitude, latitude, username);
 
 
 });

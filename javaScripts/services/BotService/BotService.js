@@ -2,9 +2,9 @@ const {
   setUserVars,
   getUserVars,
   delUserVars,
-  deleteAllKeys, 
+  deleteAllKeys,
   delAllUserVars,
-  appendToArray, 
+  appendToArray,
   getAllListElements,
 } = require("../../../database/redis");
 const sendMsg = require("../../phases");
@@ -16,7 +16,6 @@ const {
   getProducts,
   getQuantity,
 } = require("../../../app/controllers/productController");
-
 
 const { StoreService } = require("../StoreService/StoreService");
 const { ModeEnum } = require("../../ENUMS/EMode");
@@ -31,20 +30,20 @@ const {
   subCategoriess,
   categories,
 } = StoreService;
-const setLanguage = (language,translation)=>{
-  attributes.language = language
-  attributes.translation = translation
-}
+const setLanguage = (language, translation) => {
+  attributes.language = language;
+  attributes.translation = translation;
+};
 const processMessage = async ({
   receiver_id,
+  receiver,
   sender,
   sender_id,
   message,
   phase,
   args,
 }) => {
-
-  setLanguage(args.language, args.translation)
+  setLanguage(args.language, args.translation);
   /* const mode = await getUserVars(receiver_id, sender, "mode");
   mode ? processHelpMode() : processBotMode(); */
   let mode = await getUserVars(receiver_id, sender, "mode");
@@ -52,6 +51,7 @@ const processMessage = async ({
   mode == ModeEnum.bot
     ? processBotMode({
         receiver_id,
+        receiver,
         sender,
         sender_id,
         message,
@@ -60,6 +60,7 @@ const processMessage = async ({
       })
     : processHelpMode({
         receiver_id,
+        receiver,
         sender,
         sender_id,
         message,
@@ -76,14 +77,12 @@ const processHelpMode = async ({
   phase,
   args,
 }) => {
-
-  
   const isMessagePhaseChange = await handleHelpPhaseChange({
     sender,
     sender_id,
     receiver_id,
     message,
-    args
+    args,
   });
   if (isMessagePhaseChange) return;
   if (phase == HelpPhasesEnum.APPENDING)
@@ -109,13 +108,8 @@ const handleHelpPhaseChange = async ({
 
   switch (message) {
     case "0":
-
-    await setUserVars(receiver_id, sender, "mode", ModeEnum.bot);
-      sendMsg.customMessage(
-        translation.help_logout,
-        sender_id,
-        receiver_id
-      );
+      await setUserVars(receiver_id, sender, "mode", ModeEnum.bot);
+      sendMsg.customMessage(translation.help_logout, sender_id, receiver_id);
       resetSession({
         sender,
         sender_id,
@@ -127,7 +121,12 @@ const handleHelpPhaseChange = async ({
       });
       return true;
     case translation.send:
-      HelpModeService.sendMessage( receiver_id, sender, sender_id, args.username );
+      HelpModeService.sendMessage(
+        receiver_id,
+        sender,
+        sender_id,
+        args.username
+      );
       resetSession({
         sender,
         sender_id,
@@ -138,14 +137,14 @@ const handleHelpPhaseChange = async ({
         storObj,
       });
       return true;
-    case translation['delete message']:
+    case translation["delete message"]:
       await HelpModeService.changeToOverWritePhase({
         receiver_id,
         sender,
         sender_id,
       });
       return true;
-    case translation['review message']:
+    case translation["review message"]:
       HelpModeService.displayUserMessage({
         receiver_id,
         sender,
@@ -163,7 +162,7 @@ const changeBotMode = (receiver_id, sender_id, mode) => {
   setUserVars();
 };
 
-const resetSession =async ({
+const resetSession = async ({
   sender_id,
   storeEN_Name,
   storeAR_Name,
@@ -172,10 +171,10 @@ const resetSession =async ({
   receiver_id,
   sender,
 }) => {
-   delAllUserVars(receiver_id, sender);
-   setUserVars(receiver_id, sender, "phase", "1");
+  delAllUserVars(receiver_id, sender);
+  setUserVars(receiver_id, sender, "phase", "1");
 
-   sendMsg.welcomeLangPhase(
+  sendMsg.welcomeLangPhase(
     sender_id,
     storeEN_Name,
     storeAR_Name,
@@ -187,6 +186,7 @@ const resetSession =async ({
 
 const processBotMode = async ({
   receiver_id,
+  receiver,
   sender,
   sender_id,
   message,
@@ -200,9 +200,8 @@ const processBotMode = async ({
   let cityName, cart;
 
   if (message == "0" || message == translation.cancel) {
-
     //احذف هذه الاشياء من الريديس
-     resetSession({
+    resetSession({
       sender,
       sender_id,
       receiver_id,
@@ -222,7 +221,7 @@ const processBotMode = async ({
 
     deleteAllKeys();
   } else if (message == "*") {
-    // اذا كان هناك راسلة قديمة في الريديس احذفها حتى يرسل جديدة 
+    // اذا كان هناك راسلة قديمة في الريديس احذفها حتى يرسل جديدة
     delUserVars(receiver_id, sender, "msg");
 
     sendMsg.customMessage(
@@ -253,7 +252,6 @@ const processBotMode = async ({
 
       case "1":
         if (message === translation.Arabic) {
-
           setUserVars(receiver_id, sender, "language", "ar");
           const pickup_Policy = storObj.pickup_Policy;
 
@@ -284,8 +282,7 @@ const processBotMode = async ({
         break;
 
       case "1.1":
-
-      if (message == translation.home_delivery) {
+        if (message == translation.home_delivery) {
           sendMsg.locationPhase(sender_id, receiver_id);
           setUserVars(receiver_id, sender, "phase", "2");
           setUserVars(receiver_id, sender, "pickup_Policy", false);
@@ -295,7 +292,7 @@ const processBotMode = async ({
           //احضر الفروع كلها من الداتابيز
           const branchObj = JSON.parse(
             JSON.stringify(
-              await storeController.getAllBranchs(receiver_id, sender)
+              await storeController.getAllBranchs(receiver, sender)
             )
           );
 
@@ -306,7 +303,7 @@ const processBotMode = async ({
             sendMsg.nearestLocation(
               sender_id,
               branchObj[0],
-              branchObj[0],
+              storObj,
               receiver_id
             );
             setUserVars(receiver_id, sender, "phase", "3");
@@ -332,22 +329,21 @@ const processBotMode = async ({
         break;
 
       case "2":
-
-      if (longitude == undefined || latitude == undefined) {
+        if (longitude == undefined || latitude == undefined) {
           sendMsg.errorMsg(sender_id, receiver_id);
         } else {
           const location2 = `{"lat":${latitude},"lng":${longitude} }`;
           // store location in redis
           setUserVars(receiver_id, sender, "location", `${location2}`);
-
-          const nearestBranch = await storeController.getNearestBranch(
-            sender,
-            receiver_id,
-            latitude,
-            longitude
-          );
-
-          cityName = await location.getCityName(latitude, longitude);
+          let [nearestBranch, cityName] = await Promise.all([
+            storeController.getNearestBranch(
+              sender,
+              receiver_id,
+              latitude,
+              longitude
+            ),
+            location.getCityName(latitude, longitude),
+          ]);
           const fees = await storeController.getFees(storObj.id, cityName);
 
           if (fees == -1) {
@@ -370,7 +366,7 @@ const processBotMode = async ({
               longitude,
               storObj.tax,
               fees,
-              receiver_id
+              receiver
             );
             if (!nearestBranch) {
               setUserVars(receiver_id, sender, "phase", "2");
@@ -394,13 +390,14 @@ const processBotMode = async ({
         break;
 
       case "2.1":
-        let branch2_1 = JSON.parse(
-          await getUserVars(receiver_id, sender, "branch")
-        );
         if (longitude == undefined || latitude == undefined) {
           sendMsg.errorMsg(sender_id, receiver_id);
         } else {
-          cityName = await location.getCityName(latitude, longitude);
+          let [branch2_1Res, cityName] = await Promise.all([
+            getUserVars(receiver_id, sender, "branch"),
+            location.getCityName(latitude, longitude),
+          ]);
+          let branch2_1 = JSON.parse(branch2_1Res);
           const fees = await storeController.getFees(branch2_1.id, cityName);
 
           if (fees == -1) {
@@ -420,8 +417,7 @@ const processBotMode = async ({
               longitude,
               storObj.tax,
               fees,
-              receiver_id
-            );
+              receiver            );
             setUserVars(receiver_id, sender, "phase", "3");
             sendMsg.nearestLocation(
               sender_id,
@@ -438,17 +434,16 @@ const processBotMode = async ({
         تظهر ازرار بدءالطلب او الحجز او كلاهما حسب سياسة المتجر في الحجز والطلب
         */
       case "3":
-        let location3 = await getUserVars(receiver_id, sender, "location");
-
+        let [location3, branch3Res] = await Promise.all([
+          getUserVars(receiver_id, sender, "location"),
+          getUserVars(receiver_id, sender, "branch"),
+        ]);
+        let branch3 = JSON.parse(branch3Res);
         if (location3 === undefined) {
           location3 = { lat: storObj.lat, lng: storObj.lng };
         } else {
           location3 = JSON.parse(location3);
         }
-
-        let branch3 = JSON.parse(
-          await getUserVars(receiver_id, sender, "branch")
-        );
 
         const cityName3 = await location.getCityName(
           location3.lat,
@@ -471,8 +466,7 @@ const processBotMode = async ({
             location3.lng,
             storObj.tax,
             fees3,
-            receiver_id
-          );
+            receiver          );
 
           setUserVars(receiver_id, sender, "phase", "4");
           sendMsg.categoryPhase(
@@ -515,8 +509,7 @@ const processBotMode = async ({
             location3.lng,
             storObj.tax,
             fees3,
-            receiver_id
-          );
+            receiver          );
 
           setUserVars(receiver_id, sender, "phase", "4");
           sendMsg.categoryPhase(
@@ -601,8 +594,7 @@ const processBotMode = async ({
             lng,
             storObj.tax,
             fees,
-            receiver_id
-          );
+            receiver          );
 
           setUserVars(receiver_id, sender, "phase", "3");
         }
@@ -656,13 +648,14 @@ const processBotMode = async ({
         break;
 
       case "5": // التصنيفات الفرعية
-        let subCategories = JSON.parse(
-          await getUserVars(receiver_id, sender, "subcategories")
-        );
+        let [subCategoriesRes, categoryObj5Res] = await Promise.all([
+          getUserVars(receiver_id, sender, "subcategories"),
+          getUserVars(receiver_id, sender, "cats"),
+        ]);
+
+        let subCategories = JSON.parse(subCategoriesRes);
         // احضر التصنيفات الرئيسية
-        let categoryObj5 = JSON.parse(
-          await getUserVars(receiver_id, sender, "cats")
-        );
+        let categoryObj5 = JSON.parse(categoryObj5Res);
 
         let length5 = subCategories.length;
 
@@ -703,9 +696,12 @@ const processBotMode = async ({
           sendMsg.errorMsg(sender_id, receiver_id);
           return;
         }
-        let productObj = JSON.parse(
-          await getUserVars(receiver_id, sender, "products")
-        );
+        let [productObjRes, categoryObj2Res] = await Promise.all([
+          getUserVars(receiver_id, sender, "products"),
+          getUserVars(receiver_id, sender, "cats"),
+        ]);
+        let productObj = JSON.parse(productObjRes);
+        let categoryObj2 = JSON.parse(categoryObj2Res);
 
         if (productObj === {}) {
           sendMsg.customMessage(
@@ -717,9 +713,6 @@ const processBotMode = async ({
         }
 
         let length2 = productObj.length;
-        let categoryObj2 = JSON.parse(
-          await getUserVars(receiver_id, sender, "cats")
-        );
 
         if (message == "00" || message == translation.go_home) {
           delUserVars(receiver_id, sender, "products");
@@ -734,12 +727,13 @@ const processBotMode = async ({
           // send error msg
           sendMsg.errorMsg(sender_id, receiver_id);
         } else {
-          let branch = JSON.parse(
-            await getUserVars(receiver_id, sender, "branch")
-          );
-          let productObj6 = JSON.parse(
-            await getUserVars(receiver_id, sender, "products")
-          );
+          let [branchRes, productObj6Res] = await Promise.all([
+            getUserVars(receiver_id, sender, "branch"),
+            getUserVars(receiver_id, sender, "products"),
+          ]);
+          let branch = JSON.parse(branchRes);
+          let productObj6 = JSON.parse(productObj6Res);
+
           setUserVars(receiver_id, sender, "phase", "7"); // اختيار المنتجات
           let productIndex6 = message - 1;
           let product6 = productObj6[productIndex6];
@@ -756,12 +750,12 @@ const processBotMode = async ({
         break;
 
       case "7": // عرض الخدمة الواحدة او المنتج
-        let productObj7 = JSON.parse(
-          await getUserVars(receiver_id, sender, "products")
-        );
-        let categoryObj7 = JSON.parse(
-          await getUserVars(receiver_id, sender, "cats")
-        );
+        let [productObj7Res, categoryObj7Res] = await Promise.all([
+          getUserVars(receiver_id, sender, "products"),
+          getUserVars(receiver_id, sender, "cats"),
+        ]);
+        let productObj7 = JSON.parse(productObj7Res);
+        let categoryObj7 = JSON.parse(categoryObj7Res);
         if (message === "00") {
           setUserVars(receiver_id, sender, "phase", "6");
           sendMsg.productPhase(
@@ -794,22 +788,17 @@ const processBotMode = async ({
             let productDetails_7 = JSON.parse(
               await getUserVars(receiver_id, sender, "productDetails")
             );
-
             await cartController.addToCart(
               receiver_id,
               sender,
               productDetails_7
-            );
-            let newCart7 = JSON.parse(
-              await getUserVars(receiver_id, sender, "cart")
-            );
-            const purchases7 =
-              (await showPurchases(
-                receiver_id,
-                sender,
-                translation,
-                language
-              )) + "";
+            ),
+              (let[(newCart7Res, purchases7Res)] = await Promise.all([
+                getUserVars(receiver_id, sender, "cart"),
+                showPurchases(receiver_id, sender, translation, language),
+              ]));
+            let newCart7 = JSON.parse(newCart7Res);
+            const purchases7 = purchases7Res + "";
 
             setUserVars(receiver_id, sender, "phase", "9");
             sendMsg.showCart(
@@ -828,14 +817,12 @@ const processBotMode = async ({
         break;
 
       case "7.1": //اختيار المميزات / الخدمات الاضافيه
-        let productDetails_7_1 = JSON.parse(
-          await getUserVars(receiver_id, sender, "productDetails")
-        );
+        const [productDetails_7_1Res, newCart7_1Res] = await Promise.all([
+          getUserVars(receiver_id, sender, "productDetails"),
+          getUserVars(receiver_id, sender, "cart"),
+        ]);
+        let productDetails_7_1 = JSON.parse(productDetails_7_1Res);
         const featuresCount = productDetails_7_1.features.length;
-
-        const newCart7_1 = JSON.parse(
-          await getUserVars(receiver_id, sender, "cart")
-        );
 
         if (isNaN(message) === true) {
           sendMsg.errorMsg(sender_id, receiver_id);
@@ -854,25 +841,20 @@ const processBotMode = async ({
           const featureIndex = message - 1;
           const selectedFeature = features[featureIndex];
           // add selected feature to the cart list
+
           await cartController.addFeatureToCart(
             receiver_id,
             sender,
             productDetails_7_1,
             selectedFeature
           );
-
-          const newCart7_1 = await JSON.parse(
-            await getUserVars(receiver_id, sender, "cart")
-          );
+          const [newCart7_1Res, purchases7_1] = await Promise.all([
+            getUserVars(receiver_id, sender, "cart"),
+            showPurchases(receiver_id, sender, translation, language),
+          ]);
+          const newCart7_1 = await JSON.parse(newCart7_1Res);
 
           //عرض السلة بعد اضافة الخدمات الاضافية
-          const purchases7_1 = await showPurchases(
-            receiver_id,
-            sender,
-            translation,
-            language
-          );
-
           sendMsg.showCart(
             sender_id,
             purchases7_1,
@@ -922,17 +904,12 @@ const processBotMode = async ({
           } else {
             productDetails.qty = parseInt(message);
             await cartController.addToCart(receiver_id, sender, productDetails);
-
-            let newCart8 = JSON.parse(
-              await getUserVars(receiver_id, sender, "cart")
-            );
-            const purchases8 =
-              (await showPurchases(
-                receiver_id,
-                sender,
-                translation,
-                language
-              )) + "";
+            const [newCart8Res, purchases8Res] = await Promise.all([
+              getUserVars(receiver_id, sender, "cart"),
+              showPurchases(receiver_id, sender, translation, language),
+            ]);
+            let newCart8 = JSON.parse(newCart8Res);
+            const purchases8 = purchases8Res + "";
 
             setUserVars(receiver_id, sender, "phase", "9");
             sendMsg.showCart(
@@ -952,14 +929,14 @@ const processBotMode = async ({
       case "8.1":
         if (message == translation.yes) {
           // show features
-
-          let language = await getUserVars(receiver_id, sender, "language");
+          let [language, productDetailsRes] = await Promise.all([
+            getUserVars(receiver_id, sender, "language"),
+            getUserVars(receiver_id, sender, "productDetails"),
+          ]);
           if (language == undefined) language = "ar";
 
-          let productDetails = JSON.parse(
-            await getUserVars(receiver_id, sender, "productDetails")
-          );
-          const features =  showFeatures(
+          let productDetails = JSON.parse(productDetailsRes);
+          const features = showFeatures(
             productDetails.features,
             translation,
             language
@@ -987,12 +964,13 @@ const processBotMode = async ({
           }
         } else if (message == translation.no) {
           // show cart details
-          let productDetails8_1 = JSON.parse(
-            await getUserVars(receiver_id, sender, "productDetails")
-          );
-          const quantity8_1 = parseInt(
-            await getUserVars(receiver_id, sender, "quantity")
-          );
+          let [productDetails8_1Res, quantity8_1Res] = await Promise.all([
+            getUserVars(receiver_id, sender, "productDetails"),
+            getUserVars(receiver_id, sender, "quantity"),
+          ]);
+
+          let productDetails8_1 = JSON.parse(productDetails8_1Res);
+          const quantity8_1 = parseInt(quantity8_1Res);
 
           productDetails8_1.features = [];
           productDetails8_1.qty = quantity8_1;
@@ -1002,14 +980,13 @@ const processBotMode = async ({
             sender,
             productDetails8_1
           );
+          let [newCart8_1Res, purchases8_1Res] = await Promise.all([
+            getUserVars(receiver_id, sender, "cart"),
+            showPurchases(receiver_id, sender, translation, language),
+          ]);
+          let newCart8_1 = JSON.parse(newCart8_1Res);
 
-          let newCart8_1 = JSON.parse(
-            await getUserVars(receiver_id, sender, "cart")
-          );
-
-          const purchases8_1 =
-            (await showPurchases(receiver_id, sender, translation, language)) +
-            "";
+          const purchases8_1 = purchases8_1Res + "";
 
           setUserVars(receiver_id, sender, "phase", "9");
           sendMsg.showCart(
@@ -1026,15 +1003,12 @@ const processBotMode = async ({
         }
         break;
       case "9": // cart
-        const purchases9 = await showPurchases(
-          receiver_id,
-          sender,
-          translation,
-          language
-        );
-        let categoryObj9 = JSON.parse(
-          await getUserVars(receiver_id, sender, "cats")
-        );
+        const [purchases9, categoryObj9Res] = await Promise.all([
+          showPurchases(receiver_id, sender, translation, language),
+          getUserVars(receiver_id, sender, "cats"),
+        ]);
+
+        let categoryObj9 = JSON.parse(categoryObj9Res);
 
         if (message === translation.payment) {
           // عرض السلة كاملة مع رابط للدفع
@@ -1098,22 +1072,17 @@ ${purchases9} `,
           );
 
           if (result) {
-            await sendMsg.customMessage(
-              translation.delete_success,
-              sender_id,
-              receiver_id
-            );
+            const [newCart9_1Res, purchases9_1] = await Promise.all([
+              getUserVars(receiver_id, sender, "cart"),
+              showPurchases(receiver_id, sender, translation, language),
+              sendMsg.customMessage(
+                translation.delete_success,
+                sender_id,
+                receiver_id
+              ),
+            ]);
 
-            let newCart9_1 = JSON.parse(
-              await getUserVars(receiver_id, sender, "cart")
-            );
-            const purchases9_1 = await showPurchases(
-              receiver_id,
-              sender,
-              translation,
-              language
-            );
-
+            let newCart9_1 = JSON.parse(newCart9_1Res);
             sendMsg.showCart(
               sender_id,
               purchases9_1,

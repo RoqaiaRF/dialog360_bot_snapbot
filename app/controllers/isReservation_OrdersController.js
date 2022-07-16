@@ -1,4 +1,5 @@
 const isReservation_Pay = (storObj) => {
+  console.log(storObj);
   const is_order = storObj.is_order;
   const is_reservation = storObj.is_reservation;
 
