@@ -4,11 +4,12 @@ const Messages = require("../../models/Messages")(db.sequelize, db.Sequelize);
 
 
 const storeNewMessage = async (
-  receiver,
-  sender,
+  conversation_id
+  ,receiver,
   contentMessage,
   userName,
-  conversation_id
+  sender,
+  
 ) => {
   // Store a new Message
   Messages.create({

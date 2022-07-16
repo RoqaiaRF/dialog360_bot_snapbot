@@ -16,7 +16,7 @@ const helpSystemController = async (
   );
   console.log(conversation_id, "conversation_id");
   // Store New Message
-  storeNewMessage(receiver, sender, contentMessage, userName,  conversation_id);
+  storeNewMessage(conversation_id, receiver, contentMessage, userName,  sender);
 };
 module.exports = helpSystemController;
 
