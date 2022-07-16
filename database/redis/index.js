@@ -91,7 +91,8 @@ const publishToChannel = (
   type,
   content,
   userPhoneNumber,
-  userName
+  userName, 
+  store_id
 ) => {
   // Publish to myChannel.
 
@@ -101,16 +102,18 @@ const publishToChannel = (
       type: type,
       content: content,
       userPhoneNumber: userPhoneNumber,
-      userName: userName
+      userName: userName,
+      store_id : store_id
   };
 
   
-  // Message can be either a string or a buffer
+  // Message can be either a string Sor a buffer
   client.publish(channel, JSON.stringify(message), (error, count) => {
     if (error) {
         throw new Error(error);
     }
     console.log(`Subscribed to ${count} channel. Listening for updates on the ${channel} channel.`);
+    console.log("message", message)
 });
 
 };
