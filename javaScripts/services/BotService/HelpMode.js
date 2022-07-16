@@ -64,7 +64,7 @@ const changeToOverWritePhase = async ({ receiver_id, sender, sender_id }) => {
   );
 };
 
-const sendMessage = async (receiver_id, sender, sender_id , userName ) => {
+const sendMessage = async (receiver_id, sender, sender_id , userName ,store_id) => {
   const receiver = receiver_id.replace("whatsapp:+", "");
 
   // pushing  message into redis channel
@@ -74,7 +74,7 @@ const sendMessage = async (receiver_id, sender, sender_id , userName ) => {
     (pre, cur) => pre + "\n" + cur,
     ""
   );
-  publishToChannel(receiver, "stores", "message", contentMessage, sender, userName);
+  publishToChannel(receiver, "stores" , "message", contentMessage, sender, userName, store_id);
 
   // pushing to database if success
   storeNewMessage(receiver, sender, contentMessage, userName)

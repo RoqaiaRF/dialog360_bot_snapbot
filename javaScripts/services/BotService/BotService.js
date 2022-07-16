@@ -127,7 +127,7 @@ const handleHelpPhaseChange = async ({
       });
       return true;
     case translation.send:
-      HelpModeService.sendMessage( receiver_id, sender, sender_id, args.username );
+      HelpModeService.sendMessage( receiver_id, sender, sender_id, args.username , args.storObj.id);
       resetSession({
         sender,
         sender_id,
