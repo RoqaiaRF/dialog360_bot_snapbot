@@ -13,9 +13,6 @@ const renameConversation = require("./routes/renameConversation");
 // Define the express app
 const app = express();
 
-// adding Helmet to enhance your Rest API's security
-app.use(helmet());
-
 //Here we are configuring express to use body-parser as middle-ware.
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -24,6 +21,9 @@ app.use(bodyParser.json());
 
 // defining an endpoint to use it as webhook in whatsapp bot
 app.use("/", indexRouter);
+
+// adding Helmet to enhance your Rest API's security
+app.use(helmet());
 
 // enabling CORS for all requests
 app.use(cors());
