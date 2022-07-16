@@ -33,7 +33,9 @@ const bot = async (
 
   receiver_id = receiver_id.replace("whatsapp:+", "");
   let sender = sender_id.replace("whatsapp:+", "");
-
+  console.log("Receiver bot.js line 36 :  " + receiver_id);
+  console.log("sender bot.js line 36 :  " + sender);
+  
   
   // get store details
   const storObj = JSON.parse(
