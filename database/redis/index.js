@@ -9,6 +9,7 @@ const client = new Redis(REDIS_URL);
  
 const setUserVars = async (store_phone, receiver_id, variable, value) => {
   //TODO: تغيير مدة موت الريديس الى 7200 يعني ساعتين
+  store_phone = store_phone.replace('whatsapp:+','');
   await client.set(
     `${store_phone}:${receiver_id}:${variable}`,
     value,
@@ -18,11 +19,13 @@ const setUserVars = async (store_phone, receiver_id, variable, value) => {
 };
 
 const appendToArray = async (store_phone, receiver_id, variable, value) => {
+  store_phone = store_phone.replace('whatsapp+:','');
   await client.rpush(`${store_phone}:${receiver_id}:${variable}`, value);
 };
 
 //get the stored data from the redis session
 const getUserVars = async (store_phone, receiver_id, variable) => {
+  store_phone = store_phone.replace('whatsapp:+','');
   const myKeyValue = await client.get(
     `${store_phone}:${receiver_id}:${variable}`
   );
@@ -45,6 +48,7 @@ const getUserVars = async (store_phone, receiver_id, variable) => {
 
 //delete the stored data from the redis session
 const delUserVars = async (store_phone, receiver_id, variable) => {
+  store_phone = store_phone.replace('whatsapp:+','');
   await client.del(`${store_phone}:${receiver_id}:${variable}`);
 };
 
@@ -72,6 +76,7 @@ const deleteAllKeys = async () => {
 };
 
 const getAllListElements = async (store_phone, receiver_id, variable) => {
+  store_phone = store_phone.replace('whatsapp:+','');
   const list = await client.lrange(
     `${store_phone}:${receiver_id}:${variable}`,
     0,
