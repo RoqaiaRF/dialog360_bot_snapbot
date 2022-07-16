@@ -28,24 +28,26 @@ const bot = async (
   latitude,
   username
 ) => {
+  
   // EX: Input: "whatsapp:+96512345678" ,Output: "12345678"
-  console.log(receiver_id);
-  let receiver = receiver_id.replace("whatsapp:+", "");
+  console.log(receiver_id)
+  receiver_id = receiver_id.replace("whatsapp:+", "");
   let sender = sender_id.replace("whatsapp:+", "");
-  //TODO : Replace "JSON.parse(JSON.stringify(object))" with "StructuredClone(object)" when available
-
+  console.log("Receiver bot.js line 36 :  " + receiver_id);
+  console.log("sender bot.js line 36 :  " + sender);
+  
+  
   // get store details
-  console.log(sender);
-  console.log(receiver);
+  const storObj = JSON.parse(
+    JSON.stringify(await storeController.storeDetails(sender, receiver_id))
+  );
 
-  let [phase, language, store] = await Promise.all([
-    getUserVars(receiver_id, sender, "phase"),
-    getUserVars(receiver_id, sender, "language"),
-    storeController.storeDetails(sender, receiver),
-  ]);
-  const storObj = JSON.parse(JSON.stringify(store));
+
+  let phase = await getUserVars(receiver_id, sender, "phase");
+  let language = await getUserVars(receiver_id, sender, "language");
   if (language == undefined) language = "ar";
 
+  
   const translation = require(`../locales/${language}`);
   BotService.processMessage({
     receiver_id,
@@ -53,7 +55,7 @@ const bot = async (
     sender_id,
     message,
     phase,
-    args: { storObj, language, translation, longitude, latitude, username },
+    args: { storObj,language, translation, longitude, latitude, username },
   });
 };
 module.exports = bot;
