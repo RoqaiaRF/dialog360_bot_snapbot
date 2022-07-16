@@ -29,7 +29,7 @@ const bot = async (
   username
 ) => {
   // EX: Input: "whatsapp:+96512345678" ,Output: "12345678"
-
+  console.log(receiver_id);
   let receiver = receiver_id.replace("whatsapp:+", "");
   let sender = sender_id.replace("whatsapp:+", "");
   //TODO : Replace "JSON.parse(JSON.stringify(object))" with "StructuredClone(object)" when available
