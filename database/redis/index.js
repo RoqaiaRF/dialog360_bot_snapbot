@@ -79,7 +79,7 @@ const deleteAllKeys = async () => {
 const getAllListElements = async (store_phone, receiver_id, variable) => {
   store_phone = store_phone.replace('whatsapp:+','');
   receiver_id = receiver_id.replace('whatsapp:+','');
-  console.log('nnnooooow get lissst', store_phone, receiver_id, variable)
+
   const list = await client.lrange(
     `${store_phone}:${receiver_id}:${variable}`,
     0,
@@ -100,13 +100,15 @@ const publishToChannel = (
   // Publish to myChannel.
 
   const message = {
-  
+    data:{
       storePhoneNumber: storePhoneNumber,
       type: type,
       content: content,
       userPhoneNumber: userPhoneNumber,
       userName: userName,
       store_id : store_id
+    }
+      
   };
 
   
