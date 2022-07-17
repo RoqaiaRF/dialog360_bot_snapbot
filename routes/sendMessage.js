@@ -40,13 +40,6 @@ router.post("/", async function  (req, res, next) {
         // store message in database
         storeNewMessage(result.message, result.store_number, result.client)
 
-
-
-
-
-
-
-      
       }
 
 });

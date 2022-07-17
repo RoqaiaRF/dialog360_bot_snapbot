@@ -9,7 +9,7 @@ const indexRouter = require("./routes");
 const getConversations = require("./routes/getConversations");
 const getMessages = require("./routes/getMessages");
 const renameConversation = require("./routes/renameConversation");
-const demo = require("./routes/demo")
+const sendMessage = require("./routes/sendMessage")
 
 // Define the express app
 const app = express();
@@ -32,17 +32,17 @@ app.use(cors());
 // adding morgan to log HTTP requests
 app.use(morgan("combined"));
 
-//Get all conversations based on the store's phone number
-//app.use("/getConversations", getConversations());
+// Get all conversations based on the store's phone number
+app.use("/getConversations", getConversations);
 
-//Get all messages of a conversation based on the conversation id
-//app.use("/getMessages", getMessages());
+// Get all messages of a conversation based on the conversation id
+app.use("/getMessages", getMessages);
 
 // Rename a conversation
-//app.use("/renameConversation", renameConversation());
+app.use("/renameConversation", renameConversation);
 
-//Get all messages of a conversation based on the conversation id
-//app.use("/sendMessage", sendMessage());
+// Get all messages of a conversation based on the conversation id
+app.use("/sendMessage", sendMessage);
 
 
 // starting the server
