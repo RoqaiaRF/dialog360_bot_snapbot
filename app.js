@@ -1,7 +1,17 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-
-const cors = require("cors");
+const app =express();
+var cors = require('cors');
+  app.use(
+    cors({
+      allowedHeaders: ["authorization", "Content-Type"], // you can change the headers
+      exposedHeaders: ["authorization"], // you can change the headers
+      origin: "*",
+      methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+      preflightContinue: false
+    })
+  );
+app.get('/test',(req, res)=>res.send('resres'))
 const helmet = require("helmet");
 const morgan = require("morgan");
 
@@ -10,8 +20,7 @@ const renameConversation = require("./routes/renameConversation");
 const sendMessage = require("./routes/sendMessage")
 
 // Define the express app
-const app = express();
-app.use(cors());
+
 
 //Here we are configuring express to use body-parser as middle-ware.
 app.use(bodyParser.urlencoded({ extended: false }));
