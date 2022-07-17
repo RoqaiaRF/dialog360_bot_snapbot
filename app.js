@@ -19,13 +19,13 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // defining an endpoint to use it as webhook in whatsapp bot
-app.use("/", indexRouter);
 
 // adding Helmet to enhance your Rest API's security
 app.use(helmet());
 
 // enabling CORS for all requests
 app.use(cors());
+app.use("/", indexRouter);
 
 // adding morgan to log HTTP requests
 app.use(morgan("combined"));
