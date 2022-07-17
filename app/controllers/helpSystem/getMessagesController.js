@@ -10,11 +10,6 @@ const Conversations = require("../../models/Conversations")(
   db.Sequelize
 );
 
-Messages.belongsTo(Conversations, {
-  as: "conversations",
-  foreignKey: "conversation_id",
-  targetKey: "id",
-});
 
 const getMessages = async ( conversation_id ) =>{
 

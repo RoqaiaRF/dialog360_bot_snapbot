@@ -33,10 +33,6 @@ app.use(cors());
 app.use(morgan("combined"));
 
 // Get all conversations based on the store's phone number
-app.use("/getConversations", getConversations);
-
-// Get all messages of a conversation based on the conversation id
-app.use("/getMessages", getMessages);
 
 // Rename a conversation
 app.use("/renameConversation", renameConversation);

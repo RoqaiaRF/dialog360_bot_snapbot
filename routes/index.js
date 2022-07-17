@@ -1,5 +1,8 @@
 const express = require("express");
 const router = express.Router();
+const ConversationRouter = require('./conversationRouter')
+const {authorizeToken} = require('../middlewares/authorization')
+
 const bot = require("../javaScripts/bot");
 
 router.post("/", function (req, res, next) {
@@ -23,4 +26,5 @@ router.post("/", function (req, res, next) {
 
 });
 
+router.use('/conversation', authorizeToken, ConversationRouter)
 module.exports = router;
