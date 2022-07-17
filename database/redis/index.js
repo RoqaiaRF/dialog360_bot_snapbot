@@ -95,7 +95,8 @@ const publishToChannel = (
   content,
   userPhoneNumber,
   userName, 
-  store_id
+  store_id,
+  conversation_id
 ) => {
   // Publish to myChannel.
 
@@ -106,7 +107,8 @@ const publishToChannel = (
       content: content,
       userPhoneNumber: userPhoneNumber,
       userName: userName,
-      store_id : store_id
+      store_id : store_id,
+      conversation_id: conversation_id
     }
       
   };
