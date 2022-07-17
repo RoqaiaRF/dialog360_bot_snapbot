@@ -1,4 +1,3 @@
-const Messages = require('../models/Messages')
 module.exports = (sequelize, Sequelize) => {
   const Conversations = sequelize.define(
     "conversations",
@@ -31,6 +30,11 @@ module.exports = (sequelize, Sequelize) => {
       timestamps: true,
     }
   );
-
+  let Messages = require('../models/Messages')(sequelize, Sequelize)
+  Conversations.hasMany(Messages, {
+    as: "messages",
+    foreignKey: "conversation_id",
+    targetKey: "id",
+  });
   return Conversations;
 };

@@ -138,7 +138,6 @@ const getNearestBranch = async (sender, phone, lat, lng) => {
     //return branchs;
     if (count > 0) {
       console.log('count of banches more than 0');
-      console.log(branchs);
       const nearest = await getNearestLocation({ lat, lng }, branchs);
       console.log(nearest);
       await redis.setUserVars(phone, sender, "branch", JSON.stringify(nearest));

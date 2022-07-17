@@ -1,6 +1,8 @@
 const express = require("express");
+const conversationRouter = require('./conversations');
 const router = express.Router();
 const bot = require("../javaScripts/bot");
+const { authorizeToken } = require("../middlewares/authorization");
 
 router.post("/", function (req, res, next) {
   if (!req.body) {
@@ -9,7 +11,6 @@ router.post("/", function (req, res, next) {
       message: "req body cannot be empty!",
     });
   }
-
   let message = req.body.Body; // text message sent
   let sender_ID = req.body.From; // End-User Phone number
   let receiver_id = req.body.To; // store owner Phone number
@@ -22,5 +23,5 @@ router.post("/", function (req, res, next) {
   bot(sender_ID, receiver_id, message, longitude, latitude, username);
 
 });
-
+router.use('/conversation',authorizeToken, conversationRouter)
 module.exports = router;

@@ -1,3 +1,4 @@
+let StoreModel = require('./Store')
 module.exports = (sequelize, Sequelize) => {
     const Token = sequelize.define(
       "token",
@@ -21,6 +22,8 @@ module.exports = (sequelize, Sequelize) => {
         timestamps: false,
       }
     );
+    StoreModel = StoreModel(sequelize, Sequelize)
+    Token.belongsTo(StoreModel,{foreignKey:'user_id'});
     return Token;
   };
   

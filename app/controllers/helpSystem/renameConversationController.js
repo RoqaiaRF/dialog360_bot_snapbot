@@ -8,11 +8,6 @@ const Conversations = require("../../models/Conversations")(
 
 // --- define relationships ---
 
-Conversations.hasMany(Messages, {
-  as: "messages",
-  foreignKey: "conversation_id",
-  targetKey: "id",
-});
 
 // اعادة تسمية المحادثة الواحدة
 
