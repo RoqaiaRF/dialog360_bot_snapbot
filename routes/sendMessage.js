@@ -35,7 +35,7 @@ router.post("/", async function  (req, res, next) {
         const result =  req.body
         
         // send message to whatssapp 
-        sendTextMsg(result.message, result.store_number, result.client_number);
+       await sendTextMsg(result.message, result.client_number, result.store_number);
 
         // store message in database
         storeNewMessage(result.message, result.store_number, result.client)
