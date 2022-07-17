@@ -13,6 +13,7 @@ const storeNewMessage = async (
 ) => {
   let result;
   // Store a new Message
+  console.log(contentMessage)
   await Messages.create({
     message: contentMessage,
     conversation_id: conversation_id,

@@ -1,6 +1,8 @@
 const express = require("express");
-const conversationRouter = require('./conversations');
 const router = express.Router();
+const ConversationRouter = require('./conversationRouter')
+const {authorizeToken} = require('../middlewares/authorization')
+
 const bot = require("../javaScripts/bot");
 const { authorizeToken } = require("../middlewares/authorization");
 
@@ -23,5 +25,6 @@ router.post("/", function (req, res, next) {
   bot(sender_ID, receiver_id, message, longitude, latitude, username);
 
 });
-router.use('/conversation',authorizeToken, conversationRouter)
+
+router.use('/conversation', authorizeToken, ConversationRouter)
 module.exports = router;

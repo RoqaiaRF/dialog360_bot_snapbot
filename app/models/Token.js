@@ -22,8 +22,12 @@ module.exports = (sequelize, Sequelize) => {
         timestamps: false,
       }
     );
-    StoreModel = StoreModel(sequelize, Sequelize)
-    Token.belongsTo(StoreModel,{foreignKey:'user_id'});
+      Stores = StoreModel(sequelize, Sequelize);
+      Token.belongsTo(Stores,{
+        foreignKey:'user_id',
+        targetKey:'user_id'
+      })
     return Token;
+
   };
   

@@ -29,7 +29,7 @@ const appendMessage = ({ receiver_id, sender, sender_id, message }) => {
     sender_id,
     receiver_id
   );
-  appendToArray(receiver_id, sender, "msg", message);
+  appendToArray(receiver, sender, "msg", message);
 };
 
 const overWriteMessage = async ({
@@ -51,7 +51,7 @@ const overWriteMessage = async ({
     sender_id,
     receiver_id
   );
-  appendToArray(receiver_id, sender, "msg", message);
+  appendToArray(receiver, sender, "msg", message);
 };
 
 const changeToOverWritePhase = async ({ receiver_id, sender, sender_id }) => {
@@ -74,6 +74,8 @@ const sendMessage = async (receiver_id, sender, sender_id , userName ,store_id) 
     (pre, cur) => pre + "\n" + cur,
     ""
   );
+  console.log('nooow got msgs', contentMessage)
+
   publishToChannel(receiver, "stores" , "message", contentMessage, sender, userName, store_id);
 
   // pushing to database if success

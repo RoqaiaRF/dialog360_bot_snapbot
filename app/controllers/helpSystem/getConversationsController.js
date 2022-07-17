@@ -11,11 +11,11 @@ const Conversations = require("../../models/Conversations")(
 
   // --- define relationships ---
 
-  Conversations.hasMany(Messages, {
+  /* Conversations.hasMany(Messages, {
     as: "messages",
     foreignKey: "conversation_id",
     targetKey: "id",
-  });
+  }); */
 
 // احضار جميع المحادثات حسب رقم هاتف للمتجر 
 
