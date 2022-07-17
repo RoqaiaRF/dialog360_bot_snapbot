@@ -9,24 +9,34 @@ const AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
 const client = twilio(ACCOUNT_SID, AUTH_TOKEN, { lazyloading: false }); //lazyloading:  speed of sending /true or false
 
 //Send text & emoji message to specific number
-const sendTextMsg = async (message, senderID, receiver_ID) => {
+const sendTextMsg = async (message, sender_ID, receiver_ID) => {
   let result = receiver_ID.includes("whatsapp:+");
   let receiverID = receiver_ID;
   if (!result) {
     receiverID = "whatsapp:+" + receiver_ID;
   }
 
+  let result_senderID = sender_ID.includes("whatsapp:+");
+  let senderID = sender_ID;
+  if (!result_senderID) {
+    senderID = "whatsapp:+" + sender_ID;
+  }
+let resultOfSending;
   await client.messages
     .create({
       from: receiverID,
       to: senderID,
       body: message,
     })
-    .then((message) => {})
+    .then(() => {
+      resultOfSending =  true;
+    })
 
-    .catch((error) => {
-      console.log(`Error at sending message: ${error}`);
+    .catch(() => {
+      resultOfSending = false;
+
     });
+  return resultOfSending;
 };
 
 module.exports = sendTextMsg;
