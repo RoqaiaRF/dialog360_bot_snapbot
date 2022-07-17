@@ -14,7 +14,7 @@ const findConversations = async (req, res) => {
   const limit = per_page;
   const data = await Conversations.findAll({
     where: { number_store: phone },
-    include: {
+    include: { 
       model: Messages,
    
     },
