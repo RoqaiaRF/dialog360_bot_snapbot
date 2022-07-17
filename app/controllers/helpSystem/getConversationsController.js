@@ -9,38 +9,33 @@ const Conversations = require("../../models/Conversations")(
   db.Sequelize
 );
 
-  // --- define relationships ---
+  // // --- define relationships ---
 
-  /* Conversations.hasMany(Messages, {
-    as: "messages",
-    foreignKey: "conversation_id",
-    targetKey: "id",
-  }); */
+  //  Conversations.hasMany(Messages, {
+  //   as: "messages",
+  //   foreignKey: "conversation_id",
+  //   targetKey: "id",
+  // }); 
 
-// احضار جميع المحادثات حسب رقم هاتف للمتجر 
 
-const getConversations = async ( number_store) => {
-    let listOfConversations = await Conversations.findAll(
+const getConversation = async ( number_store, number_client) => {
+    let IdOfConversation = await Conversations.findOne(
         {
           where: {
             number_store: number_store,
+            number_client: number_client,
           },
         },
         {
           attributes: [
-            "name",
-            "status",
-            "number_store",
-            "number_client",
-            "created_at",
-            "updated_at",
-         
+            "id",
+           
           ],
         }
       );
-    return listOfConversations;
+    return IdOfConversation.dataValues.id ;
 
 
 };
 
-module.exports = getConversations; 
+module.exports = getConversation; 
