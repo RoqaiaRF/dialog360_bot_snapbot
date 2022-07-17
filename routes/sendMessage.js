@@ -40,7 +40,7 @@ router.post("/", async function (req, res, next) {
         req.body.message,
         req.body.store_number
       )
-    if(result_sendTextMsg){
+    if(result_sendTextMsg){ 
       res.status(result_storeNewMessage.status).json({
         status: result_storeNewMessage.status,
         message : result_storeNewMessage.message
