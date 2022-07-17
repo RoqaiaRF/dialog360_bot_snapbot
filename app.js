@@ -9,7 +9,7 @@ const indexRouter = require("./routes");
 const getConversations = require("./routes/getConversations");
 const getMessages = require("./routes/getMessages");
 const renameConversation = require("./routes/renameConversation");
-const sendMessage = require("./routes/sendMessage");
+const demo = require("./routes/demo")
 
 // Define the express app
 const app = express();
