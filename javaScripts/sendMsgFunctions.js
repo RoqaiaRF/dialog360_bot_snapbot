@@ -28,13 +28,10 @@ let res ;
       to: senderID,
       body: message,
     })
-    .then(() => {res = false})
+    .then(() => {res = true})
 
     .catch((error) => {
-      res = {
-        status: "Bad Request",
-        message: `Error at sending message: ${error}`,
-      }
+      res = false
     });
     return res;
 };

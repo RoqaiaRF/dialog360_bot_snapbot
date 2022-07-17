@@ -49,9 +49,10 @@ router.post("/", async function (req, res, next) {
     else {
       return res.status(400).json({
         status: "Bad Request",
-        message: `Error at sending message`,
+        message: `Error at sending message, Please check store phone number first of all`,
       });
     }
+    console.log(result_sendTextMsg)
   }
 });
 
