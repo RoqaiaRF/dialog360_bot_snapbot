@@ -121,16 +121,7 @@ const handleHelpPhaseChange = async ({
       });
       return true;
     case translation.send:
-<<<<<<< HEAD
       HelpModeService.sendMessage( receiver_id, sender, sender_id, args.username , args.storObj.id);
-=======
-      HelpModeService.sendMessage(
-        receiver_id,
-        sender,
-        sender_id,
-        args.username
-      );
->>>>>>> 6c71410b94cb8437f33aff96f494d2beb2afbbf4
       resetSession({
         sender,
         sender_id,
@@ -796,11 +787,11 @@ const processBotMode = async ({
               receiver_id,
               sender,
               productDetails_7
-            ),
-              (let[(newCart7Res, purchases7Res)] = await Promise.all([
+            );
+              let [newCart7Res, purchases7Res] = await Promise.all([
                 getUserVars(receiver_id, sender, "cart"),
                 showPurchases(receiver_id, sender, translation, language),
-              ]));
+              ]);
             let newCart7 = JSON.parse(newCart7Res);
             const purchases7 = purchases7Res + "";
 
