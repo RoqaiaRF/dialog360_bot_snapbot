@@ -20,6 +20,7 @@ const setUserVars = async (store_phone, receiver_id, variable, value) => {
 
 const appendToArray = async (store_phone, receiver_id, variable, value) => {
   store_phone = store_phone.replace('whatsapp+:','');
+  console.log(store_phone)
   await client.rpush(`${store_phone}:${receiver_id}:${variable}`, value);
 };
 
@@ -77,6 +78,8 @@ const deleteAllKeys = async () => {
 
 const getAllListElements = async (store_phone, receiver_id, variable) => {
   store_phone = store_phone.replace('whatsapp:+','');
+  receiver_id = receiver_id.replace('whatsapp:+','');
+  console.log('nnnooooow get lissst', store_phone, receiver_id, variable)
   const list = await client.lrange(
     `${store_phone}:${receiver_id}:${variable}`,
     0,
