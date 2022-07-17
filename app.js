@@ -26,8 +26,8 @@ app.use("/", indexRouter);
 // adding Helmet to enhance your Rest API's security
 app.use(helmet());
 
-// enabling CORS for all requests
-app.use(cors());
+// // enabling CORS for all requests
+// app.use(cors());
 
 // adding morgan to log HTTP requests
 app.use(morgan("combined"));
