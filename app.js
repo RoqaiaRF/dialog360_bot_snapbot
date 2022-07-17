@@ -26,23 +26,23 @@ app.use("/", indexRouter);
 // adding Helmet to enhance your Rest API's security
 app.use(helmet());
 
-// // enabling CORS for all requests
-// app.use(cors());
+// enabling CORS for all requests
+app.use(cors());
 
 // adding morgan to log HTTP requests
 app.use(morgan("combined"));
 
 //Get all conversations based on the store's phone number
-app.use("/getConversations", getConversations);
+app.use("/getConversations", getConversations());
 
 //Get all messages of a conversation based on the conversation id
-app.use("/getMessages", getMessages);
+app.use("/getMessages", getMessages());
 
 // Rename a conversation
-app.use("/renameConversation", renameConversation);
+app.use("/renameConversation", renameConversation());
 
 //Get all messages of a conversation based on the conversation id
-app.use("/sendMessage", sendMessage);
+app.use("/sendMessage", sendMessage());
 
 
 // starting the server
