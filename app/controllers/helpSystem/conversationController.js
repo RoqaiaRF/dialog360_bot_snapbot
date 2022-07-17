@@ -38,7 +38,6 @@ const findMessages = async(req, res) => {
       id,
       number_store: phone,
     },
-    attributes:['id'],
     include:{
         model:Messages,
   
