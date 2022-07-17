@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const ConversationRouter = require('./conversationRouter')
-const {authorizeToken} = require('../middlewares/authorization')
 
 const bot = require("../javaScripts/bot");
 const { authorizeToken } = require("../middlewares/authorization");
