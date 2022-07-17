@@ -2,21 +2,20 @@ module.exports = (sequelize, Sequelize) => {
     const Token = sequelize.define(
       "token",
       {
-        name_ar: {
+        id:{
+          type:Sequelize.INTEGER,
+          primaryKey:true,
+          autoIncrement:true
+        },
+        token: {
           type: Sequelize.STRING,
         },
-        name_en: {
-          type: Sequelize.STRING,
+        user_id: {
+          type: Sequelize.INTEGER,
         },
-        store_id: {
-          type: Sequelize.BIGINT,
-        },
-        parent_id: {
-          type: Sequelize.BIGINT,
-        },
-        deleted_at: {
-          type: Sequelize.DATE,
-        },
+        token_id:{
+          type:Sequelize.INTEGER
+        }
       },
       {
         timestamps: false,
