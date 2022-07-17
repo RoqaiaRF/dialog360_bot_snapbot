@@ -21,18 +21,22 @@ const sendTextMsg = async (message, sender_ID, receiver_ID) => {
   if (!resultsender) {
     senderID = "whatsapp:+" + sender_ID;
   }
-
+let res ;
   await client.messages
     .create({
       from: receiverID,
       to: senderID,
       body: message,
     })
-    .then((message) => {})
+    .then(() => {res = false})
 
     .catch((error) => {
-      console.log(`Error at sending message: ${error}`);
+      res = {
+        status: "Bad Request",
+        message: `Error at sending message: ${error}`,
+      }
     });
+    return res;
 };
 
 module.exports = sendTextMsg;
