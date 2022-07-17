@@ -7,7 +7,7 @@ const morgan = require("morgan");
 
 const indexRouter = require("./routes");
 const renameConversation = require("./routes/renameConversation");
-const demo = require("./routes/demo")
+const sendMessage = require("./routes/sendMessage")
 
 // Define the express app
 const app = express();
@@ -37,6 +37,10 @@ app.use(morgan("combined"));
 
 // Rename a conversation
 app.use("/renameConversation", renameConversation);
+
+// Get all messages of a conversation based on the conversation id
+app.use("/sendMessage", sendMessage);
+
 
 // starting the server
 app.listen(8080, () => {

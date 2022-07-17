@@ -788,11 +788,11 @@ const processBotMode = async ({
               receiver,
               sender,
               productDetails_7
-            ),
-              (let[(newCart7Res, purchases7Res)] = await Promise.all([
+            );
+              let[newCart7Res, purchases7Res] = await Promise.all([
                 getUserVars(receiver, sender, "cart"),
                 showPurchases(receiver, sender, translation, language),
-              ]));
+              ]);
             let newCart7 = JSON.parse(newCart7Res);
             const purchases7 = purchases7Res + "";
 

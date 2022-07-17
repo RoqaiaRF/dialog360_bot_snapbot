@@ -303,12 +303,12 @@ const showCart = async (
   const translation = require(`../locales/${language}`);
   let paymentLink = "";
 
-  const isOrder = JSON.parse(await getUserVars(receiverID, sender, "isorder"));
+  const isOrder = JSON.parse(await getUserVars(receiver, sender, "isorder"));
 
   if (isOrder === true) {
-    paymentLink = `http://pay.snapbot.app/${receiverID}/orders/${sender}`;
+    paymentLink = `http://pay.snapbot.app/${receiver}/orders/${sender}`; 
   } else if (isOrder === false) {
-    paymentLink = `http://pay.snapbot.app/${receiverID}/reservations/${sender}`;
+    paymentLink = `http://pay.snapbot.app/${receiver}/reservations/${sender}`;
   } else {
     paymentLink = translation.error_approved_payment;
   }
