@@ -2,15 +2,19 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const app =express();
 var cors = require('cors');
-  app.use(
+  app.use(function(req, res, next) {
     cors({
-      allowedHeaders: ["authorization", "Content-Type", 'X-Requested-With'], // you can change the headers
+      allowedHeaders: ["authorization", "Content-Type", 'X-Requested-With', "Origin", "Accept"], // you can change the headers
       exposedHeaders: ["authorization", 'X-Requested-With'], // you can change the headers
       origin: "*",
       methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
       preflightContinue: false
     })
-  );
+    res.header("Access-Control-Allow-Origin", "https://store.snapbot.app/");
+    next();
+  });
+
+  
 app.get('/test',(req, res)=>res.send('resres'))
 const helmet = require("helmet");
 const morgan = require("morgan");
