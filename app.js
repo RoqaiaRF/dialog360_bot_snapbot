@@ -7,7 +7,6 @@ var cors = require('cors');
       allowedHeaders: ["authorization", "Content-Type", 'X-Requested-With', "Origin", "Accept"], // you can change the headers
       exposedHeaders: ["authorization", 'X-Requested-With'], // you can change the headers
       origin:true,
-      credentials: true,
       methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
      // preflightContinue: false,
       
