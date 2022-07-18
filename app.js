@@ -11,6 +11,8 @@ var cors = require('cors');
       preflightContinue: false
     })
   );
+
+  
 app.get('/test',(req, res)=>res.send('resres'))
 const helmet = require("helmet");
 const morgan = require("morgan");
