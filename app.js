@@ -9,7 +9,7 @@ var cors = require('cors');
       Host :"bot.snapbot.app",
       Origin:"https://store.snapbot.app",
       methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-      preflightContinue: false,
+      preflightContinue: true,
       
     })
 
