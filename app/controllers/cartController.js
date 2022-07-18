@@ -7,12 +7,14 @@ const { setUserVars, getUserVars } = require("../../database/redis");
 const REDIS_URL = process.env.REDIS_URL;
 const client = new Redis(REDIS_URL);
 
-//^ DONE!
+const ShortUniqueId = require('short-unique-id');
+const uid = new ShortUniqueId({ length: 10 });
+
 // helper to add new item to items array
 const addItem = async (arr, item, sender, cart) => {
   // item doesn't exist in cart so add it
   const foundedIndex = arr.findIndex((ele) => ele.id == item.id);
-  if (foundedIndex == -1) {
+  if (foundedIndex == -1) { 
     arr.push(item); // ضيفها بكل
     return true;
   } else {
@@ -99,6 +101,7 @@ console.log(sender);
     pickup_policy: pickup_Policy,
     payment_Policy: payment_Policy,
     items: [],
+    uuid: uid()
   };
   await setUserVars(receiver_id, sender, "cart", JSON.stringify(obj));
   return cart;
