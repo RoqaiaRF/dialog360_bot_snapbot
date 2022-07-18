@@ -10,7 +10,7 @@ var cors = require('cors');
       methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
       preflightContinue: false
     })
-    res.header("Access-Control-Allow-Origin", "https://store.snapbot.app/");
+    res.header("Access-Control-Allow-Origin", "*");
     next();
   });
 
