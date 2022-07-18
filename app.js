@@ -1,25 +1,32 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const app =express();
-var cors = require('cors');
-  app.use(function(req, res, next) {
-    // cors({
-    //   allowedHeaders: ["authorization", "Content-Type", 'X-Requested-With', "Origin", "Accept"], // you can change the headers
-    //   exposedHeaders: ["authorization", 'X-Requested-With'], // you can change the headers
-    //   Host :"bot.snapbot.app",
-    //   Origin:"https://store.snapbot.app",
-    //   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    //   preflightContinue: true,
+//var cors = require('cors');
+  app.use(
+  //   function(req, res, next) {
+  //   cors({
+  //     allowedHeaders: ["authorization", "Content-Type", 'X-Requested-With', "Origin", "Accept"], // you can change the headers
+  //     exposedHeaders: ["authorization", 'X-Requested-With'], // you can change the headers
+  //     Host :"bot.snapbot.app",
+  //     Origin:"https://store.snapbot.app",
+  //     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  //     preflightContinue: true,
       
-    // })
-   cors({
-      credentials: true,
-      preflightContinue: true,
-      methods: ['GET', 'POST', 'PUT', 'PATCH' , 'DELETE', 'OPTIONS'],
-      origin: true
-  })
+  //   })
+  function (req, res, next) {
+    // CORS headers
+    res.header("Access-Control-Allow-Origin", "https://store.snapbot.app"); // restrict it to the required domain
+    res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
+    // Set custom headers for CORS
+    res.header("Access-Control-Allow-Headers", "Content-type,Accept,X-Custom-Header");
 
-  });
+    if (req.method === "OPTIONS") {
+        return res.status(200).end();
+    }
+
+    return next();
+
+   });
 
   
 app.get('/test',(req, res)=>res.send('resres'))
