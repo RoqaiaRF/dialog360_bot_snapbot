@@ -3,15 +3,21 @@ const bodyParser = require("body-parser");
 const app =express();
 var cors = require('cors');
   app.use(function(req, res, next) {
-    cors({
-      allowedHeaders: ["authorization", "Content-Type", 'X-Requested-With', "Origin", "Accept"], // you can change the headers
-      exposedHeaders: ["authorization", 'X-Requested-With'], // you can change the headers
-      Host :"bot.snapbot.app",
-      Origin:"https://store.snapbot.app",
-      methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-      preflightContinue: true,
+    // cors({
+    //   allowedHeaders: ["authorization", "Content-Type", 'X-Requested-With', "Origin", "Accept"], // you can change the headers
+    //   exposedHeaders: ["authorization", 'X-Requested-With'], // you can change the headers
+    //   Host :"bot.snapbot.app",
+    //   Origin:"https://store.snapbot.app",
+    //   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    //   preflightContinue: true,
       
-    })
+    // })
+   cors({
+      credentials: true,
+      preflightContinue: true,
+      methods: ['GET', 'POST', 'PUT', 'PATCH' , 'DELETE', 'OPTIONS'],
+      origin: true
+  })
 
   });
 
