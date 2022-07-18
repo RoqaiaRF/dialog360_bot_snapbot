@@ -6,10 +6,10 @@ var cors = require('cors');
     cors({
       allowedHeaders: ["authorization", "Content-Type", 'X-Requested-With', "Origin", "Accept"], // you can change the headers
       exposedHeaders: ["authorization", 'X-Requested-With'], // you can change the headers
-      origin: "https://store.snapbot.app",
-      host: "https://bot.snapbot.app",
+      origin:true,
+      credentials: true,
       methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-      preflightContinue: false,
+     // preflightContinue: false,
       
     })
 
