@@ -7,8 +7,8 @@ const Messages = require("../../models/Messages")(db.sequelize, db.Sequelize);
 
 const findConversations = async (req, res) => {
   const { store } = req;
-  const { page = 1 } = req.params;
-  const { per_page = 12 } = req.params;
+  const { page = 1 } = req.query;
+  const { per_page = 12 } = req.query;
   const { phone } = store;
   const offset = (page - 1) * per_page;
   const limit = per_page;
@@ -16,11 +16,11 @@ const findConversations = async (req, res) => {
     where: { number_store: phone },
     include: {
       model: Messages,
-      limit: 50,
-      offset: 0,
-      order: ["createdAt"],
+      limit,
+      offset,
+      order: [['createdAt', 'DESC']],
     },
-    order: ["createdAt"],
+    order: [['createdAt', 'DESC']],
   });
   if (data.length == 0) return res.status(204).json({ msg: "success", data });
   return res.status(200).json({
@@ -34,12 +34,13 @@ const findConversations = async (req, res) => {
 
 const findMessages = async (req, res) => {
   const { store } = req;
-  const { page = 1 } = req.params;
-  const { per_page = 30 } = req.params;
+  const { page=1 } = req.query;
+  const { per_page=30} = req.query;
   const { id } = req.params;
   const { phone } = store;
   const offset = (page - 1) * per_page;
   const limit = per_page;
+
   const[conversation, count] = await Promise.all([Conversations.findOne({
     where: {
       id,
@@ -49,10 +50,10 @@ const findMessages = async (req, res) => {
       model: Messages,
       limit,
       offset,
-      order: ["createdAt"],
+      order: [['createdAt', 'DESC']],
     },
 
-    order: ["createdAt"],
+    order: [['createdAt', 'DESC']],
   }),
   Messages.count({where:{conversation_id:id}})]
   )
