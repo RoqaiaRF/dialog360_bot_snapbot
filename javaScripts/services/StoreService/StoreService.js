@@ -107,9 +107,15 @@ const showPurchases = async (receiver_id, sender, translation, language) => {
     } else {
       purchase = element.name_ar;
     }
+    let qty;
+    if(isOrder === true){
+      qty = element.qty;
+    }else{
+      qty = 1;
+    }
     msg += ` *${index + 1}* . ${purchase},  ${quantity},  ${
       translation.price
-    }  ${(element.price * element.qty).toFixed(2)} ${translation.the_currency}
+    }  ${(element.price * qty).toFixed(2)} ${translation.the_currency}
         ${addedFeatures}
      `;
   });
