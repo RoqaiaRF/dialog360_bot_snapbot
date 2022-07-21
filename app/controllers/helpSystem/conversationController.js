@@ -20,7 +20,7 @@ const findConversations = async (req, res) => {
       offset,
       order: [['createdAt', 'DESC']],
     },
-    order: [['createdAt', 'DESC']],
+    order: [['updatedAt', 'DESC']],
   });
   if (data.length == 0) return res.status(204).json({ msg: "success", data });
   return res.status(200).json({
