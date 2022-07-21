@@ -14,13 +14,11 @@ const findConversations = async (req, res) => {
   const limit = per_page;
   const data = await Conversations.findAll({
     where: { number_store: phone },
-    include: {
-      model: Messages,
-      limit,
-      offset,
-      order: [['createdAt', 'DESC']],
-    },
-    order: [['updatedAt', 'DESC']],
+    include: 
+      Messages,
+    
+    order: [[Messages, 'createdAt', 'DESC']],
+    subQuery:false
   });
   if (data.length == 0) return res.status(204).json({ msg: "success", data });
   return res.status(200).json({
