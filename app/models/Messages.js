@@ -1,3 +1,4 @@
+const Conversations = require("../models/Conversations");
 
 module.exports = (sequelize, Sequelize) => {
     const Messages = sequelize.define(
@@ -15,6 +16,9 @@ module.exports = (sequelize, Sequelize) => {
         read_at: {
           type: Sequelize.DATE,
         },
+        is_read:{
+          type:Sequelize.BOOLEAN
+        },
         createdAt: {
           field: 'created_at',
           type: Sequelize.DATE,
@@ -30,7 +34,6 @@ module.exports = (sequelize, Sequelize) => {
   
       }
     );
- 
-    
+
     return Messages;
   };

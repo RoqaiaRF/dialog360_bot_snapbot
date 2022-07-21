@@ -8,7 +8,7 @@ const authorizeToken = async (req, res, next) => {
   console.log(bearerToken);
   console.log(token)
   console.log(token_id);
-  if (!bearerToken) return res.status(403).json({ msg: "invalid token" });
+  if (!bearerToken) return res.status(401).json({ msg: "invalid token" });
   const authObject = await Tokens.findOne({
     where: {
       token_id,
@@ -18,7 +18,7 @@ const authorizeToken = async (req, res, next) => {
     },
   });
   if (!authObject || !authObject.store)
-    return res.status(403).json({ msg: "invalid token" });
+    return res.status(401).json({ msg: "invalid token" });
   req.store = authObject.store
   next();
 };

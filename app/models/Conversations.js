@@ -36,5 +36,9 @@ module.exports = (sequelize, Sequelize) => {
     foreignKey: "conversation_id",
     targetKey: "id",
   });
+  MessageModel.belongsTo(Conversations, {
+    foreignKey: "conversation_id",
+    targetKey: "id",
+  });
   return Conversations;
 };
