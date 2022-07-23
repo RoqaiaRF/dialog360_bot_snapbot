@@ -101,6 +101,12 @@ const findMessages = async (req, res) => {
       order: [["createdAt", "DESC"]],
     }),
     Messages.count({ where: { conversation_id: id } }),
+    await Messages.update(
+      { is_read: true },
+      {
+        where: { conversation_id: id },
+      }
+    )
   ]);
   const last_page = Math.ceil(count / per_page);
   if (!conversation)
