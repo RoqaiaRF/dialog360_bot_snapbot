@@ -17,7 +17,7 @@ const storeNewMessage = async (
   await Messages.create({
     message: contentMessage,
     conversation_id: conversation_id,
-    sender_number: receiver,
+    sender_number: sender,
   })
   .then(() => {
     result= {

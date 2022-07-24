@@ -33,7 +33,7 @@ const getConversation = async ( number_store, number_client) => {
           ],
         }
       );
-    return IdOfConversation.dataValues.id ;
+    return IdOfConversation?.dataValues?.id ;
 
 
 };
