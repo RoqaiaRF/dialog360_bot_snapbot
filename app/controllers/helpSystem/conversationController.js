@@ -143,6 +143,7 @@ const storeMessage = async (req, res) => {
     message,
     conversation_id: id,
     sender_number: phone,
+    is_read:true
   });
   return res.status(200).json({ msg: "success" });
 };
