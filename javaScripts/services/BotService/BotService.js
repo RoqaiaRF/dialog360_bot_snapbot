@@ -76,6 +76,7 @@ const processHelpMode = async ({
   message,
   phase,
   args,
+  receiver
 }) => {
   const isMessagePhaseChange = await handleHelpPhaseChange({
     sender,
@@ -83,6 +84,7 @@ const processHelpMode = async ({
     receiver_id,
     message,
     args,
+    receiver
   });
   if (isMessagePhaseChange) return;
   if (phase == HelpPhasesEnum.APPENDING)
@@ -103,6 +105,7 @@ const handleHelpPhaseChange = async ({
   receiver_id,
   message,
   args,
+  receiver
 }) => {
   const { storeAR_Name, storeEN_Name, username, storObj, translation } = args;
 
