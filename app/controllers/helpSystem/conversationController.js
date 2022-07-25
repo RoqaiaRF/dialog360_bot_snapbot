@@ -1,4 +1,5 @@
 const db = require("../../../database/connection");
+const sendMsg = require("../../../javaScripts/phases");
 const { Sequelize, sequelize } = db;
 const Conversations = require("../../models/Conversations")(
   sequelize,
@@ -48,7 +49,7 @@ const findConversations = async (req, res) => {
       unread_messages: unread_messages[conv.dataValues.id] || 0,
       lastMessage: conv.dataValues.messages[0],
     })),
-    unread_conversations
+    unread_conversations,
   });
 };
 
@@ -106,7 +107,7 @@ const findMessages = async (req, res) => {
       {
         where: { conversation_id: id },
       }
-    )
+    ),
   ]);
   const last_page = Math.ceil(count / per_page);
   if (!conversation)
@@ -143,8 +144,9 @@ const storeMessage = async (req, res) => {
     message,
     conversation_id: id,
     sender_number: phone,
-    is_read:true
+    is_read: true,
   });
+  sendMsg.customMessage(message, phone, conversation.dataValues.number_client);
   return res.status(200).json({ msg: "success" });
 };
 
