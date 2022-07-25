@@ -17,7 +17,8 @@ module.exports = (sequelize, Sequelize) => {
           type: Sequelize.DATE,
         },
         is_read:{
-          type:Sequelize.BOOLEAN
+          type:Sequelize.BOOLEAN,
+          defaultValue:false
         },
         createdAt: {
           field: 'created_at',

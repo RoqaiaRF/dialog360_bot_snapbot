@@ -20,7 +20,6 @@ const storeNewMessage = async (
     message: contentMessage,
     conversation_id: conversation_id,
     sender_number: sender,
-    is_read: false,
   })
   console.log(new_message)
   const query = db.sequelize
