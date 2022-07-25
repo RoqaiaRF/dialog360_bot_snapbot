@@ -4,10 +4,10 @@ const Conversations = require("../../models/Conversations")(
   db.Sequelize
 );
 
-
 // Search Conversation if it exists
 const isExistConversation = async (number_store, number_client) => {
   try {
+    console.log("exists conversation number", number_store);
     const res = await Conversations.findOne(
       {
         where: {
@@ -19,6 +19,7 @@ const isExistConversation = async (number_store, number_client) => {
         attributes: ["id"],
       }
     );
+    console.log("it exists");
     return res.id; // conversation_id
   } catch (error) {
     return false;
@@ -33,29 +34,17 @@ const storeConversation = async (
   userName
 ) => {
   let result;
-  await isExistConversation(sender, receiver)
-    .then((isExist) => {
-      if (isExist) {
-        result = isExist; // conversation_id of existing conversation
-      } else {
-        // Create a new Conversation
-        Conversations.upsert({
-          name: userName,
-          status: 1,
-          number_store: sender,
-          number_client: receiver,
-        }).then(function (x) {
-          result = x[0].dataValues.id; // conversation_id of created conversation
-        })
-        .catch(function (error) {
-          console.log("failed store conversation : ", error);
-        });
-      }
-    })
-    .catch(function (error) {
-      console.log("store or recover a conversation failed: ", error);
+  result = await isExistConversation(receiver, sender);
+  if (!result) {
+    const new_conv = await Conversations.upsert({
+      name: userName,
+      status: 1,
+      number_store: receiver,
+      number_client: sender,
     });
-
+    result = new_conv[0].dataValues.id;
+  }
+  console.log("the resulkt issss", result);
   return result;
 };
 

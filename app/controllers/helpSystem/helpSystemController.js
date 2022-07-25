@@ -9,8 +9,8 @@ const helpSystemController = async (
 ) => {
   // خزن المحادثة او اجلبها
   const conversation_id = await storeConversation(
-    sender,
     receiver,
+    sender,
     contentMessage,
     userName
   );

@@ -76,13 +76,12 @@ const sendMessage = async (receiver_id, sender, sender_id , userName ,store_id) 
     ""
   );
   console.log('nooow got msgs', contentMessage)
+  await storeNewMessage(receiver, sender, contentMessage, userName)
   const  conversation_id = await getIdConversation(receiver, sender);
-  if(!conversation_id)
-    await storeConversation(receiver, sender, contentMessage, userName);
+
   publishToChannel(receiver, "stores" , "message", contentMessage, sender, userName, store_id, conversation_id);
 
   // pushing to database if success
-  storeNewMessage(receiver, sender, contentMessage, userName)
 
   setUserVars(receiver_id, sender, "mode", ModeEnum.bot);
   delAllUserVars(receiver_id, sender);

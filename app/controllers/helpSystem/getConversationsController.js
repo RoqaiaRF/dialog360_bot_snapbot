@@ -19,6 +19,7 @@ const Conversations = require("../../models/Conversations")(
 
 
 const getConversation = async ( number_store, number_client) => {
+  console.log(number_store,'************')
     let IdOfConversation = await Conversations.findOne(
         {
           where: {
