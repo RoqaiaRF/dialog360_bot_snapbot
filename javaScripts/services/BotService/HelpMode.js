@@ -11,6 +11,7 @@ const { HelpPhasesEnum } = require("../../ENUMS/EHelpPhase");
 const { ModeEnum } = require("../../ENUMS/EMode");
 const sendMsg = require("../../phases");
 const storeNewMessage = require("../../../app/controllers/helpSystem/helpSystemController")
+const storeConversation = require('../../../app/controllers/helpSystem/storeConversationController')
 const getIdConversation = require("../../../app/controllers/helpSystem/getConversationsController")
 const attributes = {
   language: "ar",
@@ -76,6 +77,8 @@ const sendMessage = async (receiver_id, sender, sender_id , userName ,store_id) 
   );
   console.log('nooow got msgs', contentMessage)
   const  conversation_id = await getIdConversation(receiver, sender);
+  if(!conversation_id)
+    await storeConversation(receiver, sender, contentMessage, userName);
   publishToChannel(receiver, "stores" , "message", contentMessage, sender, userName, store_id, conversation_id);
 
   // pushing to database if success

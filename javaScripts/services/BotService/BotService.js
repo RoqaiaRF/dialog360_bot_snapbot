@@ -76,7 +76,7 @@ const processHelpMode = async ({
   message,
   phase,
   args,
-  receiver
+  receiver,
 }) => {
   const isMessagePhaseChange = await handleHelpPhaseChange({
     sender,
@@ -84,7 +84,7 @@ const processHelpMode = async ({
     receiver_id,
     message,
     args,
-    receiver
+    receiver,
   });
   if (isMessagePhaseChange) return;
   if (phase == HelpPhasesEnum.APPENDING)
@@ -105,7 +105,7 @@ const handleHelpPhaseChange = async ({
   receiver_id,
   message,
   args,
-  receiver
+  receiver,
 }) => {
   const { storeAR_Name, storeEN_Name, username, storObj, translation } = args;
 
@@ -124,7 +124,13 @@ const handleHelpPhaseChange = async ({
       });
       return true;
     case translation.send:
-      HelpModeService.sendMessage( receiver_id, sender, sender_id, args.username , args.storObj.id);
+      HelpModeService.sendMessage(
+        receiver_id,
+        sender,
+        sender_id,
+        args.username,
+        args.storObj.id
+      );
       resetSession({
         sender,
         sender_id,
@@ -280,10 +286,11 @@ const processBotMode = async ({
         break;
 
       case "1.1":
-        console.log(message)
+        console.log(message);
         if (message == translation.home_delivery) {
-          sendMsg.locationPhase(sender_id, receiver_id);
-          setUserVars(receiver, sender, "phase", "2");
+          if (!["96566991500", "96595553500"].includes(receiver)) 
+            sendMsg.locationPhase(sender_id, receiver_id);
+            setUserVars(receiver, sender, "phase", "2");
           setUserVars(receiver, sender, "pickup_Policy", false);
         } else if (message == translation.Receipt_from_the_store) {
           setUserVars(receiver, sender, "pickup_Policy", true);
@@ -416,7 +423,8 @@ const processBotMode = async ({
               longitude,
               storObj.tax,
               fees,
-              receiver            );
+              receiver
+            );
             setUserVars(receiver, sender, "phase", "3");
             sendMsg.nearestLocation(
               sender_id,
@@ -452,9 +460,7 @@ const processBotMode = async ({
 
         if (message == translation.Start_ordering) {
           const categoryObj = JSON.parse(
-            JSON.stringify(
-              await getCategories(receiver, sender, storObj.id, 1)
-            )
+            JSON.stringify(await getCategories(receiver, sender, storObj.id, 1))
           );
           setUserVars(receiver, sender, "isorder", true);
 
@@ -465,7 +471,8 @@ const processBotMode = async ({
             location3.lng,
             storObj.tax,
             fees3,
-            receiver          );
+            receiver
+          );
 
           setUserVars(receiver, sender, "phase", "4");
           sendMsg.categoryPhase(
@@ -493,9 +500,7 @@ const processBotMode = async ({
           setUserVars(receiver, sender, "phase", "3.1");
         } else if (message == translation.Start_Booking) {
           const categoryObj = JSON.parse(
-            JSON.stringify(
-              await getCategories(receiver, sender, storObj.id, 0)
-            )
+            JSON.stringify(await getCategories(receiver, sender, storObj.id, 0))
           );
           //خزن ان اليوزر اختار الحجز وليس الطلب
           setUserVars(receiver, sender, "isorder", false);
@@ -508,7 +513,8 @@ const processBotMode = async ({
             location3.lng,
             storObj.tax,
             fees3,
-            receiver          );
+            receiver
+          );
 
           setUserVars(receiver, sender, "phase", "4");
           sendMsg.categoryPhase(
@@ -593,7 +599,8 @@ const processBotMode = async ({
             lng,
             storObj.tax,
             fees,
-            receiver          );
+            receiver
+          );
 
           setUserVars(receiver, sender, "phase", "3");
         }
@@ -676,11 +683,7 @@ const processBotMode = async ({
           let categoryIndex = message - 1;
           let category = subCategories[categoryIndex];
           setUserVars(receiver, sender, "phase", "6"); // اختيار المنتجات
-          const productsObj = await getProducts(
-            receiver,
-            sender,
-            category.id
-          );
+          const productsObj = await getProducts(receiver, sender, category.id);
           sendMsg.productPhase(
             sender_id,
             await products(productsObj, language),
@@ -787,15 +790,11 @@ const processBotMode = async ({
             let productDetails_7 = JSON.parse(
               await getUserVars(receiver, sender, "productDetails")
             );
-            await cartController.addToCart(
-              receiver,
-              sender,
-              productDetails_7
-            );
-              let[newCart7Res, purchases7Res] = await Promise.all([
-                getUserVars(receiver, sender, "cart"),
-                showPurchases(receiver, sender, translation, language),
-              ]);
+            await cartController.addToCart(receiver, sender, productDetails_7);
+            let [newCart7Res, purchases7Res] = await Promise.all([
+              getUserVars(receiver, sender, "cart"),
+              showPurchases(receiver, sender, translation, language),
+            ]);
             let newCart7 = JSON.parse(newCart7Res);
             const purchases7 = purchases7Res + "";
 

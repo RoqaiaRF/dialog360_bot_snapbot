@@ -34,7 +34,6 @@ const bot = async (
   let receiver = receiver_id.replace("whatsapp:+", "");
   let sender = sender_id.replace("whatsapp:+", "");
   //TODO : Replace "JSON.parse(JSON.stringify(object))" with "StructuredClone(object)" when available
-
   // get store details
   const storObj = JSON.parse(
     JSON.stringify(await storeController.storeDetails(sender, receiver))

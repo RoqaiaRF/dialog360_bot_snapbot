@@ -115,10 +115,11 @@ const publishToChannel = (
 
   
   // Message can be either a string Sor a buffer
-  client.publish(channel, JSON.stringify(message), (error, count) => {
+  client.publish(`${channel}`, JSON.stringify(message), (error, count) => {
     if (error) {
         throw new Error(error);
     }
+    console.log(`${channel}.${type}.${store_id}`);
     console.log(`Subscribed to ${count} channel. Listening for updates on the ${channel} channel.`);
     console.log("message", message)
 });
