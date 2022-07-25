@@ -32,9 +32,8 @@ const findConversations = async (req, res) => {
     }).then((res) => res.reduce((a, v) => ({ ...a, [v.id]: v.count }), {})),
     Conversations.findAll({
       where: { number_store: phone },
-      include: Messages,
-      order: [[Messages, "createdAt", "DESC"]],
-     
+      include: {model:Messages,limit:30, offset:0, order:[['createdAt','DESC']]},
+      order:[['updatedAt','DESC']],
       subQuery: false,
     }),
   ]);
@@ -144,8 +143,13 @@ const storeMessage = async (req, res) => {
     sender_number: phone,
     is_read: true,
   });
-  console.log(conversation);
-
+const query =  sequelize.getQueryInterface().queryGenerator.updateQuery(
+    'conversations',
+    { updated_at: sequelize.literal('CURRENT_TIMESTAMP') },
+    { id },
+    { returning: false },
+)
+sequelize.query(query)
   sendMsg.customMessage(message,  
     `whatsapp:+${conversation.dataValues.number_client}`,
     `whatsapp:+${phone}`);
