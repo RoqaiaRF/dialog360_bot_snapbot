@@ -33,10 +33,8 @@ const findConversations = async (req, res) => {
     Conversations.findAll({
       where: { number_store: phone },
       include: Messages,
-
       order: [[Messages, "createdAt", "DESC"]],
-      limit,
-      offset,
+     
       subQuery: false,
     }),
   ]);
