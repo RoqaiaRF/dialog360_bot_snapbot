@@ -76,10 +76,10 @@ const sendMessage = async (receiver_id, sender, sender_id , userName ,store_id) 
     ""
   );
   console.log('nooow got msgs', contentMessage)
-  await storeNewMessage(receiver, sender, contentMessage, userName)
+  const message = await storeNewMessage(receiver, sender, contentMessage, userName)
   const  conversation_id = await getIdConversation(receiver, sender);
 
-  publishToChannel(receiver, "stores" , "message", contentMessage, sender, userName, store_id, conversation_id);
+  publishToChannel(receiver, "stores" , "message", userName, store_id,message );
 
   // pushing to database if success
 

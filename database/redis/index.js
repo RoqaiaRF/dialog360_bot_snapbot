@@ -92,23 +92,24 @@ const publishToChannel = (
   storePhoneNumber,
   channel,
   type,
-  content,
-  userPhoneNumber,
   userName, 
   store_id,
-  conversation_id
+  new_message
 ) => {
   // Publish to myChannel.
+  const {id, sender_number, conversation_id, createdAt} = new_message;
 
   const message = {
     data:{
       storePhoneNumber: storePhoneNumber,
       type: type,
-      content: content,
-      userPhoneNumber: userPhoneNumber,
+      message: new_message.message,
+      sender_number,
       userName: userName,
       store_id : store_id,
-      conversation_id: conversation_id
+      conversation_id,
+      createdAt,
+      id
     }
       
   };

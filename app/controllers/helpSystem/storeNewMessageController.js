@@ -16,24 +16,13 @@ const storeNewMessage = async (
   let result;
   // Store a new Message
   console.log(contentMessage);
-  await Messages.create({
+  const new_message =  await Messages.create({
     message: contentMessage,
     conversation_id: conversation_id,
     sender_number: sender,
     is_read: false,
   })
-    .then(async () => {
-      result = {
-        status: 200,
-        message: "message created successfully",
-      };
-    })
-    .catch((err) => {
-      result = {
-        status: 400,
-        message: "Error creating message: " + err,
-      };
-    });
+  console.log(new_message)
   const query = db.sequelize
     .getQueryInterface()
     .queryGenerator.updateQuery(
@@ -43,7 +32,7 @@ const storeNewMessage = async (
       { returning: false }
     );
   db.sequelize.query(query).then((res) => console.log("updaaaaaateedddddd"));
-  return result;
+  return new_message.dataValues;
 };
 
 module.exports = storeNewMessage;
