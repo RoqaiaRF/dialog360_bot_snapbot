@@ -354,7 +354,7 @@ const errorMsg = async (senderID, receiverID) => {
 const customMessage = async (message, senderID, receiverID) => {
   const receiver = receiverID.replace("whatsapp:+", "");
   const sender = senderID.replace("whatsapp:+", "");
-
+  console.log(senderID, receiverID);
   let language = await getUserVars(receiver, sender, "language");
   if (language == undefined) language = "ar";
 

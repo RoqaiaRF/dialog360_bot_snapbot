@@ -135,7 +135,7 @@ const storeMessage = async (req, res) => {
 
   const conversation = await Conversations.findOne({
     where: { id, number_store: phone },
-    attributes: ["id"],
+    attributes: ["id",'number_client'],
   });
   if (!conversation)
     return res.status(404).json({ msg: "not found", err: "not found" });
@@ -146,7 +146,11 @@ const storeMessage = async (req, res) => {
     sender_number: phone,
     is_read: true,
   });
-  sendMsg.customMessage(message, phone, conversation.dataValues.number_client);
+  console.log(conversation);
+
+  sendMsg.customMessage(message,  
+    `whatsapp:+${conversation.dataValues.number_client}`,
+    `whatsapp:+${phone}`);
   return res.status(200).json({ msg: "success" });
 };
 
