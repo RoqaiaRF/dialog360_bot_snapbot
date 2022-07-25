@@ -62,12 +62,12 @@ const setMessagesRead = async (req, res) => {
     if (store_conversations.length == 0)
       return res.status(403).json({ msg: "you are not authorized " });
 
-    await Messages.update(
+    /* await Messages.update(
       { is_read: true },
       {
         where: { conversation_id: id },
       }
-    );
+    ); */
   } catch (err) {
     return res.status(500).json({ msg: "unexpected error in server" });
   }
@@ -99,12 +99,12 @@ const findMessages = async (req, res) => {
       order: [["createdAt", "DESC"]],
     }),
     Messages.count({ where: { conversation_id: id } }),
-    await Messages.update(
+    /* await Messages.update(
       { is_read: true },
       {
         where: { conversation_id: id },
       }
-    ),
+    ) */,
   ]);
   const last_page = Math.ceil(count / per_page);
   if (!conversation)
@@ -123,7 +123,7 @@ const storeMessage = async (req, res) => {
   const { store } = req;
   const { phone } = store;
   const { message } = req.body;
-
+  console.log('*******************///////////////router')
   if (!message)
     return res.status(400).json({
       msg: "bad request",
@@ -137,12 +137,12 @@ const storeMessage = async (req, res) => {
   if (!conversation)
     return res.status(404).json({ msg: "not found", err: "not found" });
 
-  await Messages.create({
+   /* await Messages.create({
     message,
     conversation_id: id,
     sender_number: phone,
     is_read: true,
-  });
+  });  */
 const query =  sequelize.getQueryInterface().queryGenerator.updateQuery(
     'conversations',
     { updated_at: sequelize.literal('CURRENT_TIMESTAMP') },
