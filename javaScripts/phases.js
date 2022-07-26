@@ -42,7 +42,11 @@ const pickupPhase = async (senderID, receiverID) => {
   let language = await getUserVars(receiver, sender, "language");
   if (language == undefined) language = "ar";
 
-  await sendTextMsg(template("pickup", language, " ", senderID, receiverID), senderID, receiverID);
+  await sendTextMsg(
+    template("pickup", language, " ", senderID, receiverID),
+    senderID,
+    receiverID
+  );
   sendTextMsg(`🚙 🏪`, senderID, receiverID);
 };
 
@@ -53,21 +57,17 @@ const pickupPhase = async (senderID, receiverID) => {
 const locationPhase = async (senderID, receiverID) => {
   const receiver = receiverID.replace("whatsapp:+", "");
   const sender = senderID.replace("whatsapp:+", "");
-
   let language = await getUserVars(receiver, sender, "language");
   if (language == undefined) language = "ar";
 
   const translation = require(`../locales/${language}`);
-   sendMedia(
-    `  ${translation.submit_your_location}`, senderID, 
+  sendMedia(
+    `  ${translation.submit_your_location}`,
+    senderID,
     "https://www.mybasis.com/wp-content/uploads/2020/05/location-sharing.jpg",
     receiverID
   );
-
 };
-
-
-
 
 const nearestLocation = async (senderID, branchObj, storObj, receiverID) => {
   const receiver = receiverID.replace("whatsapp:+", "");
@@ -97,7 +97,13 @@ const nearestLocation = async (senderID, branchObj, storObj, receiverID) => {
     );
   } else if (_isReservation_Pay === "Orders_Reservation_together") {
     sendTextMsg(
-      template("orders_reservation_together", language, storeName, senderID, receiverID),
+      template(
+        "orders_reservation_together",
+        language,
+        storeName,
+        senderID,
+        receiverID
+      ),
       senderID,
       receiverID
     );
@@ -202,7 +208,11 @@ const addedDetails = async (senderID, receiverID) => {
   if (language == undefined) language = "ar";
 
   const translation = require(`../locales/${language}`);
-  sendTextMsg(template("added_details", language, senderID, receiverID ), senderID, receiverID);
+  sendTextMsg(
+    template("added_details", language, senderID, receiverID),
+    senderID,
+    receiverID
+  );
 };
 
 const featuresPhase = async (senderID, features, receiverID) => {
@@ -259,14 +269,14 @@ const showProduct = async (senderID, product, receiverID) => {
       receiverID
     );
   } else {
-   await sendTextMsg(
+    await sendTextMsg(
       ` ${message}
   ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
   ${translation.return_to_the_previous_stage}
   ${translation.To_return_to_the_main}`,
       senderID,
       receiverID
-    )
+    );
   }
   sendTextMsg(
     template("product_details", language, "👇", senderID, receiverID),
@@ -306,22 +316,25 @@ const showCart = async (
   const isOrder = JSON.parse(await getUserVars(receiver, sender, "isorder"));
 
   if (isOrder === true) {
-    paymentLink = `http://pay.snapbot.app/${receiver}/orders/${sender}`; 
+    paymentLink = `http://pay.snapbot.app/${receiver}/orders/${sender}`;
   } else if (isOrder === false) {
     paymentLink = `http://pay.snapbot.app/${receiver}/reservations/${sender}`;
   } else {
     paymentLink = translation.error_approved_payment;
   }
-  let sum_without_tax = "", _tax= "";
+  let sum_without_tax = "",
+    _tax = "";
   if (tax != 0) {
-    sum_without_tax =` 
-    ${translation.sum_without_tax} ${price.toFixed(2)} ${translation.the_currency}
-    `
+    sum_without_tax = ` 
+    ${translation.sum_without_tax} ${price.toFixed(2)} ${
+      translation.the_currency
+    }
+    `;
     _tax = `${translation.Tax} ${tax.toFixed(2)} ${translation.the_currency}
     `;
   }
 
-const msg = `
+  const msg = `
 ${purchases}
 ${sum_without_tax} ${_tax}
 ${translation.Delivery_Charge} ${fees} ${translation.the_currency}
@@ -330,7 +343,6 @@ ${translation.total_summation} ${total.toFixed(2)} ${translation.the_currency}
 
 ${translation.link_approved_order} 
 ${paymentLink}`;
-
 
   await sendTextMsg(`${msg}`, senderID, receiverID);
   sendTextMsg(
@@ -379,4 +391,3 @@ module.exports = {
   pickupPhase,
   addedDetails,
 };
-

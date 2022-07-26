@@ -21,6 +21,8 @@ const { StoreService } = require("../StoreService/StoreService");
 const { ModeEnum } = require("../../ENUMS/EMode");
 const { HelpPhasesEnum } = require("../../ENUMS/EHelpPhase");
 const { HelpModeService, attributes } = require("./HelpMode");
+const template = require("../../../locales/templates");
+const sendTextMsg = require("../../sendMsgFunctions");
 
 const {
   showFeatures,
@@ -255,42 +257,83 @@ const processBotMode = async ({
         break;
 
       case "1":
-        if (message === translation.Arabic) {
-          setUserVars(receiver, sender, "language", "ar");
-          const pickup_Policy = storObj.pickup_Policy;
-
-          //  بنحكيله بدك نوصل لك لبيتك او بدك تيجي للمحل حسب اذا كان فيه باكاب او لا
-          if (pickup_Policy) {
-            sendMsg.pickupPhase(sender_id, receiver_id);
-            setUserVars(receiver, sender, "phase", "1.1");
-          } else {
-            sendMsg.locationPhase(sender_id, receiver_id);
-            setUserVars(receiver, sender, "phase", "2");
-          }
-        } else if (message === "English") {
-          setUserVars(receiver, sender, "language", "en");
-          const pickup_Policy = storObj.pickup_Policy;
-
-          //  بنحكيله بدك نوصل لك لبيتك او بدك تيجي للمحل حسب اذا كان فيه باكاب او لا
-          if (pickup_Policy) {
-            sendMsg.pickupPhase(sender_id, receiver_id);
-            setUserVars(receiver, sender, "phase", "1.1");
-          } else {
-            sendMsg.locationPhase(sender_id, receiver_id);
-            setUserVars(receiver, sender, "phase", "2");
-          }
-        } else {
-          //Send ERROR message : If the message sent is wrong
-          sendMsg.errorMsg(sender_id, receiver_id);
+        switch (message) {
+          case translation.Arabic:
+            setUserVars(receiver, sender, "language", "ar");
+            break;
+          case "English":
+            setUserVars(receiver, sender, "language", "en");
+            break;
+          default:
+            sendMsg.errorMsg(sender_id, receiver_id);
+            break;
         }
+        const pickup_Policy = storObj.pickup_Policy;
+
+        //  بنحكيله بدك نوصل لك لبيتك او بدك تيجي للمحل حسب اذا كان فيه باكاب او لا
+        if (pickup_Policy) {
+          sendMsg.pickupPhase(sender_id, receiver_id);
+          setUserVars(receiver, sender, "phase", "1.1");
+        } else {
+          console.log(receiver, "************");
+          if (["96566991500", "96595553500"].includes(receiver)) {
+            let fees = receiver =='96566991500'?0:1;
+            let {lat, lng} = storObj
+            ///////////////////////////////////////////////
+            const location2 = `{"lat":${lat},"lng":${lng} }`;
+            // store location in redis
+            setUserVars(receiver, sender, "location", `${location2}`);
+            let [nearestBranch, cityName] = await Promise.all([
+              storeController.getNearestBranch(
+                sender,
+                receiver,
+                lat,
+                lng
+              ),
+              location.getCityName(lat, lng),
+            ]);
+            let branch = JSON.parse(
+              await getUserVars(receiver, sender, "branch")
+            );
+            cart = cartController.newCart(
+              sender,
+              branch.id,
+              lat,
+              lng,
+              storObj.tax,
+              fees,
+              receiver
+            );
+            if (!nearestBranch) {
+              setUserVars(receiver, sender, "phase", "2");
+              sendMsg.customMessage(
+                translation.out_cover_error_msg,
+                sender_id,
+                receiver_id
+              );
+              sendMsg.locationPhase(sender_id, receiver_id);
+            } else {
+              sendMsg.nearestLocation(
+                sender_id,
+                nearestBranch,
+                storObj,
+                receiver_id
+              );
+              setUserVars(receiver, sender, "phase", "3");
+            }
+            break;
+          }
+          sendMsg.locationPhase(sender_id, receiver_id);
+          setUserVars(receiver, sender, "phase", "2");
+        }
+
         break;
 
       case "1.1":
         console.log(message);
         if (message == translation.home_delivery) {
-          if (!["96566991500", "96595553500"].includes(receiver)) 
-            sendMsg.locationPhase(sender_id, receiver_id);
-            setUserVars(receiver, sender, "phase", "2");
+          sendMsg.locationPhase(sender_id, receiver_id);
+          setUserVars(receiver, sender, "phase", "2");
           setUserVars(receiver, sender, "pickup_Policy", false);
         } else if (message == translation.Receipt_from_the_store) {
           setUserVars(receiver, sender, "pickup_Policy", true);
