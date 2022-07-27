@@ -229,7 +229,7 @@ const processBotMode = async ({
         } else {
           console.log(receiver, "************");
           if (["96566991500", "96595553500"].includes(receiver)) {
-            let fees = receiver == "96566991500" ? 0 : 1;
+            let fees = receiver == "96595553500" ? 0 : 1;
             let { lat, lng } = storObj;
             ///////////////////////////////////////////////
             const location2 = `{"lat":${lat},"lng":${lng} }`;
