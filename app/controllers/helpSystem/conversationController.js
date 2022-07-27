@@ -1,5 +1,6 @@
 const db = require("../../../database/connection");
 const { getUserVars } = require("../../../database/redis");
+const { ModeEnum } = require("../../../javaScripts/ENUMS/EMode");
 const sendMsg = require("../../../javaScripts/phases");
 const {
   BotEventEmitter,
@@ -110,6 +111,8 @@ const findMessages = async (req, res) => {
   const offset = (page - 1) * per_page;
   const limit = per_page;
 
+  
+
   const [conversation, count] = await Promise.all([
     Conversations.findOne({
       where: {
@@ -133,6 +136,11 @@ const findMessages = async (req, res) => {
       }
     ),
   ]);
+  const mode = await getUserVars(
+    phone.trim(),
+    conversation.dataValues.number_client.trim(),
+    "mode"
+  );
   const last_page = Math.ceil(count / per_page);
   if (!conversation)
     return res.status(404).json({ msg: "not found", err: "not found" });
@@ -142,7 +150,7 @@ const findMessages = async (req, res) => {
     current_page: page,
     per_page,
   };
-  return res.status(200).json({ msg: "success", data });
+  return res.status(200).json({ msg: "success", data:{...conversation.dataValues,online:mode==ModeEnum.help} });
 };
 
 const storeMessage = async (req, res) => {
@@ -201,7 +209,12 @@ const endConversation = async (req, res) => {
   if (conversation == null)
     return res.status(403).json({ msg: "unauthorized" });
   const sender = conversation.dataValues.number_client;
-  BotEventEmitter.emit("logout_help_mode", { storObj, sender, username, conversation_id:id });
+  BotEventEmitter.emit("logout_help_mode", {
+    storObj,
+    sender,
+    username,
+    conversation_id: id,
+  });
   return res.status(202).json({ msg: "success" });
 };
 
