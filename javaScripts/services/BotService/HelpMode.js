@@ -65,6 +65,12 @@ const changeToOverWritePhase = async ({ receiver_id, sender, sender_id }) => {
   );
 };
 
+const sendOneMessage = async ({receiver_id, sender, username ,store_id, contentMessage}) => {
+  const receiver = receiver_id.replace("whatsapp:+", "");
+  const message = await storeNewMessage(receiver, sender, contentMessage, username)
+  publishToChannel(receiver, "stores" , "message", username, store_id,message );
+};
+
 const sendMessage = async (receiver_id, sender, sender_id , userName ,store_id) => {
   const receiver = receiver_id.replace("whatsapp:+", "");
 
@@ -116,6 +122,7 @@ const HelpModeService = {
   sendMessage,
   changeToOverWritePhase,
   displayUserMessage,
+  sendOneMessage
 };
 
 module.exports = {

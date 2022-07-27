@@ -80,94 +80,46 @@ const processHelpMode = async ({
   args,
   receiver,
 }) => {
-  const isMessagePhaseChange = await handleHelpPhaseChange({
-    sender,
-    sender_id,
+  const { username, storObj } = args;
+  const { id } = storObj;
+  if (message == "0")
+   return logoutHelpMode({ sender_id, receiver_id, sender, receiver, args });
+
+  HelpModeService.sendOneMessage({
     receiver_id,
-    message,
-    args,
-    receiver,
+    sender,
+    username,
+    contentMessage: message,
+    store_id: id,
   });
-  if (isMessagePhaseChange) return;
-  if (phase == HelpPhasesEnum.APPENDING)
-    HelpModeService.appendMessage({ receiver_id, sender, sender_id, message });
-  else if (phase == HelpPhasesEnum.OVER_WRITE) {
-    HelpModeService.overWriteMessage({
-      receiver_id,
-      sender_id,
-      sender,
-      message,
-    });
-  }
-};
-
-const handleHelpPhaseChange = async ({
-  sender,
-  sender_id,
-  receiver_id,
-  message,
-  args,
-  receiver,
-}) => {
-  const { storeAR_Name, storeEN_Name, username, storObj, translation } = args;
-
-  switch (message) {
-    case "0":
-      await setUserVars(receiver, sender, "mode", ModeEnum.bot);
-      sendMsg.customMessage(translation.help_logout, sender_id, receiver_id);
-      resetSession({
-        sender,
-        sender_id,
-        receiver_id,
-        storeAR_Name,
-        storeEN_Name,
-        username,
-        storObj,
-      });
-      return true;
-    case translation.send:
-      HelpModeService.sendMessage(
-        receiver_id,
-        sender,
-        sender_id,
-        args.username,
-        args.storObj.id
-      );
-      resetSession({
-        sender,
-        sender_id,
-        receiver_id,
-        storeAR_Name,
-        storeEN_Name,
-        username,
-        storObj,
-      });
-      return true;
-    case translation["delete message"]:
-      await HelpModeService.changeToOverWritePhase({
-        receiver_id,
-        sender,
-        sender_id,
-      });
-      return true;
-    case translation["review message"]:
-      HelpModeService.displayUserMessage({
-        receiver_id,
-        sender,
-        message,
-        sender_id,
-      });
-      return true;
-    default:
-      return false;
-  }
+  return;
 };
 
 const changeBotMode = (receiver_id, sender_id, mode) => {
   setUserVars(sender_id, receiver, "mode", mode);
   setUserVars();
 };
-
+const logoutHelpMode = async ({
+  sender_id,
+  receiver_id,
+  receiver,
+  sender,
+  args,
+}) => {
+  const { storeAR_Name, storeEN_Name, username, storObj, translation } = args;
+  const { id } = storObj;
+  setUserVars(receiver, sender, "mode", ModeEnum.bot);
+  sendMsg.customMessage(translation.help_logout, sender_id, receiver_id);
+  resetSession({
+    sender,
+    sender_id,
+    receiver_id,
+    storeAR_Name,
+    storeEN_Name,
+    username,
+    storObj,
+  });
+};
 const resetSession = async ({
   sender_id,
   storeEN_Name,
@@ -179,7 +131,6 @@ const resetSession = async ({
 }) => {
   delAllUserVars(receiver_id, sender);
   setUserVars(receiver_id, sender, "phase", "1");
-
   sendMsg.welcomeLangPhase(
     sender_id,
     storeEN_Name,
@@ -204,7 +155,7 @@ const processBotMode = async ({
   const storeEN_Name = storObj.name_en; // اسم المتجر بالانجليزي
   const storeAR_Name = storObj.name_ar; // اسم المتجر في العربي
   let cityName, cart;
-
+  console.log('bot mode')
   if (message == "0" || message == translation.cancel) {
     //احذف هذه الاشياء من الريديس
     resetSession({
@@ -228,6 +179,7 @@ const processBotMode = async ({
     deleteAllKeys();
   } else if (message == "*") {
     // اذا كان هناك راسلة قديمة في الريديس احذفها حتى يرسل جديدة
+    console.log('enter help system')
     delUserVars(receiver, sender, "msg");
 
     sendMsg.customMessage(
@@ -277,19 +229,14 @@ const processBotMode = async ({
         } else {
           console.log(receiver, "************");
           if (["96566991500", "96595553500"].includes(receiver)) {
-            let fees = receiver =='96566991500'?0:1;
-            let {lat, lng} = storObj
+            let fees = receiver == "96566991500" ? 0 : 1;
+            let { lat, lng } = storObj;
             ///////////////////////////////////////////////
             const location2 = `{"lat":${lat},"lng":${lng} }`;
             // store location in redis
             setUserVars(receiver, sender, "location", `${location2}`);
             let [nearestBranch, cityName] = await Promise.all([
-              storeController.getNearestBranch(
-                sender,
-                receiver,
-                lat,
-                lng
-              ),
+              storeController.getNearestBranch(sender, receiver, lat, lng),
               location.getCityName(lat, lng),
             ]);
             let branch = JSON.parse(
@@ -1155,5 +1102,6 @@ const switchToBotMode = () => {};
 
 const BotService = {
   processMessage,
+  logoutHelpMode
 };
 module.exports = { BotService };

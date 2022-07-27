@@ -30,6 +30,7 @@ const getUserVars = async (store_phone, receiver_id, variable) => {
   const myKeyValue = await client.get(
     `${store_phone}:${receiver_id}:${variable}`
   );
+
   if (myKeyValue) {
     return myKeyValue;
   } else {
@@ -135,5 +136,6 @@ module.exports = {
   deleteAllKeys,
   appendToArray,
   getAllListElements,
-  publishToChannel
+  publishToChannel,
+  client
 };
