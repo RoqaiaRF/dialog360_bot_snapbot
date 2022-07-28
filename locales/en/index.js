@@ -15,7 +15,8 @@ const en = {
   home_delivery: "Home Delivery",
   error_in_sending: "Please choose the correct option, or send 0 to return to the main phase or send * to request help",
   Choose_a_branchs: "Choose one of the following branches: ",
-  To_return_to_the_main: " To return to the main send 0",
+  To_return_to_the_main: "*** Please use only English numbers 1,2,3 ... ,  To return to the main send 0",
+  return_to_the_main_Catigories: "To return to the selection of the main categories, send 00",
   Near_Narcos_Burger_branch:
     "Your nearest Narcos Burger branch is available to serve you now",
   Start_Booking: "Start booking",

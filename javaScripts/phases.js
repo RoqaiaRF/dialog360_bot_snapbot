@@ -26,6 +26,10 @@ const welcomeLangPhase = async (
                 😄
            للحصول على المساعدة ارسل *
            دائما للعودة للرئيسية اضغط 0 
+
+           If you need any help, send *
+           At any time to go main send 0
+
                 `,
     senderID,
     store_phone
@@ -174,7 +178,7 @@ const productPhase = async (senderID, products, receiverID) => {
   sendTextMsg(
     ` ${message} ${products}
 ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
-${translation.return_to_the_previous_stage}
+${translation.return_to_the_main_Catigories}
 ${translation.To_return_to_the_main}`,
     senderID,
     receiverID
