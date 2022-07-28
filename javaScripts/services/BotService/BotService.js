@@ -139,11 +139,6 @@ const logoutHelpMode = async ({
       if (error) {
         throw new Error(error);
       }
-      console.log(`${channel}.${type}.${store_id}`);
-      console.log(
-        `Subscribed to ${count} channel. Listening for updates on the ${channel} channel.`
-      );
-      console.log("message", message);
     }
   );
 };
