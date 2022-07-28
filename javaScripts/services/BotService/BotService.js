@@ -128,12 +128,14 @@ const logoutHelpMode = async ({
   client.publish(
     `stores`,
     JSON.stringify({
+      data:{
       type: "online",
       sender_number:sender,
       userName: username,
       store_id: id,
       conversation_id,
       data:'offline'
+      }
     }),
     (error, count) => {
       if (error) {
