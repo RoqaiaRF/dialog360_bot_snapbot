@@ -6,6 +6,8 @@ const {
   delAllUserVars,
   appendToArray,
   getAllListElements,
+  publishToChannel,
+  client,
 } = require("../../../database/redis");
 const sendMsg = require("../../phases");
 const getCategories = require("../../../app/controllers/categoryController");
@@ -23,6 +25,7 @@ const { HelpPhasesEnum } = require("../../ENUMS/EHelpPhase");
 const { HelpModeService, attributes } = require("./HelpMode");
 const template = require("../../../locales/templates");
 const sendTextMsg = require("../../sendMsgFunctions");
+const getConversation = require("../../../app/controllers/helpSystem/getConversationsController");
 
 const {
   showFeatures,
@@ -83,7 +86,7 @@ const processHelpMode = async ({
   const { username, storObj } = args;
   const { id } = storObj;
   if (message == "0")
-   return logoutHelpMode({ sender_id, receiver_id, sender, receiver, args });
+    return logoutHelpMode({ sender_id, receiver_id, sender, receiver, args });
 
   HelpModeService.sendOneMessage({
     receiver_id,
@@ -108,6 +111,8 @@ const logoutHelpMode = async ({
 }) => {
   const { storeAR_Name, storeEN_Name, username, storObj, translation } = args;
   const { id } = storObj;
+  const conversation_id = await getConversation(receiver, sender)
+  
   setUserVars(receiver, sender, "mode", ModeEnum.bot);
   sendMsg.customMessage(translation.help_logout, sender_id, receiver_id);
   resetSession({
@@ -119,6 +124,28 @@ const logoutHelpMode = async ({
     username,
     storObj,
   });
+
+  client.publish(
+    `stores`,
+    JSON.stringify({
+      type: "online",
+      sender_number:sender,
+      userName: username,
+      store_id: id,
+      conversation_id,
+      data:'offline'
+    }),
+    (error, count) => {
+      if (error) {
+        throw new Error(error);
+      }
+      console.log(`${channel}.${type}.${store_id}`);
+      console.log(
+        `Subscribed to ${count} channel. Listening for updates on the ${channel} channel.`
+      );
+      console.log("message", message);
+    }
+  );
 };
 const resetSession = async ({
   sender_id,
@@ -155,7 +182,7 @@ const processBotMode = async ({
   const storeEN_Name = storObj.name_en; // اسم المتجر بالانجليزي
   const storeAR_Name = storObj.name_ar; // اسم المتجر في العربي
   let cityName, cart;
-  console.log('bot mode')
+  console.log("bot mode");
   if (message == "0" || message == translation.cancel) {
     //احذف هذه الاشياء من الريديس
     resetSession({
@@ -179,7 +206,7 @@ const processBotMode = async ({
     deleteAllKeys();
   } else if (message == "*") {
     // اذا كان هناك راسلة قديمة في الريديس احذفها حتى يرسل جديدة
-    console.log('enter help system')
+    console.log("enter help system");
     delUserVars(receiver, sender, "msg");
 
     sendMsg.customMessage(
@@ -1102,6 +1129,6 @@ const switchToBotMode = () => {};
 
 const BotService = {
   processMessage,
-  logoutHelpMode
+  logoutHelpMode,
 };
 module.exports = { BotService };

@@ -35,7 +35,7 @@ BotEventEmitter.on(
         })();
 
     client.publish(
-      `message`,
+      `stores`,
       JSON.stringify({ type: "status", store_id: storObj.id, conversation_id }),
       (error, count) => {
         if (error) {
