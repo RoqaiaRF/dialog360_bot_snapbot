@@ -36,6 +36,7 @@ const subCategoriess = async (subCategoriesObj, language) => {
     }
     msg += `( *${index + 1}* ) ${sub_category}
    `;
+   console.log(sub_category)
   });
   return msg;
 };

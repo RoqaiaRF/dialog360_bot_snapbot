@@ -17,6 +17,7 @@ const location = require("../../../app/helpers/location");
 const {
   getProducts,
   getQuantity,
+  getOrphanProducts,
 } = require("../../../app/controllers/productController");
 
 const { StoreService } = require("../StoreService/StoreService");
@@ -111,8 +112,8 @@ const logoutHelpMode = async ({
 }) => {
   const { storeAR_Name, storeEN_Name, username, storObj, translation } = args;
   const { id } = storObj;
-  const conversation_id = await getConversation(receiver, sender)
-  
+  const conversation_id = await getConversation(receiver, sender);
+
   setUserVars(receiver, sender, "mode", ModeEnum.bot);
   sendMsg.customMessage(translation.help_logout, sender_id, receiver_id);
   resetSession({
@@ -129,11 +130,11 @@ const logoutHelpMode = async ({
     `stores`,
     JSON.stringify({
       type: "online",
-      sender_number:sender,
+      sender_number: sender,
       userName: username,
       store_id: id,
       conversation_id,
-      data:'offline'
+      data: "offline",
     }),
     (error, count) => {
       if (error) {
@@ -629,7 +630,11 @@ const processBotMode = async ({
         );
         let category = categoryObj[indexCategory];
         let length = categoryObj.length;
-
+        let orphan_products = await getOrphanProducts({
+          category_id: category.id,
+          receiver_id,
+          sender,
+        });
         if (message > length || message <= 0) {
           // send error msg
           sendMsg.errorMsg(sender_id, receiver_id);
@@ -637,12 +642,17 @@ const processBotMode = async ({
           let subCategoriesCount = category.subCategories.length;
           // اذا كان هناك منتجات فرعيه
           if (subCategoriesCount > 0) {
+            console.log("there is sub categories");
             setUserVars(receiver, sender, "phase", "5");
             sendMsg.subCategoryPhase(
               sender_id,
-              await subCategoriess(category.subCategories, language),
+              await subCategoriess(
+                category.subCategories.concat(orphan_products),
+                language
+              ),
               receiver_id
             );
+            console.log("after message has been sent");
             setUserVars(
               receiver,
               sender,
@@ -650,6 +660,7 @@ const processBotMode = async ({
               JSON.stringify(category.subCategories)
             );
           } else {
+            console.log("there is no subcategories");
             setUserVars(receiver, sender, "phase", "6"); // اختيار المنتجات
             const productsObj = await getProducts(
               receiver_id,
@@ -666,11 +677,14 @@ const processBotMode = async ({
         break;
 
       case "5": // التصنيفات الفرعية
-        let [subCategoriesRes, categoryObj5Res] = await Promise.all([
-          getUserVars(receiver, sender, "subcategories"),
-          getUserVars(receiver, sender, "cats"),
-        ]);
-
+        let [subCategoriesRes, categoryObj5Res, orphan_productsRes] =
+          await Promise.all([
+            getUserVars(receiver, sender, "subcategories"),
+            getUserVars(receiver, sender, "cats"),
+            getUserVars(receiver, sender, "orphan_products"),
+          ]);
+        if (!orphan_productsRes) orphan_productsRes = [];
+        let orphan_productsRes5 = JSON.parse(orphan_productsRes);
         let subCategories = JSON.parse(subCategoriesRes);
         // احضر التصنيفات الرئيسية
         let categoryObj5 = JSON.parse(categoryObj5Res);
@@ -690,7 +704,34 @@ const processBotMode = async ({
           );
         } else if (message > length5 || message <= 0) {
           // send error msg
-          sendMsg.errorMsg(sender_id, receiver_id);
+          if (message > orphan_productsRes.length)
+            sendMsg.errorMsg(sender_id, receiver_id);
+          else {
+            let productIndex = message - 1;
+            let product = orphan_productsRes5[productIndex - length5];
+            let [branchRes] = await Promise.all([
+              getUserVars(receiver, sender, "branch"),
+            ]);
+            let branch = JSON.parse(branchRes);
+
+            setUserVars(receiver, sender, "phase", "7"); //
+
+            product.qty = await getQuantity(branch.id, product.id);
+            console.log(orphan_productsRes);
+            await setUserVars(
+              receiver_id,
+              sender,
+              "products",
+              JSON.stringify(orphan_productsRes)
+            );
+            sendMsg.showProduct(sender_id, product, receiver_id);
+            setUserVars(
+              receiver,
+              sender,
+              "productDetails",
+              JSON.stringify(product)
+            );
+          }
         } else {
           let categoryIndex = message - 1;
           let category = subCategories[categoryIndex];
@@ -768,6 +809,7 @@ const processBotMode = async ({
           getUserVars(receiver, sender, "products"),
           getUserVars(receiver, sender, "cats"),
         ]);
+        console.log(productObj7Res)
         let productObj7 = JSON.parse(productObj7Res);
         let categoryObj7 = JSON.parse(categoryObj7Res);
         if (message === "00") {

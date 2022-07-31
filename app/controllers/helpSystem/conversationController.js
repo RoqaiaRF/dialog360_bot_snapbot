@@ -129,12 +129,6 @@ const findMessages = async (req, res) => {
       order: [["createdAt", "DESC"]],
     }),
     Messages.count({ where: { conversation_id: id } }),
-    await Messages.update(
-      { is_read: true },
-      {
-        where: { conversation_id: id },
-      }
-    ),
   ]);
   const mode = await getUserVars(
     phone.trim(),

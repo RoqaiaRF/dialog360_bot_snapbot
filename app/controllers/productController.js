@@ -2,6 +2,7 @@ const db = require("../../database/connection");
 const Products = require("../models/Products")(db.sequelize, db.Sequelize);
 const Quantity = require("../models/Quantity")(db.sequelize, db.Sequelize);
 const redis = require("../../database/redis");
+const Category = require("../models/Category")(db.sequelize, db.Sequelize);
 
 // Products has Many features
 Products.hasMany(Products, {
@@ -15,8 +16,47 @@ Products.belongsTo(Products, {
   foreignKey: "parent_id",
   targetKey: "id",
 });
+Products.belongsTo(Category, {
+  foreignKey: "category_id",
+  targetKey: "id",
+});
 
 // function get Products & features
+
+const getOrphanProducts = async ({ category_id, receiver_id, sender }) => {
+  const products_redis = await redis.getUserVars(
+    receiver_id,
+    sender,
+    "products"
+  );
+  if (products_redis) return JSON.parse(products_redis);
+  const proudcts_list = await Products.findAll({
+    where: {
+      "$category.parent_id$": null,
+      category_id,
+    },
+    include: [
+      {
+        model: Category,
+      },
+      {
+        model: Products,
+        as: "features",
+        include: {
+          model: Products,
+          as: "parent",
+        },
+      },
+    ],
+  });
+  await redis.setUserVars(
+    receiver_id,
+    sender,
+    "orphan_products",
+    JSON.stringify(proudcts_list)
+  );
+  return proudcts_list.map((elm) => elm.dataValues);
+};
 
 const getProducts = async (receiver_id, sender, category_id) => {
   const products_list = await redis.getUserVars(
@@ -77,4 +117,4 @@ const getQuantity = async (store_id, product_id) => {
     return null;
   }
 };
-module.exports = { getProducts, getQuantity };
+module.exports = { getProducts, getOrphanProducts, getQuantity };
