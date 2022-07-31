@@ -846,24 +846,14 @@ const processBotMode = async ({
             let productDetails_7 = JSON.parse(
               await getUserVars(receiver, sender, "productDetails")
             );
-            await cartController.addToCart(receiver, sender, productDetails_7);
             let [newCart7Res, purchases7Res] = await Promise.all([
               getUserVars(receiver, sender, "cart"),
               showPurchases(receiver, sender, translation, language),
             ]);
             let newCart7 = JSON.parse(newCart7Res);
             const purchases7 = purchases7Res + "";
+            sendProductFeatures({productDetails:productDetails_7, sender, sender_id, receiver , receiver_id, message:1})
 
-            setUserVars(receiver, sender, "phase", "9");
-            sendMsg.showCart(
-              sender_id,
-              purchases7,
-              newCart7.price,
-              newCart7.tax,
-              newCart7.total,
-              newCart7.fees, // رسوم التوصيل
-              receiver_id
-            );
           }
         } else {
           sendMsg.errorMsg(sender_id, receiver_id);
@@ -941,22 +931,13 @@ const processBotMode = async ({
             receiver_id
           );
         } else {
+          productDetails.qty = parseInt(message);
           if (productDetails.features.length > 0) {
+            
             // اضافة الكمية التي اختارها المستخدم لمعلومات المنتج
-            productDetails.qty = parseInt(message);
-            // productDetails.features = [];
-            setUserVars(
-              receiver,
-              sender,
-              "quantity",
-              JSON.stringify(parseInt(message))
-            );
-            // await cartController.addToCart(sender, productDetails);
-
-            sendMsg.addedDetails(sender_id, receiver_id);
-            setUserVars(receiver, sender, "phase", "8.1");
+            console.log('debug point ')
+            sendProductFeatures({productDetails, sender, sender_id, receiver , receiver_id, message})
           } else {
-            productDetails.qty = parseInt(message);
             await cartController.addToCart(receiver, sender, productDetails);
             const [newCart8Res, purchases8Res] = await Promise.all([
               getUserVars(receiver, sender, "cart"),
@@ -1017,6 +998,7 @@ const processBotMode = async ({
             setUserVars(receiver, sender, "phase", "7");
           }
         } else if (message == translation.no) {
+          console.log('no features please');
           // show cart details
           let [productDetails8_1Res, quantity8_1Res] = await Promise.all([
             getUserVars(receiver, sender, "productDetails"),
@@ -1025,12 +1007,12 @@ const processBotMode = async ({
 
           let productDetails8_1 = JSON.parse(productDetails8_1Res);
           const quantity8_1 = parseInt(quantity8_1Res);
-
           productDetails8_1.features = [];
           productDetails8_1.qty = quantity8_1;
+          console.log(productDetails8_1)
 
           await cartController.addToCart(
-            receiver_id,
+            receiver,
             sender,
             productDetails8_1
           );
@@ -1043,6 +1025,7 @@ const processBotMode = async ({
           const purchases8_1 = purchases8_1Res + "";
 
           setUserVars(receiver, sender, "phase", "9");
+          console.log(newCart8_1)
           sendMsg.showCart(
             sender_id,
             purchases8_1,
@@ -1165,6 +1148,21 @@ ${purchases9} `,
 const switchToHelpMode = () => {};
 
 const switchToBotMode = () => {};
+
+const sendProductFeatures=({productDetails, receiver, sender, message, sender_id, receiver_id})=>{
+  productDetails.qty = parseInt(message);
+            // productDetails.features = [];
+            setUserVars(
+              receiver,
+              sender,
+              "quantity",
+              JSON.stringify(parseInt(message))
+            );
+            // await cartController.addToCart(sender, productDetails);
+
+            sendMsg.addedDetails(sender_id, receiver_id);
+            setUserVars(receiver, sender, "phase", "8.1");
+}
 
 const BotService = {
   processMessage,

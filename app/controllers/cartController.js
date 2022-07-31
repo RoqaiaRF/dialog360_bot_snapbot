@@ -155,7 +155,7 @@ const addToCart = async (receiver_id, sender, item) => {
 const addFeatureToCart = async (receiver_id, sender, item, feature) => {
   item.features = [feature];
   item.price = (parseFloat(item.price) + feature.price).toFixed(2);
-  const quantity = parseInt(await getUserVars(receiver_id, sender, "quantity"));
+  let quantity = parseInt(await getUserVars(receiver_id, sender, "quantity"));
 
   const isOrder = JSON.parse(await getUserVars(receiver_id, sender, "isorder"));
 
