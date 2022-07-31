@@ -1,9 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const ConversationRouter = require('./conversationRouter')
+const ConversationRouter = require("./conversationRouter");
 
 const bot = require("../javaScripts/bot");
-const { authorizeToken } = require("../middlewares/authorization");
+const {
+  authorizeToken,
+  checkAuthentication,
+} = require("../middlewares/authorization");
 
 router.post("/", function (req, res, next) {
   if (!req.body) {
@@ -22,8 +25,8 @@ router.post("/", function (req, res, next) {
   console.log("Receiver INDEX_ROUTER :  " + receiver_id);
   console.log("sender INDEX_ROUTER :  " + sender_ID);
   bot(sender_ID, receiver_id, message, longitude, latitude, username);
-
 });
 
-router.use('/conversation', authorizeToken, ConversationRouter)
+router.use("/conversation", authorizeToken, ConversationRouter);
+router.post("/authorize/:id", authorizeToken, checkAuthentication);
 module.exports = router;
