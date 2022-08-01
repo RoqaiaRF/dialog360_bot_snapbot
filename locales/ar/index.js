@@ -79,7 +79,9 @@ const ar = {
   'delete message':'حذف الرسالة',
   write_another_message:'يُرجى كتابة رسالة جديدة',
   message_sent:'لقد تم إرسال الرسالة بنجاح وجاري الخروج من نظام المساعدة ... ',
-  help_logout:'جاري الخروج من نظام المساعدة'
+  help_logout:'تم الخروج من نظام المساعدة, شكرًا على اتصالك, للرجوع للبوت اضغط 0',
+  cart_empty:'السلة فارغة',
+  no_items_to_remove:'لا يوجد منتجات لحذفها'
 };
 
 module.exports = ar;

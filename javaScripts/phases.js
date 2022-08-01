@@ -310,11 +310,20 @@ const showCart = async (
 ) => {
   const receiver = receiverID.replace("whatsapp:+", "");
   const sender = senderID.replace("whatsapp:+", "");
-
+  
   let language = await getUserVars(receiver, sender, "language");
   if (language == undefined) language = "ar";
-
   const translation = require(`../locales/${language}`);
+
+  if(!purchases){
+    await sendTextMsg(translation.empty_cart, senderID, receiverID);
+    sendTextMsg(
+      template("cartdetails", language, " ", senderID, receiverID), // يمكنك اضافة اي string  بدل ":"
+      senderID,
+      receiverID
+    );
+    return ;
+  }
   let paymentLink = "";
 
   const isOrder = JSON.parse(await getUserVars(receiver, sender, "isorder"));

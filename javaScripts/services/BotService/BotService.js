@@ -884,7 +884,7 @@ const processBotMode = async ({
                 purchases7,
                 newCart7.price,
                 newCart7.tax,
-                newCart7.total,
+                newCart7.total, 
                 newCart7.fees, // رسوم التوصيل
                 receiver_id
               );
@@ -1087,6 +1087,15 @@ const processBotMode = async ({
         if (message === translation.payment) {
           // عرض السلة كاملة مع رابط للدفع
         } else if (message === translation.select_to_delete) {
+          if(!purchases9){
+            await sendTextMsg(translation.no_items_to_remove, sender_id, receiver_id);
+            sendTextMsg(
+              template("cartdetails", language, " ", sender_id, receiver_id), // يمكنك اضافة اي string  بدل ":"
+              sender_id,
+              receiver_id
+            );
+            return;
+          }
           sendMsg.customMessage(
             `${translation.select_number_product_to_delete} 
 ${purchases9} `,
