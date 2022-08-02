@@ -7,14 +7,14 @@ const { setUserVars, getUserVars } = require("../../database/redis");
 const REDIS_URL = process.env.REDIS_URL;
 const client = new Redis(REDIS_URL);
 
-const ShortUniqueId = require('short-unique-id');
+const ShortUniqueId = require("short-unique-id");
 const uid = new ShortUniqueId({ length: 10 });
 
 // helper to add new item to items array
 const addItem = async (arr, item, sender, cart) => {
   // item doesn't exist in cart so add it
   const foundedIndex = arr.findIndex((ele) => ele.id == item.id);
-  if (foundedIndex == -1) { 
+  if (foundedIndex == -1) {
     arr.push(item); // ضيفها بكل
     return true;
   } else {
@@ -76,14 +76,16 @@ const newCart = async (
   const storObj = JSON.parse(
     await client.get(`${receiver_id}:${sender}:store`)
   );
-console.log(receiver_id);
-console.log(sender);
+  console.log(receiver_id);
+  console.log(sender);
   const payment_Policy = payment_PolicyController(storObj);
 
   const pickup_Policy = JSON.parse(
     await client.get(`${receiver_id}:${sender}:pickup_Policy`)
   );
-  if (pickup_Policy){fees = 0}
+  if (pickup_Policy) {
+    fees = 0;
+  }
 
   let cart = await client.get(`${receiver_id}:${sender}:cart`);
   if (cart) return false;
@@ -101,7 +103,7 @@ console.log(sender);
     pickup_policy: pickup_Policy,
     payment_Policy: payment_Policy,
     items: [],
-    uuid: uid()
+    uuid: uid(),
   };
   await setUserVars(receiver_id, sender, "cart", JSON.stringify(obj));
   return cart;
@@ -117,7 +119,7 @@ console.log(sender);
 const addToCart = async (receiver_id, sender, item) => {
   const isOrder = JSON.parse(await getUserVars(receiver_id, sender, "isorder"));
   const cart = JSON.parse(await client.get(`${receiver_id}:${sender}:cart`));
-
+  if (cart.items.find((elm) => elm.uuid == item.uuid)) return false;
   if (cart) {
     const pickup_Policy1 = JSON.parse(
       await client.get(`${receiver_id}:${sender}:pickup_Policy`)
@@ -153,7 +155,9 @@ const addToCart = async (receiver_id, sender, item) => {
 
 /*-------- Add Feature to Cart ----------------*/
 const addFeatureToCart = async (receiver_id, sender, item, feature) => {
-  item.features = [feature];
+  console.log(feature);
+  //console.log(item);
+  item.features.push(feature);
   item.price = (parseFloat(item.price) + feature.price).toFixed(2);
   let quantity = parseInt(await getUserVars(receiver_id, sender, "quantity"));
 
@@ -166,7 +170,8 @@ const addFeatureToCart = async (receiver_id, sender, item, feature) => {
 
   item.qty = quantity;
 
-  await addToCart(receiver_id, sender, item);
+  await updateItemFromCartOrCreate({ receiver_id, sender_id: sender, item });
+  return item;
 };
 // Remove item from Cart
 /**
@@ -204,5 +209,25 @@ const removeFromCart = async (receiver_id, sender, item, productCartIndex) => {
   } else {
     return false;
   }
+};
+
+const updateItemFromCartOrCreate = async ({ receiver_id, sender_id, item }) => {
+  const cartRes = await getUserVars(receiver_id, sender_id, "cart");
+  let cartData = await JSON.parse(cartRes);
+  let old_item =cartData.items.find((elm) => elm.uuid == item.uuid)
+  if(cartData.total==null)
+  cartData.total = 0;
+  if (old_item){
+
+    cartData.items = cartData.items.map((elm) =>
+      elm.uuid == item.uuid ? item : elm
+    );
+    cartData.total = cartData.total+parseFloat(item.price-old_item.price); 
+  }
+  else {
+    cartData.items.push(item);
+    cartData.total+= parseFloat(item.price)
+  }
+  setUserVars(receiver_id, sender_id, "cart", await JSON.stringify(cartData));
 };
 module.exports = { removeFromCart, newCart, addToCart, addFeatureToCart };

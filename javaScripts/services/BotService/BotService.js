@@ -1,3 +1,4 @@
+const { v4: uuidv4 } = require("uuid");
 const {
   setUserVars,
   getUserVars,
@@ -796,6 +797,9 @@ const processBotMode = async ({
           let product6 = productObj6[productIndex6];
 
           product6.qty = await getQuantity(branch.id, product6.id);
+          product6.uuid = await uuidv4();
+          product6.allFeatures = product6.features;
+          product6.features = [];
           sendMsg.showProduct(sender_id, product6, receiver_id);
           setUserVars(
             receiver,
@@ -811,7 +815,6 @@ const processBotMode = async ({
           getUserVars(receiver, sender, "products"),
           getUserVars(receiver, sender, "cats"),
         ]);
-        console.log(productObj7Res);
         let productObj7 = JSON.parse(productObj7Res);
         let categoryObj7 = JSON.parse(categoryObj7Res);
         if (message === "00") {
@@ -852,7 +855,7 @@ const processBotMode = async ({
             ]);
             let newCart7 = JSON.parse(newCart7Res);
             const purchases7 = purchases7Res + "";
-            if (productDetails_7?.features?.length > 0)
+            if (productDetails_7?.allFeatures?.length > 0)
               sendProductFeatures({
                 productDetails: productDetails_7,
                 sender,
@@ -884,7 +887,7 @@ const processBotMode = async ({
                 purchases7,
                 newCart7.price,
                 newCart7.tax,
-                newCart7.total, 
+                newCart7.total,
                 newCart7.fees, // رسوم التوصيل
                 receiver_id
               );
@@ -901,7 +904,7 @@ const processBotMode = async ({
           getUserVars(receiver, sender, "cart"),
         ]);
         let productDetails_7_1 = JSON.parse(productDetails_7_1Res);
-        const featuresCount = productDetails_7_1.features.length;
+        const featuresCount = productDetails_7_1.allFeatures.length;
 
         if (isNaN(message) === true) {
           sendMsg.errorMsg(sender_id, receiver_id);
@@ -920,13 +923,14 @@ const processBotMode = async ({
           const featureIndex = message - 1;
           const selectedFeature = features[featureIndex];
           // add selected feature to the cart list
-
-          await cartController.addFeatureToCart(
+          let new_productDetails = await cartController.addFeatureToCart(
             receiver,
             sender,
             productDetails_7_1,
             selectedFeature
           );
+          console.log(new_productDetails)
+          setUserVars(receiver, sender, "productDetails", await JSON.stringify(new_productDetails));
           const [newCart7_1Res, purchases7_1] = await Promise.all([
             getUserVars(receiver, sender, "cart"),
             showPurchases(receiver, sender, translation, language),
@@ -934,16 +938,15 @@ const processBotMode = async ({
           const newCart7_1 = await JSON.parse(newCart7_1Res);
 
           //عرض السلة بعد اضافة الخدمات الاضافية
-          sendMsg.showCart(
+          sendProductFeatures({
+            productDetails: productDetails_7_1,
+            sender,
             sender_id,
-            purchases7_1,
-            newCart7_1.price,
-            newCart7_1.tax,
-            newCart7_1.total,
-            newCart7_1.fees, // رسوم التوصيل
-            receiver_id
-          );
-          setUserVars(receiver, sender, "phase", "9");
+            receiver,
+            receiver_id,
+            message: productDetails_7_1.qty,
+          });
+          setUserVars(receiver, sender, "phase", "8.1");
         }
         break;
 
@@ -967,7 +970,7 @@ const processBotMode = async ({
           );
         } else {
           productDetails.qty = parseInt(message);
-          if (productDetails.features.length > 0) {
+          if (productDetails.allFeatures.length > 0) {
             // اضافة الكمية التي اختارها المستخدم لمعلومات المنتج
             console.log("debug point ");
             sendProductFeatures({
@@ -1013,12 +1016,11 @@ const processBotMode = async ({
 
           let productDetails = JSON.parse(productDetailsRes);
           const features = showFeatures(
-            productDetails.features,
+            productDetails.allFeatures,
             translation,
             language
           );
-          const featuresCount7 = productDetails.features.length;
-
+          const featuresCount7 = productDetails.allFeatures.length;
           if (featuresCount7 > 0) {
             sendMsg.featuresPhase(sender_id, features, receiver_id);
             setUserVars(receiver, sender, "phase", "7.1");
@@ -1026,7 +1028,7 @@ const processBotMode = async ({
               receiver,
               sender,
               "features",
-              JSON.stringify(productDetails.features)
+              JSON.stringify(productDetails.allFeatures)
             );
           } else {
             await sendMsg.customMessage(
@@ -1087,8 +1089,12 @@ const processBotMode = async ({
         if (message === translation.payment) {
           // عرض السلة كاملة مع رابط للدفع
         } else if (message === translation.select_to_delete) {
-          if(!purchases9){
-            await sendTextMsg(translation.no_items_to_remove, sender_id, receiver_id);
+          if (!purchases9) {
+            await sendTextMsg(
+              translation.no_items_to_remove,
+              sender_id,
+              receiver_id
+            );
             sendTextMsg(
               template("cartdetails", language, " ", sender_id, receiver_id), // يمكنك اضافة اي string  بدل ":"
               sender_id,
@@ -1212,6 +1218,46 @@ const sendProductFeatures = ({
   setUserVars(receiver, sender, "phase", "8.1");
 };
 
+const addFeature = async ({
+  sender_id,
+  receiver_id,
+  sender,
+  receiver,
+  translation,
+}) => {
+  let [language, productDetailsRes] = await Promise.all([
+    getUserVars(receiver, sender, "language"),
+    getUserVars(receiver, sender, "productDetails"),
+  ]);
+  if (language == undefined) language = "ar";
+  let productDetails = JSON.parse(productDetailsRes);
+  const features = showFeatures(
+    productDetails.allFeatures,
+    translation,
+    language
+  );
+  const featuresCount7 = productDetails.allFeatures.length;
+
+  if (featuresCount7 > 0) {
+    sendMsg.featuresPhase(sender_id, features, receiver_id);
+    setUserVars(receiver, sender, "phase", "7.1");
+    setUserVars(
+      receiver,
+      sender,
+      "features",
+      JSON.stringify(productDetails.features)
+    );
+  } else {
+    await sendMsg.customMessage(
+      translation.no_features_found,
+      sender_id,
+      receiver_id
+    );
+    sendMsg.showProduct(sender_id, productDetails, receiver_id);
+
+    setUserVars(receiver, sender, "phase", "7");
+  }
+};
 const BotService = {
   processMessage,
   logoutHelpMode,
