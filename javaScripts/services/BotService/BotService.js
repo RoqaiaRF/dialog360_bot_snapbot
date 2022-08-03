@@ -254,8 +254,8 @@ const processBotMode = async ({
           setUserVars(receiver, sender, "phase", "1.1");
         } else {
           console.log(receiver, "************");
-          if (["96566991500", "96595553500"].includes(receiver)) {
-            let fees = receiver == "96595553500" ? 0 : 1;
+          if (["96566991500", "96595553500", "96597623959"].includes(receiver)) {
+            let fees = receiver == "96566991500" ? 1 : 0;
             let { lat, lng } = storObj;
             ///////////////////////////////////////////////
             const location2 = `{"lat":${lat},"lng":${lng} }`;
@@ -286,13 +286,14 @@ const processBotMode = async ({
               );
               sendMsg.locationPhase(sender_id, receiver_id);
             } else {
+              console.log('befooooooooooooooooooore');
               sendMsg.nearestLocation(
                 sender_id,
                 nearestBranch,
                 storObj,
                 receiver_id
               );
-              setUserVars(receiver, sender, "phase", "3");
+              console.log('afteeeeeeeeeeeeeeeeeer');
             }
             break;
           }
@@ -1258,6 +1259,29 @@ const addFeature = async ({
     setUserVars(receiver, sender, "phase", "7");
   }
 };
+
+
+const chooseOrderReservation = async({receiverID, senderID})=>{
+  const receiver = receiverID.replace("whatsapp:+", "");
+  const sender = senderID.replace("whatsapp:+", "");
+
+  let language = await getUserVars(receiver, sender, "language");
+  if (language == undefined) language = "ar";
+
+  const translation = require(`../locales/${language}`);
+  sendTextMsg(
+    template(
+      "orders_reservation_together",
+      language,
+      storeName,
+      senderID,
+      receiverID
+    ),
+    senderID,
+    receiverID
+  );
+}
+
 const BotService = {
   processMessage,
   logoutHelpMode,

@@ -4,8 +4,14 @@ const isReservation_Pay = require("../app/controllers/isReservation_OrdersContro
 const Redis = require("ioredis");
 const template = require("../locales/templates");
 require("dotenv").config(); // env مكتبة جلب المتغيرات من ال
+const { StoreService } = require("./services/StoreService/StoreService");
 
-const { getUserVars } = require("../database/redis");
+const { categories } = StoreService;
+const { getUserVars, setUserVars } = require("../database/redis");
+const storeController = require("../app/controllers/storeController");
+const location = require("../app/helpers/location");
+const getCategories = require("../app/controllers/categoryController");
+const cartController = require("../app/controllers/cartController");
 
 // Expected Outputs: English, العربية
 //^ Phase #1 welcome and choose Language
@@ -87,18 +93,10 @@ const nearestLocation = async (senderID, branchObj, storObj, receiverID) => {
   if (language === "en") {
     storeName = branchObj.name_en;
   }
-  if (_isReservation_Pay === "onlyOrders") {
-    sendTextMsg(
-      template("onley_ordering", language, storeName, senderID, receiverID),
-      senderID,
-      receiverID
-    );
-  } else if (_isReservation_Pay === "onlyReservation") {
-    sendTextMsg(
-      template("onleyreservation", language, storeName, senderID, receiverID),
-      senderID,
-      receiverID
-    );
+  if (["onlyOrders", "onlyReservation"].includes(_isReservation_Pay)) {
+    startOrder({ sender, receiver, storObj, language, receiverID, senderID, type:_isReservation_Pay });
+    setUserVars(receiver, sender, "phase", "4");
+    console.log('after end');
   } else if (_isReservation_Pay === "Orders_Reservation_together") {
     sendTextMsg(
       template(
@@ -111,9 +109,59 @@ const nearestLocation = async (senderID, branchObj, storObj, receiverID) => {
       senderID,
       receiverID
     );
+    setUserVars(receiver, sender, "phase", "3");
   } else if (_isReservation_Pay === "error") {
     sendTextMsg(`${translation.reservation_error_msg}`, senderID, receiverID);
   }
+};
+
+const startOrder = async ({
+  receiver,
+  sender,
+  receiverID,
+  senderID,
+  storObj,
+  language,
+  type
+}) => {
+  let [location3, branch3Res] = await Promise.all([
+    getUserVars(receiver, sender, "location"),
+    getUserVars(receiver, sender, "branch"),
+  ]);
+  let branch3 = JSON.parse(branch3Res);
+  if (location3 === undefined) {
+    location3 = { lat: storObj.lat, lng: storObj.lng };
+  } else {
+    location3 = JSON.parse(location3);
+  }
+  console.log(storObj);
+  console.log('//*/**/-/*-/*-/*-/*-/*-/-*/-*/-*/*-/-*/-')
+  const cityName3 = await location.getCityName(location3.lat, location3.lng);
+  const fees3 = await storeController.getFees(branch3.id, cityName3);
+
+  const categoryObj = JSON.parse(
+    JSON.stringify(await getCategories(receiver, sender, storObj.id, 
+      type=='onlyOrders'?1:0))
+  );
+  setUserVars(receiver, sender, "isorder", true);
+
+  cart = cartController.newCart(
+    sender,
+    branch3.id,
+    location3.lat,
+    location3.lng,
+    storObj.tax,
+    fees3,
+    receiver
+  );
+    console.log(categoryObj);
+    console.log('category objjjjjjjjjjjjjj')
+  categoryPhase(
+    senderID,
+    "" + (await categories(categoryObj, language)),
+    receiverID
+  );
+  console.log('ennnnnnnnnnnnnnnnnnnnnnnnnnnnd')
 };
 
 /*----------------------------------------*/
@@ -145,7 +193,8 @@ const getAllBranchesPhase = async (senderID, branches, receiverID) => {
 const categoryPhase = async (senderID, categories, receiverID) => {
   const receiver = receiverID.replace("whatsapp:+", "");
   const sender = senderID.replace("whatsapp:+", "");
-
+  console.log(categories)
+  console.log('categoreieeeeeeeeeeeeeees')
   let language = await getUserVars(receiver, sender, "language");
   if (language == undefined) language = "ar";
 
@@ -310,19 +359,19 @@ const showCart = async (
 ) => {
   const receiver = receiverID.replace("whatsapp:+", "");
   const sender = senderID.replace("whatsapp:+", "");
-  
+
   let language = await getUserVars(receiver, sender, "language");
   if (language == undefined) language = "ar";
   const translation = require(`../locales/${language}`);
 
-  if(!purchases){
+  if (!purchases) {
     await sendTextMsg(translation.empty_cart, senderID, receiverID);
     sendTextMsg(
       template("cartdetails", language, " ", senderID, receiverID), // يمكنك اضافة اي string  بدل ":"
       senderID,
       receiverID
     );
-    return ;
+    return;
   }
   let paymentLink = "";
 
