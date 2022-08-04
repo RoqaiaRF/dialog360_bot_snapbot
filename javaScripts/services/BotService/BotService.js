@@ -250,6 +250,7 @@ const processBotMode = async ({
 
         //  بنحكيله بدك نوصل لك لبيتك او بدك تيجي للمحل حسب اذا كان فيه باكاب او لا
         if (pickup_Policy) {
+          console.log('pick up ')
           sendMsg.pickupPhase(sender_id, receiver_id);
           setUserVars(receiver, sender, "phase", "1.1");
         } else {
@@ -297,6 +298,7 @@ const processBotMode = async ({
             }
             break;
           }
+
           sendMsg.locationPhase(sender_id, receiver_id);
           setUserVars(receiver, sender, "phase", "2");
         }
@@ -329,7 +331,6 @@ const processBotMode = async ({
               storObj,
               receiver_id
             );
-            setUserVars(receiver, sender, "phase", "3");
             setUserVars(
               receiver,
               sender,
@@ -619,7 +620,6 @@ const processBotMode = async ({
             receiver
           );
 
-          setUserVars(receiver, sender, "phase", "3");
         }
         break;
 
