@@ -16,6 +16,8 @@ const {
 } = require("../database/redis");
 const { ModeEnum } = require("./ENUMS/EMode");
 const { BotService } = require("./services/BotService/BotService");
+const { Sequelize, sequelize } = require("../database/connection");
+const EndUsers = require("../app/models/EndUsers")(sequelize, Sequelize);
 
 // receiver_id: رقم صاحب المتجر / رقم البوت
 // sender_id: رقم المرسل / الزبون
@@ -28,7 +30,6 @@ const bot = async (
   latitude,
   username
 ) => {
-  
   // EX: Input: "whatsapp:+96512345678" ,Output: "12345678"
 
   let receiver = receiver_id.replace("whatsapp:+", "");
@@ -39,23 +40,28 @@ const bot = async (
     JSON.stringify(await storeController.storeDetails(sender, receiver))
   );
   console.log(storObj);
-    console.log(sender);
-    console.log(receiver);
+  console.log(sender);
+  console.log(receiver);
 
   let phase = await getUserVars(receiver_id, sender, "phase");
   let language = await getUserVars(receiver_id, sender, "language");
   if (language == undefined) language = "ar";
 
-  
   const translation = require(`../locales/${language}`);
+  console.log('before create end user')
+  EndUsers.create({
+    phone: receiver,
+    full_name: username,
+    store_id: storObj.id,
+  }).catch(()=>{});
   BotService.processMessage({
     receiver_id,
-    receiver ,
+    receiver,
     sender,
     sender_id,
     message,
     phase,
-    args: { storObj,language, translation, longitude, latitude, username },
+    args: { storObj, language, translation, longitude, latitude, username },
   });
 };
 module.exports = bot;
