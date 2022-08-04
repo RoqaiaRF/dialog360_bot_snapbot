@@ -25,6 +25,24 @@ const welcomeLangPhase = async (
   receiverID
 ) => {
   const store_phone = `whatsapp:+${store_obj.phone}`;
+  const msg = `Welcome ${username} at ${storeEN_Name}...  please click on the right option
+                
+  حياك الله في   ${storeAR_Name}.. شرفتنا يا ${username}    .. 
+  😄
+للحصول على المساعدة ارسل *
+دائما للعودة للرئيسية اضغط 0 
+
+If you need any help, send *
+At any time to go main send 0
+
+  `;
+
+  const tanamara_msg = `Welcome ${username} at ${storeEN_Name}...  please click on the right option
+                
+  حياك الله في   ${storeAR_Name}.. شرفتنا يا ${username}
+  ملاحظة: لا يوجد خدمة فى منطقة ام الهيمان وصباح الاحمد
+  والشاليهات
+  `
   await sendTextMsg(
     `Welcome ${username} at ${storeEN_Name}...  please click on the right option
                 
@@ -94,9 +112,17 @@ const nearestLocation = async (senderID, branchObj, storObj, receiverID) => {
     storeName = branchObj.name_en;
   }
   if (["onlyOrders", "onlyReservation"].includes(_isReservation_Pay)) {
-    startOrder({ sender, receiver, storObj, language, receiverID, senderID, type:_isReservation_Pay });
+    startOrder({
+      sender,
+      receiver,
+      storObj,
+      language,
+      receiverID,
+      senderID,
+      type: _isReservation_Pay,
+    });
     setUserVars(receiver, sender, "phase", "4");
-    console.log('after end');
+    console.log("after end");
   } else if (_isReservation_Pay === "Orders_Reservation_together") {
     sendTextMsg(
       template(
@@ -122,7 +148,7 @@ const startOrder = async ({
   senderID,
   storObj,
   language,
-  type
+  type,
 }) => {
   let [location3, branch3Res] = await Promise.all([
     getUserVars(receiver, sender, "location"),
@@ -135,13 +161,19 @@ const startOrder = async ({
     location3 = JSON.parse(location3);
   }
   console.log(storObj);
-  console.log('//*/**/-/*-/*-/*-/*-/*-/-*/-*/-*/*-/-*/-')
+  console.log("//*/**/-/*-/*-/*-/*-/*-/-*/-*/-*/*-/-*/-");
   const cityName3 = await location.getCityName(location3.lat, location3.lng);
   const fees3 = await storeController.getFees(branch3.id, cityName3);
 
   const categoryObj = JSON.parse(
-    JSON.stringify(await getCategories(receiver, sender, storObj.id, 
-      type=='onlyOrders'?1:0))
+    JSON.stringify(
+      await getCategories(
+        receiver,
+        sender,
+        storObj.id,
+        type == "onlyOrders" ? 1 : 0
+      )
+    )
   );
   setUserVars(receiver, sender, "isorder", true);
 
@@ -154,14 +186,14 @@ const startOrder = async ({
     fees3,
     receiver
   );
-    console.log(categoryObj);
-    console.log('category objjjjjjjjjjjjjj')
+  console.log(categoryObj);
+  console.log("category objjjjjjjjjjjjjj");
   categoryPhase(
     senderID,
     "" + (await categories(categoryObj, language)),
     receiverID
   );
-  console.log('ennnnnnnnnnnnnnnnnnnnnnnnnnnnd')
+  console.log("ennnnnnnnnnnnnnnnnnnnnnnnnnnnd");
 };
 
 /*----------------------------------------*/
@@ -193,8 +225,8 @@ const getAllBranchesPhase = async (senderID, branches, receiverID) => {
 const categoryPhase = async (senderID, categories, receiverID) => {
   const receiver = receiverID.replace("whatsapp:+", "");
   const sender = senderID.replace("whatsapp:+", "");
-  console.log(categories)
-  console.log('categoreieeeeeeeeeeeeeees')
+  console.log(categories);
+  console.log("categoreieeeeeeeeeeeeeees");
   let language = await getUserVars(receiver, sender, "language");
   if (language == undefined) language = "ar";
 
