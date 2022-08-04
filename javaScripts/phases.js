@@ -164,7 +164,7 @@ const startOrder = async ({
       )
     )
   );
-  setUserVars(receiver, sender, "isorder", true);
+  setUserVars(receiver, sender, "isorder",type=='onlyOrders'? true:false);
 
   cart = cartController.newCart(
     sender,
