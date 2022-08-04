@@ -43,18 +43,7 @@ At any time to go main send 0
   ملاحظة: لا يوجد خدمة فى منطقة ام الهيمان وصباح الاحمد
   والشاليهات
   `
-  await sendTextMsg(
-    `Welcome ${username} at ${storeEN_Name}...  please click on the right option
-                
-                حياك الله في   ${storeAR_Name}.. شرفتنا يا ${username}    .. 
-                😄
-           للحصول على المساعدة ارسل *
-           دائما للعودة للرئيسية اضغط 0 
-
-           If you need any help, send *
-           At any time to go main send 0
-
-                `,
+  await sendTextMsg(store_obj.phone=='96597623959'?tanamara_msg:msg,
     senderID,
     store_phone
   );
