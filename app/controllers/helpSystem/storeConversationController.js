@@ -31,7 +31,8 @@ const storeConversation = async (
   receiver,
   sender,
   contentMessage,
-  userName
+  userName,
+  type=0
 ) => {
   let result;
   result = await isExistConversation(receiver, sender);
@@ -41,6 +42,7 @@ const storeConversation = async (
       status: 1,
       number_store: receiver,
       number_client: sender,
+      type
     });
     result = new_conv[0].dataValues.id;
   }

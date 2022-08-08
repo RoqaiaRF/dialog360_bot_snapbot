@@ -1,6 +1,9 @@
 const sendMsg = require("./phases");
 const getCategories = require("../app/controllers/categoryController");
 const storeController = require("../app/controllers/storeController");
+const storeConversation = require("../app/controllers/helpSystem/storeConversationController");
+const storeNewMessage = require("../app/controllers/helpSystem/storeNewMessageController");
+
 const cartController = require("../app/controllers/cartController");
 const location = require("../app/helpers/location");
 const {
@@ -13,10 +16,12 @@ const {
   delUserVars,
   deleteAllKeys,
   delAllUserVars,
+  publishToChannel,
 } = require("../database/redis");
 const { ModeEnum } = require("./ENUMS/EMode");
 const { BotService } = require("./services/BotService/BotService");
 const { Sequelize, sequelize } = require("../database/connection");
+const Employee = require("../app/models/Employee")(sequelize, Sequelize);
 const EndUsers = require("../app/models/EndUsers")(sequelize, Sequelize);
 
 // receiver_id: رقم صاحب المتجر / رقم البوت
@@ -39,6 +44,23 @@ const bot = async (
   const storObj = JSON.parse(
     JSON.stringify(await storeController.storeDetails(sender, receiver))
   );
+  const store_id = storObj.id;
+  const employee = await Employee.findOne({
+    where: { is_active: 1, store_id, phone: sender },
+  });
+  if (employee) {
+    const conversation_id = await storeConversation(
+      receiver,
+      sender,
+      message,
+      username,
+      1
+    );
+    await storeNewMessage(conversation_id, receiver, message, username, sender);
+    publishToChannel(receiver, "stores" , "message", username, store_id,message );
+
+    return 
+  }
   console.log(storObj);
   console.log(sender);
   console.log(receiver);
@@ -48,12 +70,12 @@ const bot = async (
   if (language == undefined) language = "ar";
 
   const translation = require(`../locales/${language}`);
-  console.log('before create end user')
+  console.log("before create end user");
   EndUsers.create({
     phone: receiver,
     full_name: username,
     store_id: storObj.id,
-  }).catch(()=>{});
+  }).catch(() => {});
   BotService.processMessage({
     receiver_id,
     receiver,

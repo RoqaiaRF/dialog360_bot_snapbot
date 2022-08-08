@@ -21,7 +21,6 @@ router.post("/", function (req, res, next) {
   let longitude = req.body.Longitude;
   let latitude = req.body.Latitude;
   let username = req.body.ProfileName;
-
   console.log("Receiver INDEX_ROUTER :  " + receiver_id);
   console.log("sender INDEX_ROUTER :  " + sender_ID);
   bot(sender_ID, receiver_id, message, longitude, latitude, username);

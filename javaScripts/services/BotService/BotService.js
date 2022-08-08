@@ -250,12 +250,14 @@ const processBotMode = async ({
 
         //  بنحكيله بدك نوصل لك لبيتك او بدك تيجي للمحل حسب اذا كان فيه باكاب او لا
         if (pickup_Policy) {
-          console.log('pick up ')
+          console.log("pick up ");
           sendMsg.pickupPhase(sender_id, receiver_id);
           setUserVars(receiver, sender, "phase", "1.1");
         } else {
           console.log(receiver, "************");
-          if (["96566991500", "96595553500", "96597623959"].includes(receiver)) {
+          if (
+            ["96566991500", "96595553500", "96597623959"].includes(receiver)
+          ) {
             let fees = receiver == "96566991500" ? 1 : 0;
             let { lat, lng } = storObj;
             ///////////////////////////////////////////////
@@ -287,14 +289,14 @@ const processBotMode = async ({
               );
               sendMsg.locationPhase(sender_id, receiver_id);
             } else {
-              console.log('befooooooooooooooooooore');
+              console.log("befooooooooooooooooooore");
               sendMsg.nearestLocation(
                 sender_id,
                 nearestBranch,
                 storObj,
                 receiver_id
               );
-              console.log('afteeeeeeeeeeeeeeeeeer');
+              console.log("afteeeeeeeeeeeeeeeeeer");
             }
             break;
           }
@@ -619,7 +621,6 @@ const processBotMode = async ({
             fees,
             receiver
           );
-
         }
         break;
 
@@ -666,11 +667,15 @@ const processBotMode = async ({
           } else {
             console.log("there is no subcategories");
             setUserVars(receiver, sender, "phase", "6"); // اختيار المنتجات
-            const productsObj = await getProducts(
+            let productsObj = await getProducts(
               receiver_id,
               sender,
               category.id
             );
+    
+            console.log("*******************");
+            console.log(productsObj);
+            console.log("*******************");
             sendMsg.productPhase(
               sender_id,
               await products(productsObj, language),
@@ -791,16 +796,32 @@ const processBotMode = async ({
             getUserVars(receiver, sender, "products"),
           ]);
           let branch = JSON.parse(branchRes);
-          let productObj6 = JSON.parse(productObj6Res);
+          let productObj6 = JSON.parse(productObj6Res); // اختيار المنتجات
 
-          setUserVars(receiver, sender, "phase", "7"); // اختيار المنتجات
           let productIndex6 = message - 1;
           let product6 = productObj6[productIndex6];
 
-          product6.qty = await getQuantity(branch.id, product6.id);
+          /* product6.qty = await getQuantity(branch.id, product6.id); */
+          product6.qty = product6.quantity;
           product6.uuid = await uuidv4();
           product6.allFeatures = product6.features;
           product6.features = [];
+          if (product6.quantity < 1){
+             sendMsg.customMessage(
+              `${translation.out_of_stock} `,
+              sender_id,
+              receiver_id
+            );
+            console.log(product6)
+            const productsObj = await getProducts(receiver, sender, product6.category_id);
+            sendMsg.productPhase(
+              sender_id,
+              await products(productsObj, language),
+              receiver_id
+            );
+            return
+          }
+
           sendMsg.showProduct(sender_id, product6, receiver_id);
           setUserVars(
             receiver,
@@ -808,6 +829,7 @@ const processBotMode = async ({
             "productDetails",
             JSON.stringify(product6)
           );
+          setUserVars(receiver, sender, "phase", "7");
         }
         break;
 
@@ -930,8 +952,13 @@ const processBotMode = async ({
             productDetails_7_1,
             selectedFeature
           );
-          console.log(new_productDetails)
-          setUserVars(receiver, sender, "productDetails", await JSON.stringify(new_productDetails));
+          console.log(new_productDetails);
+          setUserVars(
+            receiver,
+            sender,
+            "productDetails",
+            await JSON.stringify(new_productDetails)
+          );
           const [newCart7_1Res, purchases7_1] = await Promise.all([
             getUserVars(receiver, sender, "cart"),
             showPurchases(receiver, sender, translation, language),
@@ -1260,8 +1287,7 @@ const addFeature = async ({
   }
 };
 
-
-const chooseOrderReservation = async({receiverID, senderID})=>{
+const chooseOrderReservation = async ({ receiverID, senderID }) => {
   const receiver = receiverID.replace("whatsapp:+", "");
   const sender = senderID.replace("whatsapp:+", "");
 
@@ -1280,7 +1306,7 @@ const chooseOrderReservation = async({receiverID, senderID})=>{
     senderID,
     receiverID
   );
-}
+};
 
 const BotService = {
   processMessage,
