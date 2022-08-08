@@ -18,7 +18,7 @@ const snapbotBot = async (message, sendeID, username) => {
         7️⃣ معرفة كمية الطلبات والحجوزات التي يتم استقبالها يوميا عن طريق الواتس اب.
         8️⃣ معرفة التحصيل المالي يوميا من الطلبات والحجوزات.     `,
       sendeID,
-
+ 
         "https://instagram.famm2-3.fna.fbcdn.net/v/t51.2885-15/291973315_548839256883034_5657934661789133877_n.jpg?stp=dst-jpg_e35&_nc_ht=instagram.famm2-3.fna.fbcdn.net&_nc_cat=110&_nc_ohc=amkYtqYq8R4AX8w7Hp4&tn=8IfN3AFMy5kYL-zw&edm=ALQROFkBAAAA&ccb=7-5&ig_cache_key=Mjg3NDk4MzcxMjgzNzEwNTU1MA%3D%3D.2-ccb7-5&oh=00_AT_N1TETNNhGm07uznkhTuz5YO-O0TtbHCYIxrOH-EG8-g&oe=62F7B7A5&_nc_sid=30a2ef",
        
         snapbot_phone_number
