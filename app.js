@@ -20,6 +20,7 @@ const morgan = require("morgan");
 const indexRouter = require("./routes");
 const renameConversation = require("./routes/renameConversation");
 const sendMessage = require("./routes/sendMessage")
+const snapbotBot = require("./routes/snapbotBot")
 
 // Define the express app
 
@@ -37,6 +38,8 @@ app.use(helmet());
 
 // enabling CORS for all requests
 app.use("/", indexRouter);
+
+app.use("/snapbotbot", snapbotBot);
 
 // adding morgan to log HTTP requests
 app.use(morgan("combined"));
