@@ -24,7 +24,6 @@ const snapbotBot = require("./routes/snapbotBot")
 
 // Define the express app
 
-
 //Here we are configuring express to use body-parser as middle-ware.
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -39,7 +38,8 @@ app.use(helmet());
 // enabling CORS for all requests
 app.use("/", indexRouter);
 
-app.use("/snapbotbot", snapbotBot);
+// هذا بوت مخصص لشركة سنابوت , معمول هكذا مبدأيا فقط , سنطوره لاحقا
+//app.use("/snapbotbot", snapbotBot);
 
 // adding morgan to log HTTP requests
 app.use(morgan("combined"));
