@@ -630,20 +630,23 @@ const processBotMode = async ({
           return;
         }
         let indexCategory = message - 1;
-        let categoryObj = JSON.parse(
+        var categoryObj = JSON.parse(
           await getUserVars(receiver, sender, "cats")
         );
-        let category = categoryObj[indexCategory];
+        var category = categoryObj[indexCategory];
         let length = categoryObj.length;
-        let orphan_products = await getOrphanProducts({
-          category_id: category.id,
-          receiver_id,
-          sender,
-        });
+   
         if (message > length || message <= 0) {
           // send error msg
           sendMsg.errorMsg(sender_id, receiver_id);
         } else {
+
+          let orphan_products = await getOrphanProducts({
+            category_id: category.id,
+            receiver_id,
+            sender,
+          });
+
           let subCategoriesCount = category.subCategories.length;
           // اذا كان هناك منتجات فرعيه
           if (subCategoriesCount > 0) {
@@ -712,6 +715,7 @@ const processBotMode = async ({
             receiver_id
           );
         } else if (message > length5 || message <= 0) {
+
           // send error msg
           if (message > orphan_productsRes.length)
             sendMsg.errorMsg(sender_id, receiver_id);
@@ -726,12 +730,12 @@ const processBotMode = async ({
             setUserVars(receiver, sender, "phase", "7"); //
 
             product.qty = await getQuantity(branch.id, product.id);
-            console.log(orphan_productsRes);
+            console.log( "orphan_productsRes ---------------------------------", orphan_productsRes);
             await setUserVars(
               receiver_id,
               sender,
               "products",
-              JSON.stringify(orphan_productsRes)
+              orphan_productsRes
             );
             sendMsg.showProduct(sender_id, product, receiver_id);
             setUserVars(
@@ -788,6 +792,8 @@ const processBotMode = async ({
             receiver_id
           );
         } else if (message <= 0 || message > length2) {
+          console.log("Error in message length 788")
+
           // send error msg
           sendMsg.errorMsg(sender_id, receiver_id);
         } else {
@@ -844,7 +850,7 @@ const processBotMode = async ({
           setUserVars(receiver, sender, "phase", "6");
           sendMsg.productPhase(
             sender_id,
-            await products(productObj7, language),
+            "" + (await products(productObj7, language)),
             receiver_id
           );
         } else if (message == translation.go_home) {
@@ -1173,6 +1179,8 @@ ${purchases9} `,
         const length9_1 = productCart.length;
 
         if (isNaN(message) === true || message > length9_1 || message <= 0) {
+          console.log("Error in message length 1151")
+
           // send error msg
           sendMsg.errorMsg(sender_id, receiver_id);
         } else {

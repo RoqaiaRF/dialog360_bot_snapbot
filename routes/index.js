@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const ConversationRouter = require("./conversationRouter");
-
+//const getWorkTime = require("../app/controllers/workTimeController")
 const bot = require("../javaScripts/bot");
 const {
   authorizeToken,
@@ -23,8 +23,16 @@ router.post("/", function (req, res, next) {
   let username = req.body.ProfileName;
   console.log("Receiver INDEX_ROUTER :  " + receiver_id);
   console.log("sender INDEX_ROUTER :  " + sender_ID);
+
   bot(sender_ID, receiver_id, message, longitude, latitude, username);
 });
+
+
+// Just TESTING
+// router.get("/", function (req, res, next) {
+//   getWorkTime()
+// });
+
 
 router.use("/conversation", authorizeToken, ConversationRouter);
 router.post("/authorize/:id", authorizeToken, checkAuthentication);
