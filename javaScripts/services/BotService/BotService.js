@@ -691,7 +691,7 @@ const processBotMode = async ({
             getUserVars(receiver, sender, "orphan_products"),
           ]);
         if (!orphan_productsRes) orphan_productsRes = [];
-        let orphan_productsRes5 = JSON.parse(orphan_productsRes);
+        var orphan_productsRes5 = JSON.parse(orphan_productsRes);
         let subCategories = JSON.parse(subCategoriesRes);
         // احضر التصنيفات الرئيسية
         let categoryObj5 = JSON.parse(categoryObj5Res);
