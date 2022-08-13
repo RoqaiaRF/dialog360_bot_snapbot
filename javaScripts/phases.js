@@ -48,8 +48,8 @@ At any time to go main send 0
     store_phone
   );
 
-  sendTextMsg(`اختر اللغة المناسبة للطلب 🌐
-  Choose the language 🌐`, senderID, store_phone);
+  sendTextMsg(`اختر اللغة المناسبة للطلب  
+  Choose the language  `, senderID, store_phone);
 };
 //^Phase #1.1
 // Expected Outputs: "توصيل لبيتي", "استلام من المتجر"
@@ -151,7 +151,7 @@ const startOrder = async ({
     location3 = JSON.parse(location3);
   }
   console.log(storObj);
-  console.log("//*/**/-/*-/*-/*-/*-/*-/-*/-*/-*/*-/-*/-");
+
   const cityName3 = await location.getCityName(location3.lat, location3.lng);
   const fees3 = await storeController.getFees(branch3.id, cityName3);
 
@@ -177,13 +177,11 @@ const startOrder = async ({
     receiver
   );
   console.log(categoryObj);
-  console.log("category objjjjjjjjjjjjjj");
   categoryPhase(
     senderID,
     "" + (await categories(categoryObj, language)),
     receiverID
   );
-  console.log("ennnnnnnnnnnnnnnnnnnnnnnnnnnnd");
 };
 
 /*----------------------------------------*/
