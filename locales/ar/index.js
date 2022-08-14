@@ -83,8 +83,7 @@ const ar = {
   cart_empty:'السلة فارغة',
   no_items_to_remove:'لا يوجد منتجات لحذفها', 
   isWithinWorkingHoursDays_0: "نعتذر, نحن مغلقون حاليا , رجاءا اطلب في وقت لاحق ",
-  isWithinWorkingHoursDays_1: "هذا الوقت خارج اوقات العمل لكن يمكنك اكمال الطلب"
-
+  isWithinWorkingHoursDays_1: "هذا الوقت خارج اوقات العمل لكن يمكنك اكمال الطلب",
   no_items_to_remove:'لا يوجد منتجات لحذفها',
   out_of_stock:"هذا المنتج غير متوفر حاليًا"
 };
