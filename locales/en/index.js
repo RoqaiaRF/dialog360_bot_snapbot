@@ -88,7 +88,9 @@ const en = {
   message_sent:'message has been sent, logging out help center ....',
   help_logout:'logging out help center...thanks for contacting us, to return to bot press 0',
   cart_empty:'cart is empty',
-  no_items_to_remove:'no items to remove'
+  no_items_to_remove:'no items to remove',
+  out_of_stock:"this item is out of stock"
+
 
 
 };

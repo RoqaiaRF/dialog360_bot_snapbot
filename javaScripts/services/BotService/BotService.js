@@ -285,12 +285,14 @@ const processBotMode = async ({
               );
               sendMsg.locationPhase(sender_id, receiver_id);
             } else {
+
               sendMsg.nearestLocation(
                 sender_id,
                 nearestBranch,
                 storObj,
                 receiver_id
               );
+
             }
             break;
           }
@@ -662,11 +664,15 @@ const processBotMode = async ({
           } else {
             console.log("there is no subcategories");
             setUserVars(receiver, sender, "phase", "6"); // اختيار المنتجات
-            const productsObj = await getProducts(
+            let productsObj = await getProducts(
               receiver_id,
               sender,
               category.id
             );
+    
+            console.log("*******************");
+            console.log(productsObj);
+            console.log("*******************");
             sendMsg.productPhase(
               sender_id,
               await products(productsObj, language),
@@ -792,16 +798,32 @@ const processBotMode = async ({
             getUserVars(receiver, sender, "products"),
           ]);
           let branch = JSON.parse(branchRes);
-          let productObj6 = JSON.parse(productObj6Res);
+          let productObj6 = JSON.parse(productObj6Res); // اختيار المنتجات
 
-          setUserVars(receiver, sender, "phase", "7"); // اختيار المنتجات
           let productIndex6 = message - 1;
           let product6 = productObj6[productIndex6];
 
-          product6.qty = await getQuantity(branch.id, product6.id);
+          /* product6.qty = await getQuantity(branch.id, product6.id); */
+          product6.qty = product6.quantity;
           product6.uuid = await uuidv4();
           product6.allFeatures = product6.features;
           product6.features = [];
+          if (product6.quantity < 1){
+             sendMsg.customMessage(
+              `${translation.out_of_stock} `,
+              sender_id,
+              receiver_id
+            );
+            console.log(product6)
+            const productsObj = await getProducts(receiver, sender, product6.category_id);
+            sendMsg.productPhase(
+              sender_id,
+              await products(productsObj, language),
+              receiver_id
+            );
+            return
+          }
+
           sendMsg.showProduct(sender_id, product6, receiver_id);
           setUserVars(
             receiver,
@@ -809,6 +831,7 @@ const processBotMode = async ({
             "productDetails",
             JSON.stringify(product6)
           );
+          setUserVars(receiver, sender, "phase", "7");
         }
         break;
 

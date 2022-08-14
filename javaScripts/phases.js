@@ -237,7 +237,7 @@ const categoryPhase = async (senderID, categories, receiverID) => {
 const productPhase = async (senderID, products, receiverID) => {
   const receiver = receiverID.replace("whatsapp:+", "");
   const sender = senderID.replace("whatsapp:+", "");
-
+  console.log(products)
   let language = await getUserVars(receiver, sender, "language");
   if (language == undefined) language = "ar";
 
@@ -326,10 +326,8 @@ const showProduct = async (senderID, product, receiverID) => {
   ${translation.product_name} ${product_name}
   ${translation.the_description} ${product_description}
   ${translation.price} ${product.price} ${translation.the_currency}
-  ${translation.Duration} ${product.duration} ${translation.minute}
-
   `;
-
+  message+= product.duration?`${translation.Duration} ${product.duration} ${translation.minute}`:''
   if (product.image != null || product.image != undefined) {
     await sendMedia(
       ` ${message}

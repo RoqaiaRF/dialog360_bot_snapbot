@@ -20,7 +20,11 @@ Products.belongsTo(Category, {
   foreignKey: "category_id",
   targetKey: "id",
 });
-
+Products.hasOne(Quantity, {
+  as: "productQuantity",
+  foreignKey: "product_id",
+  sourceKey: "id",
+});
 // function get Products & features
 
 const getOrphanProducts = async ({ category_id, receiver_id, sender }) => {
@@ -30,7 +34,7 @@ const getOrphanProducts = async ({ category_id, receiver_id, sender }) => {
     "products"
   );
   if (products_redis) return JSON.parse(products_redis);
-  const proudcts_list = await Products.findAll({
+  let proudcts_list = await Products.findAll({
     where: {
       "$category.parent_id$": null,
       category_id,
@@ -49,6 +53,15 @@ const getOrphanProducts = async ({ category_id, receiver_id, sender }) => {
       },
     ],
   });
+  products_list = proudcts_list.map((prdct) =>
+    prdct.quantity > 1
+      ? prdct
+      : {
+          ...prdct,
+          name_ar: `${prdct.name_ar} (هذا المنتج غير متوفر حاليًا)`,
+          name_en: `${prdct.name_en} (this product is out of stock)`,
+        }
+  );
   await redis.setUserVars(
     receiver_id,
     sender,
@@ -74,16 +87,34 @@ const getProducts = async (receiver_id, sender, category_id) => {
             category_id: category_id,
             parent_id: null,
           },
-          include: {
-            model: Products,
-            as: "features",
-            include: {
+          include: [
+            {
               model: Products,
-              as: "parent",
+              as: "features",
+              include: {
+                model: Products,
+                as: "parent",
+              },
             },
-          },
+            {
+              model: Quantity,
+              as: "productQuantity",
+            },
+          ],
         },
         { attributes: ["name_ar", "name_en", "category_id"] }
+      );
+      list = list.map((prdct) =>
+        prdct.productQuantity.quantity > 0
+          ? {
+              ...prdct.dataValues,
+              quantity: prdct.dataValues.productQuantity.dataValues.quantity,
+            }
+          : {
+              ...prdct.dataValues,
+              name_ar: `${prdct.dataValues.name_ar} (*هذا المنتج غير متوافر حاليًا*)`,
+              name_en: `${prdct.dataValues.name_en} (*this product is out of stock*)`,
+            }
       );
       await redis.setUserVars(
         receiver_id,
@@ -94,6 +125,7 @@ const getProducts = async (receiver_id, sender, category_id) => {
 
       return list;
     } catch (error) {
+      console.log(error)
       return {};
     }
   }

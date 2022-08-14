@@ -16,18 +16,19 @@ const findConversations = async (req, res) => {
   const { store } = req;
   const { page = 1 } = req.query;
   const { per_page = 12 } = req.query;
+  const { type = 0} = req.query
   const { phone } = store;
   const offset = (page - 1) * per_page;
   const limit = per_page;
   const [unread_conversations, unread_messages, data] = await Promise.all([
     Conversations.count({
-      where: { number_store: phone },
+      where: { number_store: phone, type },
       include: { model: Messages, where: { is_read: 0 }, attributes: [] },
       distinct: true,
       raw: true,
     }),
     Conversations.count({
-      where: { number_store: phone },
+      where: { number_store: phone, type },
       include: { model: Messages, where: { is_read: 0 }, attributes: [] },
       order: [[Messages, "createdAt", "DESC"]],
       limit,
@@ -36,7 +37,7 @@ const findConversations = async (req, res) => {
       group: ["conversations.id"],
     }).then((res) => res.reduce((a, v) => ({ ...a, [v.id]: v.count }), {})),
     Conversations.findAll({
-      where: { number_store: phone },
+      where: { number_store: phone, type },
       include: {
         model: Messages,
         limit: 30,
