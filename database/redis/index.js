@@ -71,6 +71,7 @@ const delAllUserVars = async (receiver_id, sender) => {
   delUserVars(receiver_id, sender, "isorder");
   delUserVars(receiver_id, sender, "mode");
   delUserVars(receiver_id, sender, "store");
+  delUserVars(receiver_id, sender, "work_times");
 };
 // delete all data from all databases in redis
 const deleteAllKeys = async () => {

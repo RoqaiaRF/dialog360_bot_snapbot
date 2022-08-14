@@ -3,12 +3,9 @@ const db = require("../../database/connection");
 const WorkTime = require("../models/WorkTime")(db.sequelize, db.Sequelize);
 const redis = require("../../database/redis");
 
-const getWorkingTime = async (
-  phone = "96566991500",
-  sender = "962799849386",
-  store_id = "26"
-) => {
-  const work_times = await redis.getUserVars(phone, sender, "work_times");
+const getWorkingTime = async (phone, sender, store_id) => {
+  var work_times = await redis.getUserVars(phone, sender, "work_times");
+
   if (work_times && work_times != "null") {
     return JSON.parse(work_times);
   } else {
@@ -22,14 +19,14 @@ const getWorkingTime = async (
         attributes: ["start_time", "end_time", "store_id"],
       }
     );
+    work_times = result.dataValues;
+
     await redis.setUserVars(
       phone,
       sender,
       "work_times",
       JSON.stringify(work_times)
     );
-    console.log("work_times", result.dataValues);
-    return result.dataValues;
 
     /* EX: result.dataValues =
              {
@@ -46,13 +43,11 @@ const getWorkingTime = async (
           
           */
   }
+  return work_times;
 };
 
-const checkWithenHours = (
-  start_time = "08:00:00",
-  end_time = "00:00:00"
-) => {
-  // ---------------------------- get time now in UTC format 
+const checkWithenHours = (start_time, end_time) => {
+  // ---------------------------- get time now in UTC format
 
   let date = new Date();
   const now_time = [
@@ -68,35 +63,59 @@ const checkWithenHours = (
 
   // ---------------------------- Check if the time now within the working hours.
 
-  // مقارنة الوقت بالساعات 
-  if ( (now_time[0] > _start_time[0]) && (now_time[0] < _end_time[0]) ) {
+  // مقارنة الوقت بالساعات
+  if (now_time[0] > _start_time[0] && now_time[0] < _end_time[0]) {
     return true;
-  }
-  else {
+  } else {
     // مقارنة الوقت بالدقائق
-    if ( (now_time[1] < _start_time[1]) && (now_time[1] < _end_time[1]) ){
+    if (now_time[1] < _start_time[1] && now_time[1] < _end_time[1]) {
       return true;
-    }
-    else {
-      return false 
+    } else {
+      return false;
     }
   }
-
 };
 
 // معرفة اذا كان الوقت الان خارج مواقيت العمل او لا
 // return true if the store within the working hours, and false otherwise.
 
-const isWithinWorkingHoursDays = () => {
-
+const isWithinWorkingHoursDays = async (phone, sender, storObj) => {
   const date = new Date();
-  const todayIs = date.getDay(); // Sunday = 0, Monday = 1, ...
-  console.log("todayIs: " + todayIs);
-  const workingTime =  getWorkingTime();
- // let checkWithendays = workingTime.days.find(todayIs)
-  console.log("workingTime.days: " + workingTime.days);
-//   console.log(checkWithenHours( workingTime.start_time, workingTime.end_time));
-//   return checkWithendays && checkWithenHours( workingTime.start_time, workingTime.end_time);
+  const todayIs = date.getDay() + ""; // Sunday = 0, Monday = 1, ...
+
+
+  const workingTime = await getWorkingTime(phone, sender, storObj.id);
+  const days = workingTime.days;
+
+  // فحص اذا كان اليوم من ايام العمل او لا
+  const checkWithenDays = days.indexOf(todayIs) > -1;
+  const is_closed_bot = storObj.is_closed_bot;
+
+  const checkHours = checkWithenHours(
+    workingTime.start_time,
+    workingTime.end_time
+  );
+
+  console.log("checkWithenDays", checkWithenDays);
+  console.log("checkHours", checkHours);
+  console.log("todayIs", todayIs);
+  console.log("is_closed_bot", is_closed_bot);
+  var result = 0;
+
+  if (checkWithenDays && checkHours) {
+    // اجعل البوت يمشي عادي لانه المتجر يعمل في هذا الوقت
+    result = 0;
+  } else {
+    // اوقف البوت كليا وارسل رساله انه المتجر مغلق
+    if ( !is_closed_bot )  {
+      result = 1;
+    }
+    // اجعل البوت يستمر عادي فقط ارسل رسالة ان المتجر مغلق
+    else {
+      result = 2;
+    }
+  }
+  return result;
 };
 
 module.exports = isWithinWorkingHoursDays;
