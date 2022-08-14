@@ -51,8 +51,7 @@ const processMessage = async ({
   args,
 }) => {
   setLanguage(args.language, args.translation);
-  /* const mode = await getUserVars(receiver_id, sender, "mode");
-  mode ? processHelpMode() : processBotMode(); */
+
   let mode = await getUserVars(receiver, sender, "mode");
   mode = mode ? mode : ModeEnum.bot;
   mode == ModeEnum.bot
@@ -87,6 +86,7 @@ const processHelpMode = async ({
 }) => {
   const { username, storObj } = args;
   const { id } = storObj;
+
   if (message == "0")
     return logoutHelpMode({ sender_id, receiver_id, sender, receiver, args });
 
@@ -100,10 +100,6 @@ const processHelpMode = async ({
   return;
 };
 
-const changeBotMode = (receiver_id, sender_id, mode) => {
-  setUserVars(sender_id, receiver, "mode", mode);
-  setUserVars();
-};
 const logoutHelpMode = async ({
   sender_id,
   receiver_id,
@@ -250,15 +246,17 @@ const processBotMode = async ({
 
         //  بنحكيله بدك نوصل لك لبيتك او بدك تيجي للمحل حسب اذا كان فيه باكاب او لا
         if (pickup_Policy) {
-          console.log('pick up ')
+          console.log("pick up ");
           sendMsg.pickupPhase(sender_id, receiver_id);
           setUserVars(receiver, sender, "phase", "1.1");
         } else {
           console.log(receiver, "************");
-          if (["96566991500", "96595553500", "96597623959"].includes(receiver)) {
+          if (
+            ["96566991500", "96595553500", "96597623959"].includes(receiver)
+          ) {
             let fees = receiver == "96566991500" ? 1 : 0;
             let { lat, lng } = storObj;
-            ///////////////////////////////////////////////
+
             const location2 = `{"lat":${lat},"lng":${lng} }`;
             // store location in redis
             setUserVars(receiver, sender, "location", `${location2}`);
@@ -287,14 +285,12 @@ const processBotMode = async ({
               );
               sendMsg.locationPhase(sender_id, receiver_id);
             } else {
-              console.log('befooooooooooooooooooore');
               sendMsg.nearestLocation(
                 sender_id,
                 nearestBranch,
                 storObj,
                 receiver_id
               );
-              console.log('afteeeeeeeeeeeeeeeeeer');
             }
             break;
           }
@@ -306,7 +302,6 @@ const processBotMode = async ({
         break;
 
       case "1.1":
-        console.log(message);
         if (message == translation.home_delivery) {
           sendMsg.locationPhase(sender_id, receiver_id);
           setUserVars(receiver, sender, "phase", "2");
@@ -619,7 +614,6 @@ const processBotMode = async ({
             fees,
             receiver
           );
-
         }
         break;
 
@@ -634,12 +628,11 @@ const processBotMode = async ({
         );
         var category = categoryObj[indexCategory];
         let length = categoryObj.length;
-   
+
         if (message > length || message <= 0) {
           // send error msg
           sendMsg.errorMsg(sender_id, receiver_id);
         } else {
-
           let orphan_products = await getOrphanProducts({
             category_id: category.id,
             receiver_id,
@@ -710,7 +703,6 @@ const processBotMode = async ({
             receiver_id
           );
         } else if (message > length5 || message <= 0) {
-
           // send error msg
           if (message > orphan_productsRes.length)
             sendMsg.errorMsg(sender_id, receiver_id);
@@ -725,7 +717,10 @@ const processBotMode = async ({
             setUserVars(receiver, sender, "phase", "7"); //
 
             product.qty = await getQuantity(branch.id, product.id);
-            console.log( "orphan_productsRes ---------------------------------", orphan_productsRes);
+            console.log(
+              "orphan_productsRes ---------------------------------",
+              orphan_productsRes
+            );
             await setUserVars(
               receiver_id,
               sender,
@@ -787,7 +782,7 @@ const processBotMode = async ({
             receiver_id
           );
         } else if (message <= 0 || message > length2) {
-          console.log("Error in message length 788")
+          console.log("Error in message length 788");
 
           // send error msg
           sendMsg.errorMsg(sender_id, receiver_id);
@@ -936,8 +931,13 @@ const processBotMode = async ({
             productDetails_7_1,
             selectedFeature
           );
-          console.log(new_productDetails)
-          setUserVars(receiver, sender, "productDetails", await JSON.stringify(new_productDetails));
+          console.log(new_productDetails);
+          setUserVars(
+            receiver,
+            sender,
+            "productDetails",
+            await JSON.stringify(new_productDetails)
+          );
           const [newCart7_1Res, purchases7_1] = await Promise.all([
             getUserVars(receiver, sender, "cart"),
             showPurchases(receiver, sender, translation, language),
@@ -1152,7 +1152,7 @@ ${purchases9} `,
         const length9_1 = productCart.length;
 
         if (isNaN(message) === true || message > length9_1 || message <= 0) {
-          console.log("Error in message length 1151")
+          console.log("Error in message length 1151");
 
           // send error msg
           sendMsg.errorMsg(sender_id, receiver_id);
@@ -1206,10 +1206,6 @@ ${purchases9} `,
   }
 };
 
-const switchToHelpMode = () => {};
-
-const switchToBotMode = () => {};
-
 const sendProductFeatures = ({
   productDetails,
   receiver,
@@ -1219,10 +1215,10 @@ const sendProductFeatures = ({
   receiver_id,
 }) => {
   productDetails.qty = parseInt(message);
-  // productDetails.features = [];
-  setUserVars(receiver, sender, "quantity", JSON.stringify(parseInt(message)));
-  // await cartController.addToCart(sender, productDetails);
 
+  setUserVars(receiver, sender, "quantity", JSON.stringify(parseInt(message)));
+
+  
   sendMsg.addedDetails(sender_id, receiver_id);
   setUserVars(receiver, sender, "phase", "8.1");
 };
@@ -1268,8 +1264,7 @@ const addFeature = async ({
   }
 };
 
-
-const chooseOrderReservation = async({receiverID, senderID})=>{
+const chooseOrderReservation = async ({ receiverID, senderID }) => {
   const receiver = receiverID.replace("whatsapp:+", "");
   const sender = senderID.replace("whatsapp:+", "");
 
@@ -1288,7 +1283,7 @@ const chooseOrderReservation = async({receiverID, senderID})=>{
     senderID,
     receiverID
   );
-}
+};
 
 const BotService = {
   processMessage,

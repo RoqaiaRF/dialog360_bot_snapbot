@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const ConversationRouter = require("./conversationRouter");
-//const getWorkTime = require("../app/controllers/workTimeController")
+const getWorkTime = require("../app/controllers/workTimeController")
 const bot = require("../javaScripts/bot");
 const {
   authorizeToken,
@@ -30,9 +30,9 @@ router.post("/", function (req, res, next) {
 
 
 // Just TESTING
-// router.get("/", function (req, res, next) {
-//   getWorkTime()
-// });
+router.get("/", function (req, res, next) {
+  getWorkTime()
+});
 
 
 router.use("/conversation", authorizeToken, ConversationRouter);

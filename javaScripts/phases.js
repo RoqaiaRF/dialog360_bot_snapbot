@@ -48,8 +48,8 @@ At any time to go main send 0
     store_phone
   );
 
-  sendTextMsg(`اختر اللغة المناسبة للطلب  
-  Choose the language  `, senderID, store_phone);
+  sendTextMsg(`اختر اللغة المناسبة للطلب من فضلك
+  Choose the language ,please`, senderID, store_phone);
 };
 //^Phase #1.1
 // Expected Outputs: "توصيل لبيتي", "استلام من المتجر"

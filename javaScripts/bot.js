@@ -2,11 +2,14 @@ const sendMsg = require("./phases");
 const getCategories = require("../app/controllers/categoryController");
 const storeController = require("../app/controllers/storeController");
 const cartController = require("../app/controllers/cartController");
+const workTimeController = require("../app/controllers/workTimeController");
+
 const location = require("../app/helpers/location");
 const {
   getProducts,
   getQuantity,
 } = require("../app/controllers/productController");
+
 const {
   setUserVars,
   getUserVars,
@@ -35,20 +38,35 @@ const bot = async (
   let receiver = receiver_id.replace("whatsapp:+", "");
   let sender = sender_id.replace("whatsapp:+", "");
   //TODO : Replace "JSON.parse(JSON.stringify(object))" with "StructuredClone(object)" when available
+
   // get store details
   const storObj = JSON.parse(
     JSON.stringify(await storeController.storeDetails(sender, receiver))
   );
-  console.log(storObj);
-  console.log(sender);
-  console.log(receiver);
+  
 
   let phase = await getUserVars(receiver_id, sender, "phase");
   let language = await getUserVars(receiver_id, sender, "language");
   if (language == undefined) language = "ar";
 
   const translation = require(`../locales/${language}`);
-  console.log('before create end user')
+  
+
+  // فحص مواقيت العمل
+const isWithinWorkingHoursDays = await workTimeController(receiver, sender, storObj);
+console.log("isWithinWorkingHoursDays: " + isWithinWorkingHoursDays);
+
+switch (isWithinWorkingHoursDays) {
+
+  case 1 :
+    setUserVars(receiver, sender, "mode", ModeEnum.help);
+    sendMsg.customMessage(translation.isWithinWorkingHoursDays_0, sender_id, receiver_id);
+    break;
+
+  case 2 :
+     sendMsg.customMessage(translation.isWithinWorkingHoursDays_1, sender_id, receiver_id);
+    break;
+}
   EndUsers.create({
     phone: receiver,
     full_name: username,

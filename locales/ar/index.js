@@ -81,7 +81,10 @@ const ar = {
   message_sent:'لقد تم إرسال الرسالة بنجاح وجاري الخروج من نظام المساعدة ... ',
   help_logout:'تم الخروج من نظام المساعدة, شكرًا على اتصالك, للرجوع للبوت اضغط 0',
   cart_empty:'السلة فارغة',
-  no_items_to_remove:'لا يوجد منتجات لحذفها'
+  no_items_to_remove:'لا يوجد منتجات لحذفها', 
+  isWithinWorkingHoursDays_0: "نعتذر, نحن مغلقون حاليا , رجاءا اطلب في وقت لاحق ",
+  isWithinWorkingHoursDays_1: "هذا الوقت خارج اوقات العمل لكن يمكنك اكمال الطلب"
+
 };
 
 module.exports = ar;
