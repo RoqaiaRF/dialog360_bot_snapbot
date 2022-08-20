@@ -101,7 +101,7 @@ const isWithinWorkingHoursDays = async (phone, sender, storObj) => {
   console.log("todayIs", todayIs);
   console.log("is_closed_bot", is_closed_bot);
   var result = 0;
-
+if(!storObj.is_reservation){
   if (checkWithenDays && checkHours) {
     // اجعل البوت يمشي عادي لانه المتجر يعمل في هذا الوقت
     result = 0;
@@ -114,6 +114,7 @@ const isWithinWorkingHoursDays = async (phone, sender, storObj) => {
     else {
       result = 2;
     }
+  }
   }
   return result;
 };
