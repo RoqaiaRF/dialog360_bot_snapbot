@@ -43,7 +43,7 @@ At any time to go main send 0
   ملاحظة: لا يوجد خدمة فى منطقة ام الهيمان وصباح الاحمد
   والشاليهات
   `
-  await sendTextMsg(store_obj.phone=='96597623959'?tanamara_msg:msg,
+  await sendTextMsg(store_obj.id=='32'?tanamara_msg:msg,
     senderID,
     store_phone
   );
