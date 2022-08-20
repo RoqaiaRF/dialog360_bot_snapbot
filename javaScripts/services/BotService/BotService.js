@@ -251,9 +251,11 @@ const processBotMode = async ({
           setUserVars(receiver, sender, "phase", "1.1");
         } else {
           console.log(receiver, "************");
+          console.log(storObj.id)
           if (
-            ["26", "32", "40"].includes(storObj.id)
+            [26, 32, 40].includes(parseInt(storObj.id))
           ) {
+            console.log('incluudddeees')
             let fees = storObj.id == "26" ? 1 : 0;
             let { lat, lng } = storObj;
 
