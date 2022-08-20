@@ -79,7 +79,7 @@ const en = {
   sum_without_tax: "Total without tax:",
   link_approved_order: "Please use the link to confirm the order.",
   help_mode:'to append another message continue typing ',
-  welcome_help_mode:' welcome to help center, kindly write your message',
+  welcome_help_mode:' welcome to help center, kindly write your message, to return to bot mode enter 0',
   continue_typing:'your message',
   send:'send',
   'review message':'review message',
