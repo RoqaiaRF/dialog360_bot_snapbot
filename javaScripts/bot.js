@@ -63,14 +63,6 @@ const bot = async (
       1
     );
     await storeNewMessage(conversation_id, receiver, message, username, sender);
-    publishToChannel(
-      receiver,
-      "stores",
-      "emp_message",
-      username,
-      store_id,
-      message
-    );
     client.publish(
       `stores`,
       JSON.stringify({
@@ -78,7 +70,8 @@ const bot = async (
           type: "emp_message",
           store_id,
           conversation_id,
-          data:message
+          data:message,
+          username
         },
       })
     );
