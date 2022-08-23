@@ -20,6 +20,7 @@ const {
   deleteAllKeys,
   delAllUserVars,
   publishToChannel,
+  client,
 } = require("../database/redis");
 const { ModeEnum } = require("./ENUMS/EMode");
 const { BotService } = require("./services/BotService/BotService");
@@ -48,23 +49,39 @@ const bot = async (
   const storObj = JSON.parse(
     JSON.stringify(await storeController.storeDetails(sender, receiver))
   );
-  
+
   const store_id = storObj.id;
   const employee = await Employee.findOne({
     where: { is_active: 1, store_id, phone: sender },
   });
   if (employee) {
     const conversation_id = await storeConversation(
-      receiver, 
+      receiver,
       sender,
       message,
       username,
       1
     );
     await storeNewMessage(conversation_id, receiver, message, username, sender);
-    publishToChannel(receiver, "stores" , "emp_message", username, store_id,message );
-
-    return 
+    publishToChannel(
+      receiver,
+      "stores",
+      "emp_message",
+      username,
+      store_id,
+      message
+    );
+    client.publish(
+      `stores`,
+      JSON.stringify({
+        data: {
+          type: "emp_message",
+          store_id,
+          conversation_id,
+        },
+      })
+    );
+    return;
   }
   console.log(storObj);
   console.log(sender);
@@ -75,26 +92,36 @@ const bot = async (
   if (language == undefined) language = "ar";
 
   const translation = require(`../locales/${language}`);
-  
 
   // فحص مواقيت العمل
-const isWithinWorkingHoursDays = await workTimeController(receiver, sender, storObj);
-console.log("isWithinWorkingHoursDays: " + isWithinWorkingHoursDays);
+  const isWithinWorkingHoursDays = await workTimeController(
+    receiver,
+    sender,
+    storObj
+  );
+  console.log("isWithinWorkingHoursDays: " + isWithinWorkingHoursDays);
 
-switch (isWithinWorkingHoursDays) {
+  switch (isWithinWorkingHoursDays) {
+    case 1:
+      setUserVars(receiver, sender, "mode", ModeEnum.help);
+      sendMsg.customMessage(
+        translation.isWithinWorkingHoursDays_0,
+        sender_id,
+        receiver_id
+      );
+      break;
 
-  case 1 :
-    setUserVars(receiver, sender, "mode", ModeEnum.help);
-    sendMsg.customMessage(translation.isWithinWorkingHoursDays_0, sender_id, receiver_id);
-    break;
-
-  case 2 :
-     sendMsg.customMessage(translation.isWithinWorkingHoursDays_1, sender_id, receiver_id);
-    break;
-}
+    case 2:
+      sendMsg.customMessage(
+        translation.isWithinWorkingHoursDays_1,
+        sender_id,
+        receiver_id
+      );
+      break;
+  }
   console.log("before create end user");
 
-EndUsers.create({
+  EndUsers.create({
     phone: receiver,
     full_name: username,
     store_id: storObj.id,
