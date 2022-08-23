@@ -35,7 +35,7 @@ const storeConversation = async (
   type=0
 ) => {
   let result;
-  result = await isExistConversation(receiver, sender);
+  result = await isExistConversation(receiver, sender, type);
   if (!result) {
     const new_conv = await Conversations.upsert({
       name: userName,
