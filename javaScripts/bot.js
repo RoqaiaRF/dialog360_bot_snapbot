@@ -78,6 +78,7 @@ const bot = async (
           type: "emp_message",
           store_id,
           conversation_id,
+          data:message
         },
       })
     );
