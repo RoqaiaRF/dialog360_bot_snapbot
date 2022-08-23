@@ -62,7 +62,7 @@ const bot = async (
       1
     );
     await storeNewMessage(conversation_id, receiver, message, username, sender);
-    publishToChannel(receiver, "stores" , "message", username, store_id,message );
+    publishToChannel(receiver, "stores" , "emp_message", username, store_id,message );
 
     return 
   }

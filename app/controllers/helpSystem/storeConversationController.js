@@ -21,6 +21,7 @@ const isExistConversation = async (number_store, number_client, type) => {
       }
     );
     console.log("it exists");
+    console.log(res)
     return res.id; // conversation_id
   } catch (error) {
     return false;
@@ -36,8 +37,12 @@ const storeConversation = async (
   type=0
 ) => {
   let result;
+  console.log('//////////////////////')
+  console.log(type)
   result = await isExistConversation(receiver, sender, type);
+  console.log(result)
   if (!result) { 
+    console.log('result is null ')
     const new_conv = await Conversations.upsert({
       name: userName,
       status: 1,

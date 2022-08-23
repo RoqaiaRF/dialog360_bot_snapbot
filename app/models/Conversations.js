@@ -26,6 +26,7 @@ module.exports = (sequelize, Sequelize) => {
         field: "updated_at",
         type: Sequelize.DATE,
       },
+      type:Sequelize.INTEGER
     },
     {
       timestamps: true,
