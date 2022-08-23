@@ -5,7 +5,7 @@ const Conversations = require("../../models/Conversations")(
 );
 
 // Search Conversation if it exists
-const isExistConversation = async (number_store, number_client) => {
+const isExistConversation = async (number_store, number_client, type) => {
   try {
     console.log("exists conversation number", number_store);
     const res = await Conversations.findOne(
@@ -13,6 +13,7 @@ const isExistConversation = async (number_store, number_client) => {
         where: {
           number_store: number_store,
           number_client: number_client,
+          type
         },
       },
       {
@@ -36,7 +37,7 @@ const storeConversation = async (
 ) => {
   let result;
   result = await isExistConversation(receiver, sender, type);
-  if (!result) {
+  if (!result) { 
     const new_conv = await Conversations.upsert({
       name: userName,
       status: 1,
