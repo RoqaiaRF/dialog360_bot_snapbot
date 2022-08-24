@@ -62,7 +62,7 @@ const bot = async (
       username,
       1
     );
-    await storeNewMessage(conversation_id, receiver, message, username, sender);
+    const new_message =  await storeNewMessage(conversation_id, receiver, message, username, sender);
     client.publish(
       `stores`,
       JSON.stringify({
@@ -70,8 +70,10 @@ const bot = async (
           type: "emp_message",
           store_id,
           conversation_id,
-          data:message,
-          username
+          message,
+          username,
+          sender_number:sender,
+          createdAt:new_message.createdAt
         },
       })
     );
