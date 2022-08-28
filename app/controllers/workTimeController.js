@@ -96,10 +96,7 @@ const isWithinWorkingHoursDays = async (phone, sender, storObj) => {
     workingTime.end_time
   );
 
-  console.log("checkWithenDays", checkWithenDays);
-  console.log("checkHours", checkHours);
-  console.log("todayIs", todayIs);
-  console.log("is_closed_bot", is_closed_bot);
+
   var result = 0;
 if(!storObj.is_reservation){
   if (checkWithenDays && checkHours) {
@@ -107,7 +104,7 @@ if(!storObj.is_reservation){
     result = 0;
   } else {
     // اوقف البوت كليا وارسل رساله انه المتجر مغلق
-    if ( !is_closed_bot )  {
+    if ( is_closed_bot )  {
       result = 1;
     }
     // اجعل البوت يستمر عادي فقط ارسل رسالة ان المتجر مغلق

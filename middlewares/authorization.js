@@ -1,6 +1,7 @@
 const db = require("../database/connection");
 const Tokens = require("../app/models/Token")(db.sequelize, db.Sequelize);
 const Stores = require("../app/models/Store")(db.sequelize, db.Sequelize);
+
 const authorizeToken = async (req, res, next) => {
   const bearerToken = req.header("Authorization");
   const token = bearerToken?.split(" ")[1];

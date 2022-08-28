@@ -39,7 +39,7 @@ app.use(helmet());
 app.use("/", indexRouter);
 
 // هذا بوت مخصص لشركة سنابوت , معمول هكذا مبدأيا فقط , سنطوره لاحقا
-//app.use("/snapbotbot", snapbotBot);
+app.use("/snapbotbot", snapbotBot);
 
 // adding morgan to log HTTP requests
 app.use(morgan("combined"));
