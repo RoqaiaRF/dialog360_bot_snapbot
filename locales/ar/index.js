@@ -82,8 +82,10 @@ const ar = {
   help_logout:'تم الخروج من نظام المساعدة, شكرًا على اتصالك, للرجوع للبوت اضغط 0',
   cart_empty:'السلة فارغة',
   no_items_to_remove:'لا يوجد منتجات لحذفها', 
-  isWithinWorkingHoursDays_0: "نعتذر, نحن مغلقون حاليا , رجاءا اطلب في وقت لاحق ",
-  isWithinWorkingHoursDays_1: "هذا الوقت خارج اوقات العمل لكن يمكنك اكمال الطلب",
+  isWithinWorkingHoursDays_0: `نعتذر, نحن مغلقون حاليا , رجاءا اطلب في وقت لاحق 
+  Excuse me, the store is now closed`,
+  isWithinWorkingHoursDays_1: `This time is out of business hours but you can complete the order
+  هذا الوقت خارج اوقات العمل لكن يمكنك اكمال الطلب`,
   no_items_to_remove:'لا يوجد منتجات لحذفها',
   out_of_stock:"هذا المنتج غير متوفر حاليًا"
 };
