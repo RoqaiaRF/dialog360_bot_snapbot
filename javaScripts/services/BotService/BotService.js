@@ -251,9 +251,8 @@ const processBotMode = async ({
           setUserVars(receiver, sender, "phase", "1.1");
         } else {
           console.log(receiver, "************");
-          console.log(storObj.id)
           if (
-            [26, 32, 40].includes(parseInt(storObj.id))
+            !storObj.policy_send_location
           ) {
             console.log('incluudddeees')
             let fees = storObj.id == "26" ? 1 : 0;
@@ -307,7 +306,55 @@ const processBotMode = async ({
 
       case "1.1":
         if (message == translation.home_delivery) {
-          sendMsg.locationPhase(sender_id, receiver_id);
+          if (
+            !storObj.policy_send_location
+          ) {
+            console.log('incluudddeees')
+            let fees = storObj.id == "26" ? 1 : 0;
+            let { lat, lng } = storObj;
+
+            const location2 = `{"lat":${lat},"lng":${lng} }`;
+            // store location in redis
+            setUserVars(receiver, sender, "location", `${location2}`);
+            let [nearestBranch, cityName] = await Promise.all([
+              storeController.getNearestBranch(sender, receiver, lat, lng),
+              location.getCityName(lat, lng),
+            ]);
+            let branch = JSON.parse(
+              await getUserVars(receiver, sender, "branch")
+            );
+            cart = cartController.newCart(
+              sender,
+              branch.id,
+              lat,
+              lng,
+              storObj.tax,
+              fees,
+              receiver
+            );
+            if (!nearestBranch) {
+              setUserVars(receiver, sender, "phase", "2");
+              sendMsg.customMessage(
+                translation.out_cover_error_msg,
+                sender_id,
+                receiver_id
+              );
+              sendMsg.locationPhase(sender_id, receiver_id);
+            } else {
+
+              sendMsg.nearestLocation(
+                sender_id,
+                nearestBranch,
+                storObj,
+                receiver_id
+              );
+
+            }
+            break;
+          }
+          else{
+            sendMsg.locationPhase(sender_id, receiver_id);
+          }
           setUserVars(receiver, sender, "phase", "2");
           setUserVars(receiver, sender, "pickup_Policy", false);
         } else if (message == translation.Receipt_from_the_store) {

@@ -54,10 +54,12 @@ const storeDetails = async (sender, phone) => {
           "pickup_Policy",
           "is_order",
           "is_reservation",
-          "is_closed_bot"
+          "is_closed_bot",
+          "policy_send_location"
         ],
       }
     );
+    console.log("store is here")
     await redis.setUserVars(phone, sender, "store", JSON.stringify(store));
     return store;
   }
@@ -94,6 +96,7 @@ const getAllBranchs = async (phone, sender) => {
         ],
       }
     );
+    
     await redis.setUserVars(phone, sender, "allbranches", JSON.stringify(list));
 
     return list;
@@ -166,4 +169,3 @@ const getFees = async (store_id, city_name) => {
   else return region.fees;
 }; 
 module.exports = { storeDetails, getNearestBranch, getAllBranchs, getFees };
-

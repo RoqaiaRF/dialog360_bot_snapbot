@@ -77,6 +77,9 @@ module.exports = (sequelize, Sequelize) => {
       pickup_Policy: {
         type: Sequelize.BOOLEAN,
       },
+      policy_send_location:{
+        type:Sequelize.BOOLEAN
+      },
       is_closed_bot: {
         type: Sequelize.BOOLEAN,
       },
