@@ -6,29 +6,24 @@ const {
   getAllListElements,
   publishToChannel,
 } = require("../../../database/redis");
-const template = require("../../../locales/templates");
+const template = require("../.././sendTemplate");
 const { HelpPhasesEnum } = require("../../ENUMS/EHelpPhase");
 const { ModeEnum } = require("../../ENUMS/EMode");
 const sendMsg = require("../../phases");
-const storeNewMessage = require("../../../app/controllers/helpSystem/helpSystemController")
-const storeConversation = require('../../../app/controllers/helpSystem/storeConversationController')
-const getIdConversation = require("../../../app/controllers/helpSystem/getConversationsController")
+const storeNewMessage = require("../../../app/controllers/helpSystem/helpSystemController");
+const storeConversation = require("../../../app/controllers/helpSystem/storeConversationController");
+const getIdConversation = require("../../../app/controllers/helpSystem/getConversationsController");
 const attributes = {
   language: "ar",
   translation: {},
 };
 const appendMessage = ({ receiver_id, sender, sender_id, message }) => {
   const receiver = receiver_id.replace("whatsapp:+", "");
-  sendMsg.customMessage(
-    template(
-      "help_mode",
-      attributes.language,
-      attributes.translation.continue_typing,
-      sender,
-      receiver
-    ),
-    sender_id,
-    receiver_id
+  template(
+    "help_mode",
+    attributes.language,
+    sender,
+    attributes.translation.continue_typing
   );
   appendToArray(receiver, sender, "msg", message);
 };
@@ -41,22 +36,16 @@ const overWriteMessage = async ({
 }) => {
   const receiver = receiver_id.replace("whatsapp:+", "");
   delUserVars(receiver_id, sender, "msg");
-  sendMsg.customMessage(
-    template(
-      "help_mode",
-      attributes.language,
-      attributes.translation.continue_typing,
-      sender,
-      receiver
-    ),
-    sender_id,
-    receiver_id
+  template(
+    "help_mode",
+    attributes.language,
+    sender,
+    attributes.translation.continue_typing
   );
   appendToArray(receiver, sender, "msg", message);
 };
 
 const changeToOverWritePhase = async ({ receiver_id, sender, sender_id }) => {
-
   setUserVars(receiver_id, sender, "phase", HelpPhasesEnum.OVER_WRITE);
   sendMsg.customMessage(
     attributes.translation.write_another_message,
@@ -65,13 +54,30 @@ const changeToOverWritePhase = async ({ receiver_id, sender, sender_id }) => {
   );
 };
 
-const sendOneMessage = async ({receiver_id, sender, username ,store_id, contentMessage}) => {
+const sendOneMessage = async ({
+  receiver_id,
+  sender,
+  username,
+  store_id,
+  contentMessage,
+}) => {
   const receiver = receiver_id.replace("whatsapp:+", "");
-  const message = await storeNewMessage(receiver, sender, contentMessage, username)
-  publishToChannel(receiver, "stores" , "message", username, store_id,message );
+  const message = await storeNewMessage(
+    receiver,
+    sender,
+    contentMessage,
+    username
+  );
+  publishToChannel(receiver, "stores", "message", username, store_id, message);
 };
 
-const sendMessage = async (receiver_id, sender, sender_id , userName ,store_id) => {
+const sendMessage = async (
+  receiver_id,
+  sender,
+  sender_id,
+  userName,
+  store_id
+) => {
   const receiver = receiver_id.replace("whatsapp:+", "");
 
   // pushing  message into redis channel
@@ -81,11 +87,16 @@ const sendMessage = async (receiver_id, sender, sender_id , userName ,store_id) 
     (pre, cur) => pre + "\n" + cur,
     ""
   );
-  console.log('nooow got msgs', contentMessage)
-  const message = await storeNewMessage(receiver, sender, contentMessage, userName)
-  const  conversation_id = await getIdConversation(receiver, sender);
+  console.log("nooow got msgs", contentMessage);
+  const message = await storeNewMessage(
+    receiver,
+    sender,
+    contentMessage,
+    userName
+  );
+  const conversation_id = await getIdConversation(receiver, sender);
 
-  publishToChannel(receiver, "stores" , "message", userName, store_id,message );
+  publishToChannel(receiver, "stores", "message", userName, store_id, message);
 
   // pushing to database if success
 
@@ -103,16 +114,12 @@ const displayUserMessage = async ({ receiver_id, sender, sender_id }) => {
   const message = session_messages.reduce((pre, cur) => pre + "\n" + cur, "");
   const receiver = receiver_id.replace("whatsapp:+", "");
   sendMsg.customMessage(message, sender_id, receiver_id);
-  sendMsg.customMessage(
-    template(
-      "help_mode",
-      attributes.language,
-      attributes.translation.continue_typing,
-      sender,
-      receiver
-    ),
-    sender_id,
-    receiver_id
+
+  template(
+    "help_mode",
+    attributes.language,
+    sender,
+    attributes.translation.continue_typing
   );
 };
 
@@ -122,7 +129,7 @@ const HelpModeService = {
   sendMessage,
   changeToOverWritePhase,
   displayUserMessage,
-  sendOneMessage
+  sendOneMessage,
 };
 
 module.exports = {

@@ -1,8 +1,8 @@
 const sendTextMsg = require("./sendMsgFunctions");
 const sendMedia = require("./sendMedia");
 const isReservation_Pay = require("../app/controllers/isReservation_OrdersController");
-const Redis = require("ioredis");
-const template = require("../locales/templates");
+
+const template = require("./sendTemplate");
 require("dotenv").config(); // env مكتبة جلب المتغيرات من ال
 const { StoreService } = require("./services/StoreService/StoreService");
 
@@ -25,9 +25,9 @@ const welcomeLangPhase = async (
   receiverID
 ) => {
   const store_phone = `whatsapp:+${store_obj.phone}`;
-  const msg = `Welcome ${username} at ${storeEN_Name}...  please click on the right option
+  const msg = `Welcome at ${storeEN_Name}...  please click on the right option
                 
-  حياك الله في   ${storeAR_Name}.. شرفتنا يا ${username}    .. 
+  حياك الله في   ${storeAR_Name}.. شرفتنا   .. 
   😄
 للحصول على المساعدة ارسل *
 دائما للعودة للرئيسية اضغط 0 
@@ -37,19 +37,20 @@ At any time to go main send 0
 
   `;
 
-  const tanamara_msg = `Welcome ${username} at ${storeEN_Name}...  please click on the right option
+  const tanamara_msg = `Welcome  at ${storeEN_Name}...  please click on the right option
                 
-  حياك الله في   ${storeAR_Name}.. شرفتنا يا ${username}
+  حياك الله في   ${storeAR_Name}.. شرفتنا  
   ملاحظة: لا يوجد خدمة فى منطقة ام الهيمان وصباح الاحمد
   والشاليهات
-  `
-  await sendTextMsg(store_obj.id=='32'?tanamara_msg:msg,
+  `;
+  await sendTextMsg(
+    store_obj.id == "32" ? tanamara_msg : msg,
     senderID,
     store_phone
   );
 
-  sendTextMsg(`اختر اللغة المناسبة للطلب من فضلك
-  Choose the language ,please`, senderID, store_phone);
+  await template( "news_choose_language","ar",senderID," ");
+
 };
 //^Phase #1.1
 // Expected Outputs: "توصيل لبيتي", "استلام من المتجر"
@@ -60,12 +61,7 @@ const pickupPhase = async (senderID, receiverID) => {
   let language = await getUserVars(receiver, sender, "language");
   if (language == undefined) language = "ar";
 
-  await sendTextMsg(
-    template("pickup", language, " ", senderID, receiverID),
-    senderID,
-    receiverID
-  );
-  sendTextMsg(`🚙 🏪`, senderID, receiverID);
+  await template("pickup", language, senderID, " ");
 };
 
 /*----------------------------------------*/
@@ -114,17 +110,8 @@ const nearestLocation = async (senderID, branchObj, storObj, receiverID) => {
     setUserVars(receiver, sender, "phase", "4");
     console.log("after end");
   } else if (_isReservation_Pay === "Orders_Reservation_together") {
-    sendTextMsg(
-      template(
-        "orders_reservation_together",
-        language,
-        storeName,
-        senderID,
-        receiverID
-      ),
-      senderID,
-      receiverID
-    );
+    template("orders_reservation_together", language, senderID, storeName);
+
     setUserVars(receiver, sender, "phase", "3");
   } else if (_isReservation_Pay === "error") {
     sendTextMsg(`${translation.reservation_error_msg}`, senderID, receiverID);
@@ -165,7 +152,7 @@ const startOrder = async ({
       )
     )
   );
-  setUserVars(receiver, sender, "isorder",type=='onlyOrders'? true:false);
+  setUserVars(receiver, sender, "isorder", type == "onlyOrders" ? true : false);
 
   cart = cartController.newCart(
     sender,
@@ -214,7 +201,7 @@ const categoryPhase = async (senderID, categories, receiverID) => {
   const receiver = receiverID.replace("whatsapp:+", "");
   const sender = senderID.replace("whatsapp:+", "");
   console.log(categories);
-  console.log("categoreieeeeeeeeeeeeeees");
+
   let language = await getUserVars(receiver, sender, "language");
   if (language == undefined) language = "ar";
 
@@ -237,7 +224,7 @@ const categoryPhase = async (senderID, categories, receiverID) => {
 const productPhase = async (senderID, products, receiverID) => {
   const receiver = receiverID.replace("whatsapp:+", "");
   const sender = senderID.replace("whatsapp:+", "");
-  console.log(products)
+  console.log(products);
   let language = await getUserVars(receiver, sender, "language");
   if (language == undefined) language = "ar";
 
@@ -281,11 +268,7 @@ const addedDetails = async (senderID, receiverID) => {
   if (language == undefined) language = "ar";
 
   const translation = require(`../locales/${language}`);
-  sendTextMsg(
-    template("added_details", language, senderID, receiverID),
-    senderID,
-    receiverID
-  );
+  template("added_details", language, senderID, " ");
 };
 
 const featuresPhase = async (senderID, features, receiverID) => {
@@ -327,7 +310,9 @@ const showProduct = async (senderID, product, receiverID) => {
   ${translation.the_description} ${product_description}
   ${translation.price} ${product.price} ${translation.the_currency}
   `;
-  message+= product.duration?`${translation.Duration} ${product.duration} ${translation.minute}`:''
+  message += product.duration
+    ? `${translation.Duration} ${product.duration} ${translation.minute}`
+    : "";
   if (product.image != null || product.image != undefined) {
     await sendMedia(
       ` ${message}
@@ -349,11 +334,7 @@ const showProduct = async (senderID, product, receiverID) => {
       receiverID
     );
   }
-  sendTextMsg(
-    template("product_details", language, "👇", senderID, receiverID),
-    senderID,
-    receiverID
-  );
+  template("product_details", language, senderID, "👇");
 };
 const quantityProductPhase = async (senderID, receiverID) => {
   const receiver = receiverID.replace("whatsapp:+", "");
@@ -384,11 +365,9 @@ const showCart = async (
 
   if (!purchases) {
     await sendTextMsg(translation.empty_cart, senderID, receiverID);
-    sendTextMsg(
-      template("cartdetails", language, " ", senderID, receiverID), // يمكنك اضافة اي string  بدل ":"
-      senderID,
-      receiverID
-    );
+
+    template("cartdetails", language, senderID, " "); // يمكنك اضافة اي string  بدل ":"
+
     return;
   }
   let paymentLink = "";
@@ -425,11 +404,7 @@ ${translation.link_approved_order}
 ${paymentLink}`;
 
   await sendTextMsg(`${msg}`, senderID, receiverID);
-  sendTextMsg(
-    template("cartdetails", language, " ", senderID, receiverID), // يمكنك اضافة اي string  بدل ":"
-    senderID,
-    receiverID
-  );
+  template("cartdetails", language, senderID, " "); // يمكنك اضافة اي string  بدل ":"
 };
 
 const errorMsg = async (senderID, receiverID) => {

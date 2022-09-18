@@ -15,25 +15,41 @@ router.post("/", function (req, res, next) {
       message: "req body cannot be empty!",
     });
   }
-  let message = req.body.Body; // text message sent
-  let sender_ID = req.body.From; // End-User Phone number
-  let receiver_id = req.body.To; // store owner Phone number
+ // console.log(req.body)
+  let message = req.body.messages[0].text.body; // text message sent
+  let sender_ID = req.body.messages[0].from; // End-User Phone number
+  let receiver_id = "201281705838"; // store owner Phone number
   let longitude = req.body.Longitude;
   let latitude = req.body.Latitude;
   let username = req.body.ProfileName;
-  console.log("Receiver INDEX_ROUTER :  " + receiver_id);
-  console.log("sender INDEX_ROUTER :  " + sender_ID);
+  console.log("Receiver INDEX_ROUTER :  " , receiver_id);
+  console.log("sender INDEX_ROUTER :  " , sender_ID);
+  console.log("message :  " , message);
+
 
   bot(sender_ID, receiver_id, message, longitude, latitude, username);
 });
 
-
-// Just TESTING
-router.get("/", function (req, res, next) {
-  getWorkTime()
-});
-
-
 router.use("/conversation", authorizeToken, ConversationRouter);
 router.post("/authorize/:id", authorizeToken, checkAuthentication);
 module.exports = router;
+
+
+/* req.body at Dialog 360 :
+
+{
+  contacts: [ { profile: [Object], wa_id: '962799849386' } ],
+  messages: [
+    {
+      from: '962799849386',
+      id: 'ABEGlieZhJOGAgo-sFz22dR7ApfZ',
+      text: [Object],
+      timestamp: '1663267221',
+      type: 'text'
+    }
+  ]
+}
+
+
+
+*/

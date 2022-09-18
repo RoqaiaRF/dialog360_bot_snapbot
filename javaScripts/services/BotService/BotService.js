@@ -25,7 +25,7 @@ const { StoreService } = require("../StoreService/StoreService");
 const { ModeEnum } = require("../../ENUMS/EMode");
 const { HelpPhasesEnum } = require("../../ENUMS/EHelpPhase");
 const { HelpModeService, attributes } = require("./HelpMode");
-const template = require("../../../locales/templates");
+const template = require("../.././sendTemplate");
 const sendTextMsg = require("../../sendMsgFunctions");
 const getConversation = require("../../../app/controllers/helpSystem/getConversationsController");
 
@@ -251,10 +251,8 @@ const processBotMode = async ({
           setUserVars(receiver, sender, "phase", "1.1");
         } else {
           console.log(receiver, "************");
-          if (
-            !storObj.policy_send_location
-          ) {
-            console.log('incluudddeees')
+          if (!storObj.policy_send_location) {
+            console.log("incluudddeees");
             let fees = storObj.id == "26" ? 1 : 0;
             let { lat, lng } = storObj;
 
@@ -286,14 +284,12 @@ const processBotMode = async ({
               );
               sendMsg.locationPhase(sender_id, receiver_id);
             } else {
-
               sendMsg.nearestLocation(
                 sender_id,
                 nearestBranch,
                 storObj,
                 receiver_id
               );
-
             }
             break;
           }
@@ -306,10 +302,8 @@ const processBotMode = async ({
 
       case "1.1":
         if (message == translation.home_delivery) {
-          if (
-            !storObj.policy_send_location
-          ) {
-            console.log('incluudddeees')
+          if (!storObj.policy_send_location) {
+            console.log("incluudddeees");
             let fees = storObj.id == "26" ? 1 : 0;
             let { lat, lng } = storObj;
 
@@ -341,18 +335,15 @@ const processBotMode = async ({
               );
               sendMsg.locationPhase(sender_id, receiver_id);
             } else {
-
               sendMsg.nearestLocation(
                 sender_id,
                 nearestBranch,
                 storObj,
                 receiver_id
               );
-
             }
             break;
-          }
-          else{
+          } else {
             sendMsg.locationPhase(sender_id, receiver_id);
           }
           setUserVars(receiver, sender, "phase", "2");
@@ -718,7 +709,7 @@ const processBotMode = async ({
               sender,
               category.id
             );
-    
+
             console.log("*******************");
             console.log(productsObj);
             console.log("*******************");
@@ -857,20 +848,24 @@ const processBotMode = async ({
           product6.uuid = await uuidv4();
           product6.allFeatures = product6.features;
           product6.features = [];
-          if (product6.quantity < 1){
-             sendMsg.customMessage(
+          if (product6.quantity < 1) {
+            sendMsg.customMessage(
               `${translation.out_of_stock} `,
               sender_id,
               receiver_id
             );
-            console.log(product6)
-            const productsObj = await getProducts(receiver, sender, product6.category_id);
+            console.log(product6);
+            const productsObj = await getProducts(
+              receiver,
+              sender,
+              product6.category_id
+            );
             sendMsg.productPhase(
               sender_id,
               await products(productsObj, language),
               receiver_id
             );
-            return
+            return;
           }
 
           sendMsg.showProduct(sender_id, product6, receiver_id);
@@ -1008,7 +1003,7 @@ const processBotMode = async ({
             receiver,
             sender,
             "productDetails",
-            await JSON.stringify(new_productDetails)
+             JSON.stringify(new_productDetails)
           );
           const [newCart7_1Res, purchases7_1] = await Promise.all([
             getUserVars(receiver, sender, "cart"),
@@ -1174,11 +1169,9 @@ const processBotMode = async ({
               sender_id,
               receiver_id
             );
-            sendTextMsg(
-              template("cartdetails", language, " ", sender_id, receiver_id), // يمكنك اضافة اي string  بدل ":"
-              sender_id,
-              receiver_id
-            );
+
+            template("cartdetails", language, sender_id, " "); // يمكنك اضافة اي string  بدل ":"
+
             return;
           }
           sendMsg.customMessage(
@@ -1290,7 +1283,6 @@ const sendProductFeatures = ({
 
   setUserVars(receiver, sender, "quantity", JSON.stringify(parseInt(message)));
 
-  
   sendMsg.addedDetails(sender_id, receiver_id);
   setUserVars(receiver, sender, "phase", "8.1");
 };
@@ -1344,17 +1336,7 @@ const chooseOrderReservation = async ({ receiverID, senderID }) => {
   if (language == undefined) language = "ar";
 
   const translation = require(`../locales/${language}`);
-  sendTextMsg(
-    template(
-      "orders_reservation_together",
-      language,
-      storeName,
-      senderID,
-      receiverID
-    ),
-    senderID,
-    receiverID
-  );
+  template("orders_reservation_together", language, senderID, storeName);
 };
 
 const BotService = {

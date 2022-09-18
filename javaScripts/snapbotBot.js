@@ -1,6 +1,6 @@
 const sendTextMsg = require("./sendMsgFunctions");
 const sendMedia = require("./sendMedia");
-const demo = require("./demoApp");
+
 var snapbot_phone_number = "whatsapp:+201144002242";
 
 const snapbotBot = async (message, sendeID, username) => {
@@ -12,12 +12,12 @@ const snapbotBot = async (message, sendeID, username) => {
         sendeID,
         snapbot_phone_number
       );
-      sendMedia(
-        "",
-        sendeID,
-        "https://stores-logos.fra1.digitaloceanspaces.com/sanpbot-img/snap1.jpeg",
-        snapbot_phone_number
-      );
+      // sendMedia(
+      //   "",
+      //   sendeID,
+      //   "https://stores-logos.fra1.digitaloceanspaces.com/sanpbot-img/snap1.jpeg",
+      //   snapbot_phone_number
+      // );
 
       break;
 
@@ -27,12 +27,12 @@ const snapbotBot = async (message, sendeID, username) => {
           sendeID,
           snapbot_phone_number
         );
-        sendMedia(
-          "",
-          sendeID,
-          "https://stores-logos.fra1.digitaloceanspaces.com/sanpbot-img/snap1.jpeg",
-          snapbot_phone_number
-        );
+        // sendMedia(
+        //   "",
+        //   sendeID,
+        //   "https://stores-logos.fra1.digitaloceanspaces.com/sanpbot-img/snap1.jpeg",
+        //   snapbot_phone_number
+        // );
   
         break;
 
@@ -41,7 +41,7 @@ const snapbotBot = async (message, sendeID, username) => {
         "التعرف أكثر علينا 🤗",
         sendeID,
         snapbot_phone_number
-      ); // نعرض له صورة ونعرض له رسالة فيها كل الخدمات
+      );
       sendMedia(
         `نحن شركة رائدة في مجال التكنولوجيا ونستخدم تقنيات توفر على العميل الوقت والمجهود في استقبال طلبات الزبائن والتواصل معهم عبر الواتس اب 📲
         `,
@@ -51,7 +51,7 @@ const snapbotBot = async (message, sendeID, username) => {
       );
       break;
 
-      case  "about us"     : // نعرض له صورة ونعرض له رسالة فيها كل الخدمات
+      case  "about us"     :
       await sendTextMsg(
         "getting to know us better 🤗",
         sendeID,
@@ -87,11 +87,11 @@ const snapbotBot = async (message, sendeID, username) => {
 
         case "شركات تثق بنا":
           await sendTextMsg(`
-          ثري بيز متخصصة بإنتاج العسل
+          1️⃣ ثري بيز متخصصة بإنتاج العسل
           2️⃣ روت كوفي بار
           3️⃣ مطعم طبخ الفريج 
           4️⃣ تناميرا مساج 
-          5️⃣ SunGard Express 
+          5️⃣ سانجارد اكسبرس 
           6️⃣ نانو فور لايف الكويت  
           7️⃣ اولد تاون كافيه
           
